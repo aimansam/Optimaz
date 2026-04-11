@@ -1,28 +1,30 @@
+import dynamic from 'next/dynamic';
+const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 "use client";
-
-import { Header } from '@/components/layout/header';
-import { TaskList } from '@/components/tasks/task-list';
-import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
-import { useUser } from '@/hooks/use-user';
-import { useState } from 'react';
-import { Dialog } from '@/components/ui/dialog';
-import { TaskForm } from '@/components/tasks/task-form';
-import { Button } from '@/components/ui/button';
-import { Plus, BarChart3 } from 'lucide-react';
-
-import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
-import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
-import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
-import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
-
-
-function TaskSkeleton() {
 	return (
-		<div className="space-y-2">
-			{[...Array(3)].map((_, i) => (
-				<div key={i} className="h-17 rounded-xl bg-slate-100 dark:bg-slate-800/60 animate-pulse" />
-			))}
-		</div>
+		<>
+			<Header
+				title="Today"
+				actions={
+					<Button size="sm" onClick={() => setAddOpen(true)}>
+						<Plus className="h-4 w-4" />
+						Add Task
+					</Button>
+				}
+			/>
+			<div className="flex-1 overflow-y-auto">
+				<div className="mx-auto max-w-2xl px-6 py-8">
+					{/* Date hero with icon toggle */}
+					<div className="mb-8 flex items-center justify-between gap-4">
+						<div>
+							<p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
+						</div>
+					</div>
+					{/* ...rest of your dashboard code... */}
+				</div>
+			</div>
+			<InstallPWAButton />
+		</>
 	);
 }
 

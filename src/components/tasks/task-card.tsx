@@ -9,7 +9,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from './task-form';
 import { useUpdateTask, useDeleteTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
-import { SubtaskList } from './subtask-list';
+import { SubtaskList } from './subtask-list2';
 
 interface TaskCardProps {
   task: Task;

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types';
 
-
 export function SubtaskList({ task }: { task: Task }) {
   const [newTitle, setNewTitle] = useState('');
   const [showInput, setShowInput] = useState(false);

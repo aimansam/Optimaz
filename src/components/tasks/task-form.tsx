@@ -9,7 +9,7 @@ import { useCreateTask, useUpdateTask } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
 import type { Task, Priority, TaskStatus, RecurrenceRule } from '@/lib/types';
-import { SubtaskList } from './subtask-list';
+import { SubtaskList } from './subtask-list2';
 
 interface TaskFormProps {
   defaultStatus?: TaskStatus;

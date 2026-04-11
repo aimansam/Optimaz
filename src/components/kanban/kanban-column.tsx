@@ -11,9 +11,9 @@ import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
 
 const COLUMN_DOT: Record<TaskStatus, string> = {
-  todo: 'bg-slate-400',
-  in_progress: 'bg-slate-500 dark:bg-slate-400',
-  done: 'bg-emerald-500',
+  todo: 'bg-red-500',
+  in_progress: 'bg-yellow-400',
+  done: 'bg-green-500',
 };
 
 const COLUMN_COUNT_STYLE: Record<TaskStatus, string> = {

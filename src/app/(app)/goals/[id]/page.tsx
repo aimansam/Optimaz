@@ -84,7 +84,7 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
 
             {percent === 100 && (
               <p className="mt-3 text-center text-sm font-semibold text-green-600 dark:text-green-400">
-                🎉 Goal achieved! Great work!
+                Goal achieved! Great work!
               </p>
             )}
           </div>

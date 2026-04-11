@@ -1,0 +1,150 @@
+-- Enable UUID extension
+create extension if not exists "uuid-ossp";
+
+-- Projects table
+create table if not exists public.projects (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  description text,
+  color text not null default '#6366f1',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Tasks table
+create table if not exists public.tasks (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  project_id uuid references public.projects(id) on delete set null,
+  title text not null,
+  notes text,
+  priority text not null default 'medium' check (priority in ('low', 'medium', 'high', 'urgent')),
+  status text not null default 'todo' check (status in ('todo', 'in_progress', 'done')),
+  due_date date,
+  position integer not null default 0,
+  -- Recurring
+  is_recurring boolean not null default false,
+  recurrence_rule text, -- 'daily' | 'weekly' | 'monthly'
+  -- Metadata
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Subtasks table
+create table if not exists public.subtasks (
+  id uuid primary key default uuid_generate_v4(),
+  task_id uuid not null references public.tasks(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  completed boolean not null default false,
+  position integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- Goals table
+create table if not exists public.goals (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  description text,
+  color text not null default '#6366f1',
+  due_date date,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Add goal_id to tasks
+alter table public.tasks
+  add column if not exists goal_id uuid references public.goals(id) on delete set null;
+
+-- Push subscriptions table
+create table if not exists public.push_subscriptions (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists tasks_goal_id_idx on public.tasks(goal_id);
+create index if not exists goals_user_id_idx on public.goals(user_id);
+create index if not exists tasks_user_id_idx on public.tasks(user_id);
+create index if not exists tasks_project_id_idx on public.tasks(project_id);
+create index if not exists tasks_status_idx on public.tasks(status);
+create index if not exists tasks_due_date_idx on public.tasks(due_date);
+create index if not exists subtasks_task_id_idx on public.subtasks(task_id);
+create index if not exists push_subscriptions_user_id_idx on public.push_subscriptions(user_id);
+
+-- Updated_at trigger function
+create or replace function public.handle_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create or replace trigger tasks_updated_at
+  before update on public.tasks
+  for each row execute function public.handle_updated_at();
+
+create or replace trigger projects_updated_at
+  before update on public.projects
+  for each row execute function public.handle_updated_at();
+
+create or replace trigger goals_updated_at
+  before update on public.goals
+  for each row execute function public.handle_updated_at();
+
+-- Row Level Security
+alter table public.goals enable row level security;
+alter table public.projects enable row level security;
+alter table public.tasks enable row level security;
+alter table public.subtasks enable row level security;
+alter table public.push_subscriptions enable row level security;
+
+-- Goals policies
+create policy "Users can view own goals" on public.goals
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own goals" on public.goals
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own goals" on public.goals
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own goals" on public.goals
+  for delete using (auth.uid() = user_id);
+
+-- Projects policies
+create policy "Users can view own projects" on public.projects
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own projects" on public.projects
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own projects" on public.projects
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own projects" on public.projects
+  for delete using (auth.uid() = user_id);
+
+-- Tasks policies
+create policy "Users can view own tasks" on public.tasks
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own tasks" on public.tasks
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own tasks" on public.tasks
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own tasks" on public.tasks
+  for delete using (auth.uid() = user_id);
+
+-- Subtasks policies
+create policy "Users can view own subtasks" on public.subtasks
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own subtasks" on public.subtasks
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own subtasks" on public.subtasks
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own subtasks" on public.subtasks
+  for delete using (auth.uid() = user_id);
+
+-- Push subscriptions policies
+create policy "Users can manage own push subscriptions" on public.push_subscriptions
+  for all using (auth.uid() = user_id);

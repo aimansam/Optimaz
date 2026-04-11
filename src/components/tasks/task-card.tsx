@@ -1,0 +1,157 @@
+'use client';
+
+import { useState } from 'react';
+import { Check, Trash2, Edit2, CalendarDays, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
+import { TaskForm } from './task-form';
+import { useUpdateTask, useDeleteTask } from '@/hooks/use-tasks';
+import type { Task } from '@/lib/types';
+import { SubtaskList } from './subtask-list';
+
+interface TaskCardProps {
+  task: Task;
+  compact?: boolean;
+}
+
+const PRIORITY_LEFT_BORDER: Record<string, string> = {
+  low: 'border-l-blue-400',
+  medium: 'border-l-amber-400',
+  high: 'border-l-orange-400',
+  urgent: 'border-l-red-500',
+};
+
+export function TaskCard({ task, compact = false }: TaskCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const updateTask = useUpdateTask();
+  const deleteTask = useDeleteTask();
+
+  const priority = PRIORITY_CONFIG[task.priority];
+  const overdue = isOverdue(task.due_date) && task.status !== 'done';
+  const isDone = task.status === 'done';
+  const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
+  const totalSubtasks = task.subtasks?.length ?? 0;
+
+  const toggleDone = () => {
+    updateTask.mutate({ id: task.id, status: isDone ? 'todo' : 'done' });
+  };
+
+  const handleDelete = () => {
+    if (confirm('Delete this task?')) deleteTask.mutate(task.id);
+  };
+
+  return (
+    <>
+      <div
+        className={cn(
+          'group relative rounded-xl border-l-[3px] bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-150 hover:shadow-md dark:bg-slate-900 dark:ring-slate-800',
+          isDone
+            ? 'border-l-slate-200 opacity-60 dark:border-l-slate-700'
+            : PRIORITY_LEFT_BORDER[task.priority],
+          overdue && 'border-l-red-500!'
+        )}
+      >
+        <div className="flex items-start gap-3 p-3.5">
+          {/* Checkbox */}
+          <button
+            onClick={toggleDone}
+            className={cn(
+              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-150',
+              isDone
+                ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+                : 'border-slate-300 hover:border-slate-400 hover:shadow-sm hover:shadow-slate-400/20 dark:border-slate-600'
+            )}
+          >
+            {isDone && <Check className="h-3 w-3 stroke-3" />}
+          </button>
+
+          {/* Content */}
+          <div className="min-w-0 flex-1">
+            <p
+              className={cn(
+                'text-sm font-medium leading-snug text-slate-800 dark:text-slate-100',
+                isDone && 'line-through text-slate-400 dark:text-slate-500'
+              )}
+            >
+              {task.title}
+            </p>
+
+            {!compact && task.notes && (
+              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-2">{task.notes}</p>
+            )}
+
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {/* Priority badge */}
+              <Badge className={cn('text-[10px] font-semibold tracking-wide', priority.bg, priority.color)}>
+                {priority.label}
+              </Badge>
+
+              {/* Project */}
+              {task.project && (
+                <Badge className="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-[10px]">
+                  <span
+                    className="mr-1 inline-block h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: task.project.color }}
+                  />
+                  {task.project.name}
+                </Badge>
+              )}
+
+              {/* Due date */}
+              {task.due_date && (
+                <span className={cn('flex items-center gap-0.5 text-[10px] font-medium', overdue ? 'text-red-500' : 'text-slate-400 dark:text-slate-500')}>
+                  <CalendarDays className="h-3 w-3" />
+                  {formatDate(task.due_date)}
+                </span>
+              )}
+
+              {/* Recurring */}
+              {task.is_recurring && (
+                <span title={`Recurring ${task.recurrence_rule}`}>
+                  <RefreshCw className="h-3 w-3 text-slate-400" />
+                </span>
+              )}
+
+              {/* Subtasks progress */}
+              {totalSubtasks > 0 && (
+                <span className="text-[10px] font-medium text-slate-400">
+                  {completedSubtasks}/{totalSubtasks} subtasks
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+            {totalSubtasks > 0 && (
+              <Button variant="ghost" size="icon" onClick={() => setExpanded(!expanded)} className="h-7 w-7 rounded-lg">
+                {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)} className="h-7 w-7 rounded-lg">
+              <Edit2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleDelete} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Subtasks */}
+        {expanded && totalSubtasks > 0 && (
+          <div className="border-t border-slate-100 px-3.5 pb-3 pt-2.5 pl-12 dark:border-slate-800">
+            <SubtaskList task={task} />
+          </div>
+        )}
+      </div>
+
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Task">
+        <TaskForm task={task} onClose={() => setEditOpen(false)} />
+      </Dialog>
+    </>
+  );
+}
+

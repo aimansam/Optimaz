@@ -1,0 +1,23 @@
+# Deployment Checklist for TaskFlow
+
+- [ ] Push latest code to GitHub (or GitLab/Bitbucket)
+- [ ] Create Supabase project and set up schema (if not done)
+- [ ] Get Supabase environment variables:
+    - [ ] NEXT_PUBLIC_SUPABASE_URL
+    - [ ] NEXT_PUBLIC_SUPABASE_ANON_KEY
+    - [ ] (Optional) SUPABASE_SERVICE_ROLE_KEY
+    - [ ] (Optional) NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    - [ ] (Optional) VAPID_PRIVATE_KEY
+    - [ ] (Optional) VAPID_SUBJECT
+- [ ] Deploy to Vercel:
+    - [ ] Import repo at https://vercel.com/import
+    - [ ] Set environment variables in Vercel dashboard
+    - [ ] Click "Deploy"
+- [ ] (Optional) Set up custom domain in Vercel
+- [ ] (Optional) For self-hosting:
+    - [ ] Run `npm run build` and `npm start` on your server
+    - [ ] Set environment variables in your hosting environment
+- [ ] Test deployed app (login, tasks, subtasks, kanban, PWA, dark mode)
+- [ ] (Optional) Enable push notifications and test
+- [ ] (Optional) Add project logo/favicon
+- [ ] (Optional) Update documentation (README, PROJECT.md)

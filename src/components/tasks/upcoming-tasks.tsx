@@ -37,7 +37,7 @@ export function UpcomingTasks({ days = 7, showHeading = true }: { days?: number,
       {showHeading && (
         <h3 className="mb-2 text-lg font-semibold text-slate-800 dark:text-slate-100">Upcoming Deadlines</h3>
       )}
-      <TaskList tasks={data} compact />
+      <TaskList tasks={data} />
     </div>
   );
 }

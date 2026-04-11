@@ -63,6 +63,8 @@ export default function DashboardPage() {
 		<>
 			<Header
 				title="Today"
+			import dynamic from 'next/dynamic';
+			const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 				actions={
 					<Button size="sm" onClick={() => setAddOpen(true)}>
 						<Plus className="h-4 w-4" />
@@ -80,6 +82,10 @@ export default function DashboardPage() {
 							<p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
 							<h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
 								{greeting}{firstName ? `, ${firstName}` : ''}
+									</div>
+								</div>
+								{/* ...rest of your dashboard code... */}
+								<InstallPWAButton />
 							</h2>
 						</div>
 						<button

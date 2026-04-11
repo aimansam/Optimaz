@@ -1,6 +1,7 @@
 
 
 
+
 "use client";
 import dynamic from 'next/dynamic';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
@@ -42,22 +43,13 @@ export default function DashboardPage() {
 		<>
 			<Header
 				title="Today"
-			import dynamic from 'next/dynamic';
-			const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 				actions={
 					<Button size="sm" onClick={() => setAddOpen(true)}>
 						<Plus className="h-4 w-4" />
-						return (
-							<>
-								<Header
-									title="Today"
-									actions={
-										<Button size="sm" onClick={() => setAddOpen(true)}>
-											<Plus className="h-4 w-4" />
-											Add Task
-										</Button>
-									}
-								/>
+						Add Task
+					</Button>
+				}
+			/>
 								<div className="flex-1 overflow-y-auto">
 									<div className="mx-auto max-w-2xl px-6 py-8">
 										{/* Date hero with icon toggle */}

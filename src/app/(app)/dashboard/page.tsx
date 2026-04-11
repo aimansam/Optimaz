@@ -1,4 +1,5 @@
 
+
 "use client";
 import dynamic from 'next/dynamic';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });

@@ -3,6 +3,8 @@ import { Geist } from 'next/font/google';
 import './globals.css';
 
 import ProvidersClient from './providers-client';
+import dynamic from 'next/dynamic';
+const InstallPWAButton = dynamic(() => import('../components/InstallPWAButton'), { ssr: false });
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
@@ -36,14 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ProvidersClient>
           {children}
         </ProvidersClient>
-        {process.env.NODE_ENV !== 'development' && (
-          <div suppressHydrationWarning>
-            {typeof window !== 'undefined' && (() => {
-              const InstallPWAButton = require('../components/InstallPWAButton').default;
-              return <InstallPWAButton />;
-            })()}
-          </div>
-        )}
+        {process.env.NODE_ENV !== 'development' && <InstallPWAButton />}
       </body>
     </html>
   );

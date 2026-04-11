@@ -1,12 +1,18 @@
 "use client";
 import { useEffect, useState } from 'react';
 
+// Define the correct type for the beforeinstallprompt event
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => void;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; }>;
+}
+
 export default function InstallPWAButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const handler = (e: Event & { prompt?: () => void; userChoice?: Promise<{ outcome: string }> }) => {
+    const handler = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShow(true);

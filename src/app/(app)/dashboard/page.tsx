@@ -116,4 +116,4 @@ export default function DashboardPage() {
 			<InstallPWAButton />
 		</>
 	);
-															(overdueTasks?.length ?? 0) > 0
+}

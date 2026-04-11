@@ -6,13 +6,13 @@ export default function InstallPWAButton() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: Event & { prompt?: () => void; userChoice?: Promise<{ outcome: string }> }) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShow(true);
     };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('beforeinstallprompt', handler as EventListener);
+    return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
   }, []);
 
   const handleInstall = async () => {

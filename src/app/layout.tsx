@@ -36,6 +36,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ProvidersClient>
           {children}
         </ProvidersClient>
+        {process.env.NODE_ENV !== 'development' && (
+          <div suppressHydrationWarning>
+            {typeof window !== 'undefined' && (() => {
+              const InstallPWAButton = require('../components/InstallPWAButton').default;
+              return <InstallPWAButton />;
+            })()}
+          </div>
+        )}
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,6 +9,7 @@ import { useCreateTask, useUpdateTask } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
 import type { Task, Priority, TaskStatus, RecurrenceRule } from '@/lib/types';
+import { SubtaskList } from './subtask-list';
 
 interface TaskFormProps {
   defaultStatus?: TaskStatus;
@@ -38,7 +39,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   const updateTask = useUpdateTask();
   const isEdit = !!task;
 
-  const { register, handleSubmit, watch, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, control, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
       title: task?.title ?? '',
       notes: task?.notes ?? '',
@@ -52,7 +53,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
     },
   });
 
-  const isRecurring = watch('is_recurring');
+  const isRecurring = useWatch({ control, name: 'is_recurring' }) ?? false;
 
   const onSubmit = async (values: FormValues) => {
     const payload = {
@@ -86,6 +87,15 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Notes</label>
         <Textarea {...register('notes')} placeholder="Add details..." rows={3} />
       </div>
+
+
+      {/* Subtasks section (edit mode only) */}
+      {isEdit && task && (
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Subtasks</label>
+          <SubtaskList task={task} />
+        </div>
+      )}
 
       <div className="h-px bg-slate-100 dark:bg-slate-800" />
 

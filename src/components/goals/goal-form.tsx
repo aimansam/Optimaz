@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +27,7 @@ export function GoalForm({ goal, onClose }: GoalFormProps) {
   const updateGoal = useUpdateGoal();
   const isEdit = !!goal;
 
-  const { register, handleSubmit, watch, setValue, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, control, setValue, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
       title: goal?.title ?? '',
       description: goal?.description ?? '',
@@ -36,7 +36,7 @@ export function GoalForm({ goal, onClose }: GoalFormProps) {
     },
   });
 
-  const selectedColor = watch('color');
+  const selectedColor = useWatch({ control, name: 'color' }) ?? COLORS[0];
 
   const onSubmit = async (values: FormValues) => {
     const payload = {

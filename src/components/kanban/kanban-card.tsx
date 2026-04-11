@@ -9,6 +9,7 @@ import type { Task } from '@/lib/types';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
+import { SubtaskList } from '@/components/tasks/subtask-list';
 
 const PRIORITY_BORDER: Record<string, string> = {
   low: 'border-l-blue-400',
@@ -32,29 +33,40 @@ export function KanbanCard({ task }: { task: Task }) {
   const priority = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.due_date) && task.status !== 'done';
 
+  const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
+  const totalSubtasks = task.subtasks?.length ?? 0;
+  const percentComplete = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+
   return (
     <>
       <div
         ref={setNodeRef}
         style={style}
+        {...attributes}
+        {...listeners}
         className={cn(
-          'group relative rounded-xl border-l-[3px] bg-white ring-1 ring-slate-900/5 shadow-sm dark:bg-slate-900 dark:ring-slate-800 cursor-pointer transition-all duration-150',
+          'group relative rounded-xl border-l-[3px] bg-white ring-1 ring-slate-900/5 shadow-sm dark:bg-slate-900 dark:ring-slate-800 transition-all duration-150',
           isDragging ? 'opacity-40 shadow-xl scale-[0.98]' : 'hover:shadow-md',
           overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority]
         )}
-        onClick={() => setEditOpen(true)}
       >
         <div className="flex items-start gap-2 p-3">
-          {/* Drag handle — only visible on hover */}
-          <button
-            {...attributes}
-            {...listeners}
-            className="mt-0.5 shrink-0 cursor-grab active:cursor-grabbing text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
-          >
+          {/* Drag handle icon (visual only, not interactive) */}
+          <span className="mt-0.5 shrink-0 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
             <GripVertical className="h-4 w-4" />
-          </button>
-          <div className="min-w-0 flex-1">
+          </span>
+          <div className="min-w-0 flex-1 relative">
+                        {/* Edit icon button */}
+                        <button
+                          className="absolute top-0 right-0 z-10 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditOpen(true);
+                          }}
+                          aria-label="Edit task"
+                        >
+                          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 11l6 6M3 21h6l11.293-11.293a1 1 0 0 0 0-1.414l-4.586-4.586a1 1 0 0 0-1.414 0L3 15v6z"/></svg>
+                        </button>
             <p className="text-sm font-medium leading-snug text-slate-800 dark:text-slate-100 truncate">{task.title}</p>
             {task.notes && (
               <p className="mt-0.5 text-xs text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</p>
@@ -79,15 +91,32 @@ export function KanbanCard({ task }: { task: Task }) {
                 </span>
               )}
               {task.is_recurring && <RefreshCw className="h-3 w-3 text-slate-400" />}
-              {(task.subtasks?.length ?? 0) > 0 && (
-                <span className="text-[10px] font-medium text-slate-400">
-                  {task.subtasks?.filter((s) => s.completed).length}/{task.subtasks?.length}
-                </span>
+              {totalSubtasks > 0 && (
+                <div className="flex flex-col gap-0.5 min-w-20">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-medium text-slate-400">
+                      {completedSubtasks}/{totalSubtasks} subtasks
+                    </span>
+                    <span className="text-[10px] font-semibold text-emerald-500 ml-1">
+                      {percentComplete}%
+                    </span>
+                  </div>
+                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-1 bg-emerald-500 transition-all duration-200"
+                      style={{ width: `${percentComplete}%` }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
+            {/* Show interactive subtasks or add button always */}
+            <div className="mt-2">
+              <SubtaskList task={task} />
+            </div>
+		  </div>
+		</div>
+	  </div>
 
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Task">
         <TaskForm task={task} onClose={() => setEditOpen(false)} />

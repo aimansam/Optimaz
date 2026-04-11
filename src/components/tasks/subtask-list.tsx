@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types';
 
+
 export function SubtaskList({ task }: { task: Task }) {
   const [newTitle, setNewTitle] = useState('');
+  const [showInput, setShowInput] = useState(false);
   const toggleSubtask = useToggleSubtask();
   const createSubtask = useCreateSubtask();
   const deleteSubtask = useDeleteSubtask();
@@ -19,10 +22,14 @@ export function SubtaskList({ task }: { task: Task }) {
     if (!newTitle.trim()) return;
     await createSubtask.mutateAsync({ task_id: task.id, title: newTitle.trim() });
     setNewTitle('');
+    setShowInput(false);
   };
 
   return (
     <div className="space-y-1.5">
+      {toggleSubtask.isError && (
+        <div className="text-xs text-red-500 font-semibold">{toggleSubtask.error?.message || 'Failed to update subtask.'}</div>
+      )}
       {task.subtasks?.map((subtask) => (
         <div key={subtask.id} className="group flex items-center gap-2">
           <button
@@ -53,17 +60,52 @@ export function SubtaskList({ task }: { task: Task }) {
         </div>
       ))}
 
-      <form onSubmit={handleAdd} className="flex items-center gap-2 pt-1">
-        <Input
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          placeholder="Add subtask..."
-          className="h-7 text-xs"
-        />
-        <Button type="submit" size="sm" variant="ghost" disabled={!newTitle.trim()}>
-          <Plus className="h-3 w-3" />
+      {showInput ? (
+        <div className="flex items-center gap-2 pt-1">
+          <Input
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter' && newTitle.trim()) {
+                handleAdd(e);
+              } else if (e.key === 'Escape') {
+                setShowInput(false);
+                setNewTitle('');
+              }
+            }}
+            placeholder="Add subtask..."
+            className="h-7 text-xs"
+            autoFocus
+          />
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            disabled={!newTitle.trim()}
+            onClick={handleAdd}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => { setShowInput(false); setNewTitle(''); }}
+          >
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          onClick={() => setShowInput(true)}
+        >
+          <Plus className="h-3 w-3" /> Add subtask
         </Button>
-      </form>
+      )}
     </div>
   );
 }

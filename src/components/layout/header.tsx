@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
-import { LogOut, Bell } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { NotificationBell } from '@/components/ui/notification-bell';
 import { usePushSubscription } from '@/hooks/use-push';
 
 const supabase = createClient();
@@ -29,9 +30,7 @@ export function Header({ title, actions }: HeaderProps) {
       <h1 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
       <div className="flex items-center gap-1.5">
         {actions}
-        <Button variant="ghost" size="icon" onClick={() => subscribe()} title="Enable notifications">
-          <Bell className="h-4 w-4" />
-        </Button>
+        <NotificationBell notifications={[]} />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign out">
           <LogOut className="h-4 w-4" />

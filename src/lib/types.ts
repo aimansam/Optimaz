@@ -20,8 +20,11 @@ export interface Project {
   name: string;
   description: string | null;
   color: string;
+  favorite?: boolean;
+  archived?: boolean;
   created_at: string;
   updated_at: string;
+  tags?: string[];
 }
 
 export interface Task {

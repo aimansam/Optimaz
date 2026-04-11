@@ -6,4 +6,5 @@ const withPWA = require('next-pwa')({
 module.exports = withPWA({
   // Add your Next.js config here
   reactStrictMode: true,
+  turbopack: {},
 });

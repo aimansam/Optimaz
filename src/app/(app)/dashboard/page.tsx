@@ -93,9 +93,7 @@ export default function DashboardPage() {
 
 					{/* Today section */}
 					<DashboardWidget title="Today">
-						{isLoading ? (
-							<TaskSkeleton />
-						) : (
+						{isLoading ? null : (
 							<TaskList
 								tasks={filterTasks(todayTasks)}
 								emptyMessage={
@@ -117,3 +115,18 @@ export default function DashboardPage() {
 		</>
 	);
 }
+import { useState } from 'react';
+import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
+import { useUser } from '@/hooks/use-user';
+import { Header } from '@/components/layout/header';
+import { Button } from '@/components/ui/button';
+import { Plus, BarChart3 } from 'lucide-react';
+import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
+import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
+import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
+import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
+import { TaskList } from '@/components/tasks/task-list';
+import { Dialog } from '@/components/ui/dialog';
+import { TaskForm } from '@/components/tasks/task-form';
+// TaskSkeleton is referenced but missing, so comment it out for now
+// import { TaskSkeleton } from '@/components/tasks/task-skeleton';

@@ -37,7 +37,7 @@ export function KanbanCard({ task }: { task: Task }) {
       <div
         className={cn(
           'flex flex-col rounded-xl bg-white dark:bg-slate-800 shadow border border-slate-200 dark:border-slate-700 transition-all duration-200',
-          'px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 gap-1.5 sm:gap-2',
+          'px-4 py-3 gap-2',
           isDragging && 'ring-2 ring-blue-400 border-transparent',
           'cursor-grab active:cursor-grabbing select-none'
         )}
@@ -46,16 +46,16 @@ export function KanbanCard({ task }: { task: Task }) {
         {...attributes}
         {...listeners}
       >
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{task.title}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{task.title}</span>
           {task.due_date && (
-            <span className="ml-auto text-[11px] sm:text-xs text-slate-400 dark:text-slate-500">{formatDate(task.due_date)}</span>
+            <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">{formatDate(task.due_date)}</span>
           )}
         </div>
         {task.notes && (
-          <div className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</div>
         )}
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <Badge className={cn('text-[10px] font-semibold tracking-wide', priority.bg, priority.color)}>
             {priority.label}
           </Badge>

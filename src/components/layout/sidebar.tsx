@@ -14,49 +14,79 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
+import { useState } from 'react';
+
 export function Sidebar() {
   const pathname = usePathname();
   const { data: projects } = useProjects();
+  const [open, setOpen] = useState(false);
 
   return (
-    <aside className="flex h-full w-60 flex-col border-r border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-950">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 shadow-sm shadow-black/20 dark:bg-white">
-          <Zap className="h-4 w-4 text-white dark:text-slate-900" fill="currentColor" />
-        </div>
-        <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">TaskFlow</span>
-      </div>
+    <>
+      {/* Hamburger for mobile */}
+      <button
+        className="fixed top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow md:hidden border border-slate-200 dark:bg-slate-900 dark:border-slate-700"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Open navigation menu"
+      >
+        <span className="sr-only">Open navigation</span>
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu h-6 w-6 text-slate-900 dark:text-white"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      </button>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                active
-                  ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200'
-              )}
-            >
-              <span
+      {/* Sidebar overlay for mobile */}
+      <div
+        className={cn(
+          'fixed inset-0 z-30 bg-black/40 transition-opacity md:hidden',
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={() => setOpen(false)}
+      />
+
+      <aside
+        className={cn(
+          'fixed z-40 top-0 left-0 h-full w-60 flex-col border-r border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-950 transition-transform duration-300 md:static md:flex',
+          open ? 'translate-x-0' : '-translate-x-full',
+          'md:translate-x-0'
+        )}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-5 py-5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 shadow-sm shadow-black/20 dark:bg-white">
+            <Zap className="h-4 w-4 text-white dark:text-slate-900" fill="currentColor" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">TaskFlow</span>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
                 className={cn(
-                  'flex h-7 w-7 items-center justify-center rounded-lg transition-all',
+                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
                   active
-                    ? 'bg-slate-900 text-white shadow-sm shadow-black/20 dark:bg-white dark:text-slate-900'
-                    : 'text-slate-400 dark:text-slate-500'
+                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200'
                 )}
+                onClick={() => setOpen(false)}
               >
-                <Icon className="h-4 w-4" />
-              </span>
-              {label}
-            </Link>
-          );
-        })}
+                <span
+                  className={cn(
+                    'flex h-7 w-7 items-center justify-center rounded-lg transition-all',
+                    active
+                      ? 'bg-slate-900 text-white shadow-sm shadow-black/20 dark:bg-white dark:text-slate-900'
+                      : 'text-slate-400 dark:text-slate-500'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                {label}
+              </Link>
+            );
+          })}
 
         {/* Projects */}
         {projects && projects.length > 0 && (
@@ -76,6 +106,7 @@ export function Sidebar() {
                       ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
                       : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200'
                   )}
+                  onClick={() => setOpen(false)}
                 >
                   <span
                     className="h-2.5 w-2.5 rounded-full shrink-0"
@@ -87,8 +118,9 @@ export function Sidebar() {
             })}
           </div>
         )}
-      </nav>
-    </aside>
+        </nav>
+      </aside>
+    </>
   );
 }
 

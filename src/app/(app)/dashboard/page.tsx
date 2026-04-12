@@ -51,7 +51,7 @@ export default function DashboardPage() {
 				}
 			/>
 			<div className="flex-1 overflow-y-auto">
-				<div className="mx-auto max-w-2xl px-6 py-8">
+				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-6 md:py-8">
 					{/* Date hero with icon toggle */}
 					<div className="mb-8 flex items-center justify-between gap-4">
 						<div>

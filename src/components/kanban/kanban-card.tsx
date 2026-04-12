@@ -6,7 +6,7 @@ import { GripVertical, CalendarDays, RefreshCw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import type { Task } from '@/lib/types';
-import { useState, memo, useCallback } from 'react';
+import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
 import { SubtaskList } from '@/components/tasks/subtask-list';
@@ -18,7 +18,7 @@ const PRIORITY_BORDER: Record<string, string> = {
   urgent: 'border-l-red-500',
 };
 
-const KanbanCardComponent = ({ task }: { task: Task }) => {
+export function KanbanCard({ task }: { task: Task }) {
   const [editOpen, setEditOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -27,9 +27,7 @@ const KanbanCardComponent = ({ task }: { task: Task }) => {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'transform 200ms cubic-bezier(0.22, 1, 0.36, 1)',
-    zIndex: isDragging ? 50 : undefined,
-    boxShadow: isDragging ? '0 4px 24px 0 rgba(0,0,0,0.10)' : undefined,
+    transition,
   };
 
   const priority = PRIORITY_CONFIG[task.priority];
@@ -40,7 +38,7 @@ const KanbanCardComponent = ({ task }: { task: Task }) => {
   const percentComplete = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
 
   // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Enter' || e.key === ' ') {
       setEditOpen(true);
       e.preventDefault();
@@ -57,7 +55,7 @@ const KanbanCardComponent = ({ task }: { task: Task }) => {
       prev?.focus();
       e.preventDefault();
     }
-  }, []);
+  }
 
   return (
     <>
@@ -67,11 +65,9 @@ const KanbanCardComponent = ({ task }: { task: Task }) => {
         {...attributes}
         {...listeners}
         className={cn(
-          'group relative rounded-xl border-l-[3px] bg-white ring-1 ring-slate-900/5 shadow-sm dark:bg-slate-900 dark:ring-slate-800 transition-all duration-150 will-change-transform',
-          isDragging ? 'opacity-40 shadow-xl scale-[0.98] ring-2 ring-blue-400/60' : 'hover:shadow-md',
-          overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority],
-          // Touch-friendly padding and spacing
-          'px-2 py-2 sm:px-3 sm:py-3'
+          'group relative rounded-xl border-l-[3px] bg-white ring-1 ring-slate-900/5 shadow-sm dark:bg-slate-900 dark:ring-slate-800 transition-all duration-150',
+          isDragging ? 'opacity-40 shadow-xl scale-[0.98]' : 'hover:shadow-md',
+          overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority]
         )}
         tabIndex={0}
         role="button"
@@ -151,7 +147,5 @@ const KanbanCardComponent = ({ task }: { task: Task }) => {
       </Dialog>
     </>
   );
-};
-
-export const KanbanCard = memo(KanbanCardComponent);
+}
 

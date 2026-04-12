@@ -115,7 +115,8 @@ export default function DashboardPage() {
 			<Dialog open={addOpen} onClose={() => setAddOpen(false)} title="New Task">
 				<TaskForm onClose={() => setAddOpen(false)} />
 			</Dialog>
-			<InstallPWAButton />
+				<InstallPWAButton />
 		</>
 	);
+}
 

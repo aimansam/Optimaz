@@ -60,7 +60,7 @@ export default function DashboardPage() {
 				aria-label="Add Task"
 				title="Add Task"
 				onClick={() => setAddOpen(true)}
-				className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
+				className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
 			>
 				<Plus className="h-5 w-5" />
 				<span className="hidden sm:inline">Add Task</span>

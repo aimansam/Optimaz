@@ -11,7 +11,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-[#f8f9fc] dark:bg-[#0a0a0f]">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <main className="flex flex-1 flex-col overflow-hidden w-full md:w-auto">
-        <Header title="TaskFlow" onMenuClick={() => setSidebarOpen(true)} />
+
         {children}
       </main>
     </div>

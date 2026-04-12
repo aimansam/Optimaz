@@ -55,7 +55,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           overdue && 'border-l-red-500!'
         )}
       >
-        <div className="flex items-start gap-3 p-3.5">
+        <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3.5">
           {/* Checkbox */}
           <button
             onClick={toggleDone}

@@ -51,22 +51,22 @@ export default function DashboardPage() {
 				}
 			/>
 			<div className="flex-1 overflow-y-auto">
-				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-6 md:py-8">
+				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">
 					{/* Date hero with icon toggle */}
-					<div className="mb-8 flex items-center justify-between gap-4">
+					<div className="mb-4 sm:mb-8 flex items-center justify-between gap-2 sm:gap-4">
 						<div>
-							<p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
-							<h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+							<p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
+							<h2 className="mt-0.5 sm:mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
 								{greeting}{firstName ? `, ${firstName}` : ''}
 							</h2>
 						</div>
 						<button
 							type="button"
 							aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
-							className={`rounded-md border border-slate-800 bg-slate-900 p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800`}
+							className={`rounded-md border border-slate-800 bg-slate-900 p-1.5 sm:p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800`}
 							onClick={() => setShowAnalytics((v) => !v)}
 						>
-							<BarChart3 className="h-6 w-6" />
+							<BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
 						</button>
 					</div>
 

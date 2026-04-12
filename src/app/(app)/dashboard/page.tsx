@@ -8,7 +8,7 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 
-import { useHeader } from './layout';
+import { useHeader } from '@/app/(app)/layout';
 
 export default function DashboardPage() {
 	const { setTitle, setActions } = useHeader();

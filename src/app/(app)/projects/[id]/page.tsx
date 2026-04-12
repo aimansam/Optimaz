@@ -14,7 +14,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Header title={project?.name ?? 'Project'} />
+
       <div className="flex-1 overflow-y-auto p-6">
         {project && (
           <div className="mb-4 flex items-center gap-2">

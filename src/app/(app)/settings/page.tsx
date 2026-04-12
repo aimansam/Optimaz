@@ -23,7 +23,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Header title="Settings" />
+
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-lg space-y-6">
           {/* Profile */}

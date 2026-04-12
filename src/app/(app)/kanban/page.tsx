@@ -9,7 +9,7 @@ export default function KanbanPage() {
 
   return (
     <>
-      <Header title="Kanban Board" />
+
       <div className="flex-1 overflow-hidden p-2 sm:p-4 md:p-6">
         {isLoading ? (
           <div className="flex gap-4">

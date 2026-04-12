@@ -27,15 +27,7 @@ export default function GoalsPage() {
 
   return (
     <>
-      <Header
-        title="Goals"
-        actions={
-          <Button size="sm" onClick={() => setAddOpen(true)}>
-            <Plus className="h-4 w-4" />
-            New Goal
-          </Button>
-        }
-      />
+
 
       <div className="flex-1 overflow-y-auto p-6">
         {isLoading ? (

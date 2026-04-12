@@ -24,17 +24,7 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Header
-        title={goal?.title ?? 'Goal'}
-        actions={
-          goal && (
-            <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
-              <Edit2 className="h-4 w-4" />
-              Edit Goal
-            </Button>
-          )
-        }
-      />
+
 
       <div className="flex-1 overflow-y-auto p-6">
         {goalLoading ? (

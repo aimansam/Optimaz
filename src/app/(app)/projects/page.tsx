@@ -112,12 +112,7 @@ export default function ProjectsPage() {
   }, [allTags]);
   return (
     <>
-      <Header title="Projects" actions={
-        <Button size="sm" onClick={() => setAddOpen(true)}>
-          <Plus className="h-4 w-4" />
-          Add Project
-        </Button>
-      } />
+
       <div className="flex-1 overflow-y-auto p-6">
         {/* Toggle for sort/search bar */}
         <div className="flex items-center gap-3 mb-2">

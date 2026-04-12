@@ -43,16 +43,7 @@ export default function DashboardPage() {
 
 		return (
 			<>
-				<Header
-					title="Today"
-					actions={
-						<Button size="sm" onClick={() => setAddOpen(true)}>
-							<Plus className="h-4 w-4" />
-							Add Task
-						</Button>
-					}
-					// No sidebar toggle for now
-				/>
+
 			<div className="flex-1 overflow-y-auto">
 				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">
 					{/* Date hero with icon toggle */}

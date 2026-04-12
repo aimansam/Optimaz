@@ -71,12 +71,20 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4 h-full px-1 pt-1">
+      <div
+        className={
+          [
+            "flex w-full h-full gap-2 sm:gap-3 md:gap-4",
+            "flex-col md:flex-row md:items-start",
+            "overflow-y-auto md:overflow-x-auto md:overflow-y-visible",
+            "pb-2 sm:pb-3 md:pb-4"
+          ].join(' ')
+        }
+      >
         {COLUMNS.map(({ id, label }) => (
           <KanbanColumn key={id} id={id} label={label} tasks={getTasksByStatus(id)} />
         ))}
       </div>
-
       <DragOverlay>
         {activeTask && <KanbanCard task={activeTask} />}
       </DragOverlay>

@@ -36,8 +36,8 @@ export function KanbanCard({ task }: { task: Task }) {
     <>
       <div
         className={cn(
-          'w-full flex flex-col rounded-2xl bg-white dark:bg-slate-800 shadow border border-slate-200 dark:border-slate-700 transition-all duration-200',
-          'px-6 py-5 gap-4',
+          'flex flex-col rounded-xl bg-white dark:bg-slate-800 shadow border border-slate-200 dark:border-slate-700 transition-all duration-200',
+          'px-4 py-3 gap-2',
           isDragging && 'ring-2 ring-blue-400 border-transparent',
           'cursor-grab active:cursor-grabbing select-none'
         )}

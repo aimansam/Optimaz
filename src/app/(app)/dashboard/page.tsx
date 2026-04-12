@@ -8,11 +8,36 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 
+import { useHeader } from './layout';
+
 export default function DashboardPage() {
+	const { setTitle, setActions } = useHeader();
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
 	const { data: user } = useUser();
 	const [addOpen, setAddOpen] = useState(false);
+	const [filterQuery, setFilterQuery] = useState("");
+	const [filterStatus, setFilterStatus] = useState("");
+	const [showAnalytics, setShowAnalytics] = useState(false);
+
+	// Set header title and actions on mount
+	useEffect(() => {
+		setTitle('Dashboard');
+		setActions(
+			<button
+				type="button"
+				aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
+				className={`rounded-md border border-slate-800 bg-slate-900 p-1.5 sm:p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800`}
+				onClick={() => setShowAnalytics((v) => !v)}
+			>
+				<BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
+			</button>
+		);
+		return () => {
+			setTitle('TaskFlow');
+			setActions(undefined);
+		};
+	}, [setTitle, setActions, showAnalytics]);
 
 	const hour = new Date().getHours();
 	const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -20,14 +45,9 @@ export default function DashboardPage() {
 		?? user?.user_metadata?.name?.split(' ')[0]
 		?? user?.email?.split('@')[0]
 		?? null;
-
 	const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 	const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
 	const isLoading = loadingToday || loadingOverdue;
-	const [filterQuery, setFilterQuery] = useState("");
-	const [filterStatus, setFilterStatus] = useState("");
-	const [showAnalytics, setShowAnalytics] = useState(false);
 
 	function handleFilter(query: string, status: string) {
 		setFilterQuery(query);
@@ -41,12 +61,11 @@ export default function DashboardPage() {
 		);
 	}
 
-		return (
-			<>
-
+	return (
+		<>
 			<div className="flex-1 overflow-y-auto">
 				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">
-					{/* Date hero with icon toggle */}
+					{/* Date hero */}
 					<div className="mb-4 sm:mb-8 flex items-center justify-between gap-2 sm:gap-4">
 						<div>
 							<p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
@@ -54,14 +73,6 @@ export default function DashboardPage() {
 								{greeting}{firstName ? `, ${firstName}` : ''}
 							</h2>
 						</div>
-						<button
-							type="button"
-							aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
-							className={`rounded-md border border-slate-800 bg-slate-900 p-1.5 sm:p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800`}
-							onClick={() => setShowAnalytics((v) => !v)}
-						>
-							<BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
-						</button>
 					</div>
 
 					{/* Collapsible Markdown-style section for Analytics and Filter */}

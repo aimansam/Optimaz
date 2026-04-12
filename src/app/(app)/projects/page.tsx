@@ -135,7 +135,7 @@ export default function ProjectsPage() {
           aria-label="Add Project"
           title="Add Project"
           onClick={() => setAddOpen(true)}
-          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
         >
           <Plus className="h-5 w-5" />
           <span className="hidden sm:inline">Add Project</span>

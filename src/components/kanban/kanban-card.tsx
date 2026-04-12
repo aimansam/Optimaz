@@ -55,7 +55,7 @@ export function KanbanCard({ task }: { task: Task }) {
         {task.notes && (
           <div className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</div>
         )}
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-2 mb-2 flex flex-wrap items-center gap-3">
           <Badge className={cn('text-[10px] font-semibold tracking-wide', priority.bg, priority.color)}>
             {priority.label}
           </Badge>

@@ -23,16 +23,6 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Hamburger for mobile */}
-      <button
-        className="fixed top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow md:hidden border border-slate-200 dark:bg-slate-900 dark:border-slate-700"
-        onClick={() => setOpen((v) => !v)}
-        aria-label="Open navigation menu"
-      >
-        <span className="sr-only">Open navigation</span>
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu h-6 w-6 text-slate-900 dark:text-white"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-      </button>
-
       {/* Sidebar overlay for mobile */}
       <div
         className={cn(

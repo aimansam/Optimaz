@@ -129,6 +129,17 @@ export default function ProjectsPage() {
             Show archived
           </label>
         </div>
+        {/* Floating Add Project Button */}
+        <button
+          type="button"
+          aria-label="Add Project"
+          title="Add Project"
+          onClick={() => setAddOpen(true)}
+          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <Plus className="h-5 w-5" />
+          <span className="hidden sm:inline">Add Project</span>
+        </button>
         {showFilters && (
           <div className="mb-6 flex flex-wrap gap-4 items-center">
             <label className="flex items-center gap-2 text-sm">

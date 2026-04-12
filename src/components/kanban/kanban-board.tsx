@@ -74,12 +74,16 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
       <div
         className={
           [
+            // On mobile: horizontal scroll, columns in a row
             "flex w-full h-full gap-2 sm:gap-3 md:gap-4",
-            "flex-col md:flex-row md:items-start",
-            "overflow-y-auto md:overflow-x-auto md:overflow-y-visible",
-            "pb-2 sm:pb-3 md:pb-4"
+            "flex-row md:flex-row md:items-start",
+            "overflow-x-auto overflow-y-visible md:overflow-x-auto md:overflow-y-visible",
+            "pb-2 sm:pb-3 md:pb-4",
+            // Snap columns for mobile
+            "snap-x snap-mandatory"
           ].join(' ')
         }
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {COLUMNS.map(({ id, label }) => (
           <KanbanColumn key={id} id={id} label={label} tasks={getTasksByStatus(id)} />

@@ -10,6 +10,16 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 import { Plus, BarChart3 } from 'lucide-react';
+import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
+import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
+import { TaskList } from '@/components/tasks/task-list';
+import { TaskForm } from '@/components/tasks/task-form';
+import { Dialog } from '@/components/ui/dialog';
+import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
+import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
+
+import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
+import { useUser } from '@/hooks/use-user';
 
 export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();

@@ -8,7 +8,7 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 
-export default function DashboardPage({ onMenuClick }: { onMenuClick?: () => void }) {
+export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
 	const { data: user } = useUser();
@@ -51,7 +51,7 @@ export default function DashboardPage({ onMenuClick }: { onMenuClick?: () => voi
 							Add Task
 						</Button>
 					}
-					onMenuClick={onMenuClick}
+					// No sidebar toggle for now
 				/>
 			<div className="flex-1 overflow-y-auto">
 				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">

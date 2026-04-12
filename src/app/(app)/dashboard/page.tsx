@@ -4,12 +4,14 @@
 
 "use client";
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 
 
 
 import { Plus, BarChart3 } from 'lucide-react';
 
+export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
 	const { data: user } = useUser();

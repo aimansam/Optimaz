@@ -29,6 +29,17 @@ export default function GoalsPage() {
     <>
 
 
+      {/* Floating Add Goal Button */}
+      <button
+        type="button"
+        aria-label="Add Goal"
+        title="Add Goal"
+        onClick={() => setAddOpen(true)}
+        className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
+      >
+        <Plus className="h-5 w-5" />
+        <span className="hidden sm:inline">Add Goal</span>
+      </button>
       <div className="flex-1 overflow-y-auto p-6">
         {isLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -54,6 +54,17 @@ export default function DashboardPage() {
 
 	return (
 		<>
+			{/* Floating Add Task Button */}
+			<button
+				type="button"
+				aria-label="Add Task"
+				title="Add Task"
+				onClick={() => setAddOpen(true)}
+				className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
+			>
+				<Plus className="h-5 w-5" />
+				<span className="hidden sm:inline">Add Task</span>
+			</button>
 			<div className="flex-1 overflow-y-auto">
 				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">
 					{/* Date hero and actions */}
@@ -72,14 +83,6 @@ export default function DashboardPage() {
 								onClick={() => setShowAnalytics((v) => !v)}
 							>
 								<BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
-							</button>
-							<button
-								type="button"
-								aria-label="Add Task"
-								className="rounded-md border border-slate-800 bg-slate-900 p-1.5 sm:p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
-								onClick={() => setAddOpen(true)}
-							>
-								<Plus className="h-5 w-5 sm:h-6 sm:w-6" />
 							</button>
 						</div>
 					</div>

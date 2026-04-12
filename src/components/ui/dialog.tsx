@@ -34,7 +34,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
     >
       <div
         className={cn(
-          'relative w-full max-w-lg rounded-2xl bg-white shadow-2xl shadow-black/20 dark:bg-slate-900 dark:shadow-black/60 max-h-[90vh] overflow-y-auto border border-slate-200/80 dark:border-slate-700/60',
+          'relative w-full max-w-3xl min-h-100 max-h-[95vh] rounded-2xl bg-white shadow-2xl shadow-black/20 dark:bg-slate-900 dark:shadow-black/60 overflow-y-auto border border-slate-200/80 dark:border-slate-700/60',
           className
         )}
       >

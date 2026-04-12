@@ -118,7 +118,7 @@ export function KanbanCard({ task }: { task: Task }) {
 		</div>
 	  </div>
 
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Task" className="max-w-3xl min-h-100">
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Task">
         <TaskForm task={task} onClose={() => setEditOpen(false)} />
       </Dialog>
     </>

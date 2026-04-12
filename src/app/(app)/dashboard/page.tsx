@@ -8,6 +8,7 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 
+import { useEffect } from 'react';
 import { useHeader } from '@/app/(app)/layout';
 
 export default function DashboardPage() {

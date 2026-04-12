@@ -27,7 +27,17 @@ export function Header({ title, actions }: HeaderProps) {
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-6 backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-950/80">
-      <h1 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+      <div className="flex items-center gap-2">
+        {/* Hamburger/Menu button (mobile only) */}
+        <button
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow md:hidden border border-slate-200 dark:bg-slate-900 dark:border-slate-700"
+          // TODO: Attach sidebar open handler if needed
+          aria-label="Open navigation menu"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu h-6 w-6 text-slate-900 dark:text-white"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+        <h1 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+      </div>
       <div className="flex items-center gap-1.5">
         {actions}
         <NotificationBell notifications={[]} />

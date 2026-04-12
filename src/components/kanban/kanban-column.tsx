@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { KanbanCard } from './kanban-card';
 import type { Task, TaskStatus } from '@/lib/types';
-import { useState, memo, useCallback } from 'react';
+import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
 
@@ -28,13 +28,9 @@ interface KanbanColumnProps {
   tasks: Task[];
 }
 
-const KanbanColumnComponent = ({ id, label, tasks }: KanbanColumnProps) => {
+export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
   const [addOpen, setAddOpen] = useState(false);
   const { setNodeRef, isOver } = useDroppable({ id });
-
-  // Memoize open handler
-  const handleOpen = useCallback(() => setAddOpen(true), []);
-  const handleClose = useCallback(() => setAddOpen(false), []);
 
   return (
     <>
@@ -42,10 +38,7 @@ const KanbanColumnComponent = ({ id, label, tasks }: KanbanColumnProps) => {
         className={cn(
           'flex flex-col rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 transition-all duration-200',
           isOver && 'ring-2 ring-slate-400 border-transparent',
-          // Responsive width: mobile 80vw, min 260px, max 96vw; desktop fixed
-          'w-[80vw] min-w-[260px] max-w-[96vw] md:w-[288px] md:min-w-[288px] md:max-w-xs',
-          // Snap for mobile
-          'snap-center'
+          'w-full md:w-[288px] min-w-0 md:min-w-[288px]'
         )}
       >
         {/* Column header */}
@@ -58,7 +51,7 @@ const KanbanColumnComponent = ({ id, label, tasks }: KanbanColumnProps) => {
             </span>
           </div>
           <button
-            onClick={handleOpen}
+            onClick={() => setAddOpen(true)}
             className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/80 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
           >
             <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -66,25 +59,13 @@ const KanbanColumnComponent = ({ id, label, tasks }: KanbanColumnProps) => {
         </div>
 
         {/* Tasks */}
-        <div
-          ref={setNodeRef}
-          className={cn(
-            "flex flex-1 flex-col gap-1.5 sm:gap-2 md:gap-2.5 overflow-y-auto px-2 sm:px-3 pb-2 sm:pb-3 relative",
-            isOver && "bg-slate-100/70 dark:bg-slate-800/40 transition-colors duration-200"
-          )}
-          style={{ minHeight: 100 }}
-        >
+        <div ref={setNodeRef} className="flex flex-1 flex-col gap-1.5 sm:gap-2 md:gap-2.5 overflow-y-auto px-2 sm:px-3 pb-2 sm:pb-3" style={{ minHeight: 100 }}>
           <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map((task) => (
               <KanbanCard key={task.id} task={task} />
             ))}
           </SortableContext>
-          {isOver && (
-            <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none z-10 flex justify-center">
-              <div className="h-10 w-11/12 rounded-lg border-2 border-dashed border-slate-400 dark:border-slate-600 bg-slate-200/60 dark:bg-slate-700/40 animate-pulse" />
-            </div>
-          )}
-          {tasks.length === 0 && !isOver && (
+          {tasks.length === 0 && (
             <div className="flex flex-1 items-center justify-center py-6 sm:py-10">
               <p className="text-xs text-slate-400 dark:text-slate-600">Drop tasks here</p>
             </div>
@@ -92,11 +73,9 @@ const KanbanColumnComponent = ({ id, label, tasks }: KanbanColumnProps) => {
         </div>
       </div>
 
-      <Dialog open={addOpen} onClose={handleClose} title="New Task">
-        <TaskForm defaultStatus={id} onClose={handleClose} />
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="New Task">
+        <TaskForm defaultStatus={id} onClose={() => setAddOpen(false)} />
       </Dialog>
     </>
   );
-};
-
-export const KanbanColumn = memo(KanbanColumnComponent);
+}

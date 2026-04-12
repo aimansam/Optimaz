@@ -37,6 +37,26 @@ export function KanbanCard({ task }: { task: Task }) {
   const totalSubtasks = task.subtasks?.length ?? 0;
   const percentComplete = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
 
+  // Keyboard navigation
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      setEditOpen(true);
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowRight') {
+      // Focus next card
+      const next = (e.currentTarget.nextElementSibling as HTMLElement | null);
+      next?.focus();
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowLeft') {
+      // Focus previous card
+      const prev = (e.currentTarget.previousElementSibling as HTMLElement | null);
+      prev?.focus();
+      e.preventDefault();
+    }
+  }
+
   return (
     <>
       <div
@@ -49,6 +69,10 @@ export function KanbanCard({ task }: { task: Task }) {
           isDragging ? 'opacity-40 shadow-xl scale-[0.98]' : 'hover:shadow-md',
           overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority]
         )}
+        tabIndex={0}
+        role="button"
+        aria-label={`Edit task ${task.title}`}
+        onKeyDown={handleKeyDown}
       >
         <div className="flex items-start gap-2 p-3">
           {/* Drag handle icon (visual only, not interactive) */}

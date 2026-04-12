@@ -16,6 +16,7 @@ interface DialogProps {
 export function Dialog({ open, onClose, title, children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
+  // Keyboard accessibility: ESC closes dialog
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();

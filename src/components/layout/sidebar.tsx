@@ -14,12 +14,11 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
-import { useState } from 'react';
 
-export function Sidebar() {
+
+export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   const pathname = usePathname();
   const { data: projects } = useProjects();
-  const [open, setOpen] = useState(false);
 
   return (
     <>

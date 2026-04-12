@@ -116,7 +116,7 @@ import { Plus, BarChart3 } from 'lucide-react';
 			<InstallPWAButton />
 		</>
 	);
-}
+
 import { useState } from 'react';
 import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
 import { useUser } from '@/hooks/use-user';

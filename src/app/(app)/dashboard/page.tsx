@@ -71,19 +71,8 @@ export default function DashboardPage() {
 
 	return (
 		<>
-			{/* Floating Add Task Button */}
-			<button
-				type="button"
-				aria-label="Add Task"
-				title="Add Task"
-				onClick={() => setAddOpen(true)}
-				className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
-			>
-				<Plus className="h-5 w-5" />
-				<span className="hidden sm:inline">Add Task</span>
-			</button>
 			<div className="flex-1 overflow-y-auto">
-				<div className="mx-auto w-full max-w-2xl px-2 sm:px-4 md:px-6 py-3 md:py-8">
+				<div className="mx-auto w-full max-w-3xl px-3 sm:px-4 md:px-6 py-3 md:py-8">
 					{/* Date hero and actions */}
 					<div className="mb-4 sm:mb-8 flex items-center justify-between gap-2 sm:gap-4">
 						<div>
@@ -95,23 +84,31 @@ export default function DashboardPage() {
 						<div className="flex gap-2">
 							<button
 								type="button"
+								aria-label="Add Task"
+								title="Add Task"
+								onClick={() => setAddOpen(true)}
+								className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+							>
+								<Plus className="h-4 w-4" />
+								<span className="hidden sm:inline">Add Task</span>
+							</button>
+							<button
+								type="button"
 								aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
-								className="rounded-md border border-slate-800 bg-slate-900 p-1.5 sm:p-2 text-slate-100 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+								className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
 								onClick={() => setShowAnalytics((v) => !v)}
 							>
-								<BarChart3 className="h-5 w-5 sm:h-6 sm:w-6" />
+								<BarChart3 className="h-5 w-5" />
 							</button>
 						</div>
 					</div>
 
-					{/* Collapsible Markdown-style section for Analytics and Filter */}
-					<details className="mb-4" open={showAnalytics}>
-						<summary className="hidden" />
-						<div className="mt-4">
+					{showAnalytics && (
+						<div className="mb-5">
 							<DashboardAnalytics />
 							<TaskFilterBar onFilter={handleFilter} />
 						</div>
-					</details>
+					)}
 
 					{/* Upcoming deadlines section */}
 					<DashboardWidget title="Upcoming Deadlines">

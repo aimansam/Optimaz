@@ -107,31 +107,26 @@ export default function ProjectsPage() {
 
       <div className="flex-1 overflow-y-auto p-6">
         {/* Toggle for sort/search bar */}
-        <div className="flex items-center gap-3 mb-2">
-          <Button size="sm" variant="secondary" onClick={() => setShowFilters(v => !v)}>
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="sm" variant="secondary" onClick={() => setShowFilters(v => !v)}>
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </Button>
+            <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={showArchived}
+                onChange={e => setShowArchived(e.target.checked)}
+                className="accent-blue-500"
+              />
+              Show archived
+            </label>
+          </div>
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus className="h-4 w-4" />
+            Add Project
           </Button>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={showArchived}
-              onChange={e => setShowArchived(e.target.checked)}
-              className="accent-blue-500"
-            />
-            Show archived
-          </label>
         </div>
-        {/* Floating Add Project Button */}
-        <button
-          type="button"
-          aria-label="Add Project"
-          title="Add Project"
-          onClick={() => setAddOpen(true)}
-          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 rounded-full bg-black hover:bg-white border-2 border-black text-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white px-5 py-3 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-black"
-        >
-          <Plus className="h-5 w-5" />
-          <span className="hidden sm:inline">Add Project</span>
-        </button>
         {showFilters && (
           <div className="mb-6 flex flex-wrap gap-4 items-center">
             <label className="flex items-center gap-2 text-sm">

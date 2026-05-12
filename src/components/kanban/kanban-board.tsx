@@ -74,7 +74,7 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
       <div
         className={
           [
-            "flex w-full h-full gap-2 sm:gap-3 md:gap-4",
+            "flex h-full w-full gap-2 sm:gap-3 md:min-w-max md:gap-4",
             "flex-col md:flex-row md:items-start",
             "overflow-y-auto md:overflow-x-auto md:overflow-y-visible",
             "pb-2 sm:pb-3 md:pb-4"

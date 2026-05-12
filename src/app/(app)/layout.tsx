@@ -1,38 +1,33 @@
 "use client";
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
-import { createContext, useContext } from 'react';
 
-interface HeaderContextType {
-  title: string;
-  setTitle: (title: string) => void;
-  actions?: React.ReactNode;
-  setActions: (actions?: React.ReactNode) => void;
-}
-
-const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
-
-export function useHeader() {
-  const ctx = useContext(HeaderContext);
-  if (!ctx) throw new Error('useHeader must be used within HeaderContext');
-  return ctx;
+function getPageTitle(pathname: string) {
+  if (pathname === '/dashboard') return 'Today';
+  if (pathname === '/goals') return 'Goals';
+  if (pathname.startsWith('/goals/')) return 'Goal';
+  if (pathname === '/kanban') return 'Kanban';
+  if (pathname === '/projects') return 'Projects';
+  if (pathname.startsWith('/projects/')) return 'Project';
+  if (pathname === '/settings') return 'Settings';
+  return 'TaskFlow';
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [title, setTitle] = useState('TaskFlow');
-  const [actions, setActions] = useState<React.ReactNode>(undefined);
+  const pathname = usePathname();
+  const title = getPageTitle(pathname);
+
   return (
-    <HeaderContext.Provider value={{ title, setTitle, actions, setActions }}>
-      <div className="flex min-h-screen">
-        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-        <main className="flex-1 flex flex-col">
-          <Header title={title} actions={actions} onMenuClick={() => setSidebarOpen(true)} />
-          {children}
-        </main>
-      </div>
-    </HeaderContext.Provider>
+    <div className="flex min-h-screen">
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+      <main className="flex-1 flex min-w-0 flex-col">
+        <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
+        {children}
+      </main>
+    </div>
   );
 }

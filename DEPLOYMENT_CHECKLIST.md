@@ -1,23 +1,35 @@
 # Deployment Checklist for TaskFlow
 
-- [ ] Push latest code to GitHub (or GitLab/Bitbucket)
-- [ ] Create Supabase project and set up schema (if not done)
+- [ ] Run local checks:
+    - [ ] `npm run lint`
+    - [ ] `npm run build`
+- [ ] Commit changes to `main`
+- [ ] Push latest code to GitHub
+- [ ] Create Supabase project and set up schema/migrations (if not done)
+- [ ] Apply pending migrations with `npx supabase db push`
 - [ ] Get Supabase environment variables:
     - [ ] NEXT_PUBLIC_SUPABASE_URL
     - [ ] NEXT_PUBLIC_SUPABASE_ANON_KEY
-    - [ ] (Optional) SUPABASE_SERVICE_ROLE_KEY
     - [ ] (Optional) NEXT_PUBLIC_VAPID_PUBLIC_KEY
     - [ ] (Optional) VAPID_PRIVATE_KEY
-    - [ ] (Optional) VAPID_SUBJECT
+    - [ ] (Optional) VAPID_EMAIL
 - [ ] Deploy to Vercel:
     - [ ] Import repo at https://vercel.com/import
     - [ ] Set environment variables in Vercel dashboard
-    - [ ] Click "Deploy"
+    - [ ] Deploy latest `main`
 - [ ] (Optional) Set up custom domain in Vercel
 - [ ] (Optional) For self-hosting:
     - [ ] Run `npm run build` and `npm start` on your server
     - [ ] Set environment variables in your hosting environment
-- [ ] Test deployed app (login, tasks, subtasks, kanban, PWA, dark mode)
+- [ ] Test deployed app:
+    - [ ] Login redirects unauthenticated users to `/auth/login`
+    - [ ] Google login works
+    - [ ] Dashboard loads without hydration errors
+    - [ ] Create/edit/delete task
+    - [ ] Clear due date/project/goal from a task
+    - [ ] Bulk complete/delete tasks
+    - [ ] Create/favorite/archive project
+    - [ ] Goals, Kanban, Projects, and Settings pages load
+    - [ ] `/manifest.json` and `/sw.js` return 200
 - [ ] (Optional) Enable push notifications and test
-- [ ] (Optional) Add project logo/favicon
-- [ ] (Optional) Update documentation (README, PROJECT.md)
+- [ ] After smoke test passes, create a stable tag and push it

@@ -2,10 +2,10 @@
 
 ## Overview
 TaskFlow is a full-stack productivity app built with Next.js 16 (App Router), React 19, Supabase (auth + database), TanStack React Query, and Tailwind CSS v4. It features:
-- Auth (Google/GitHub OAuth via Supabase)
+- Auth (Google OAuth via Supabase)
 - Kanban board (drag & drop)
 - Tasks, subtasks, projects, goals
-- PWA support (offline, push notifications)
+- PWA installability and optional push notifications
 - Minimalist black/white design with full dark mode
 
 ## Tech Stack
@@ -17,12 +17,12 @@ TaskFlow is a full-stack productivity app built with Next.js 16 (App Router), Re
 - **Icons:** lucide-react
 
 ## Key Features
-- **Authentication:** Google/GitHub OAuth via Supabase
+- **Authentication:** Google OAuth via Supabase
 - **Tasks:** CRUD, priorities, due dates, recurring, subtasks
-- **Projects:** Organize tasks by project
+- **Projects:** Organize tasks by project, with favorite/archive flags and tags
 - **Goals:** High-level objectives, link tasks to goals
 - **Kanban:** Drag & drop columns/cards
-- **PWA:** Installable, offline, push notifications
+- **PWA:** Installable via manifest and manual service worker, with optional push notifications
 - **Dark Mode:** Toggle, respects system, custom Tailwind variant
 
 ## Deployment
@@ -30,17 +30,19 @@ TaskFlow is a full-stack productivity app built with Next.js 16 (App Router), Re
 - **Env Vars:**
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - (Optional: `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`)
+  - Optional push variables: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`
 - **Self-hosting:** `npm run build` + `npm start` (Docker optional)
 
 ## Local Development
 1. Clone repo
-2. Copy `.env.local.example` to `.env.local` and fill in Supabase keys
+2. Create `.env.local` and fill in Supabase keys
 3. `npm install`
 4. `npm run dev`
+5. Before pushing, run `npm run lint` and `npm run build`
 
 ## Database Schema
 - See `supabase/schema.sql` for full schema
+- Apply committed migrations with `npx supabase db push`
 - RLS enabled on all tables
 
 ## Customizations

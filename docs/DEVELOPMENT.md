@@ -34,9 +34,32 @@ npm run dev      # local dev server, uses next dev --webpack
 npm run lint     # eslint
 npm run build    # production build
 npm run start    # serve a production build
+npm run test:smoke # Playwright smoke tests against the live app by default
 ```
 
 Run `npm run lint` and `npm run build` before pushing to `main`.
+
+## Live Smoke Tests
+
+Smoke tests use Playwright and target the production Vercel URL by default:
+
+```bash
+npm run test:smoke
+```
+
+Override the target with `SMOKE_BASE_URL`:
+
+```bash
+SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke
+```
+
+The default run verifies public behavior such as the login page, protected-route redirects, and PWA assets. Authenticated route checks are optional. To run them, save a Playwright storage state for a signed-in account at `tests/.auth/user.json`, then run:
+
+```bash
+SMOKE_AUTH_STATE=tests/.auth/user.json npm run test:smoke
+```
+
+The `tests/.auth` folder is ignored by git so local sessions are not committed.
 
 ## Database Changes
 

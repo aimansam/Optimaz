@@ -8,6 +8,8 @@ create table if not exists public.projects (
   name text not null,
   description text,
   color text not null default '#6366f1',
+  favorite boolean not null default false,
+  archived boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

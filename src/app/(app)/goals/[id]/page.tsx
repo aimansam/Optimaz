@@ -1,7 +1,6 @@
 'use client';
 
 import { use, useState } from 'react';
-import { Header } from '@/components/layout/header';
 import { TaskList } from '@/components/tasks/task-list';
 import { GoalForm } from '@/components/goals/goal-form';
 import { Dialog } from '@/components/ui/dialog';
@@ -59,6 +58,16 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
                   <CheckCircle2 className="h-3 w-3" />
                   {completed}/{total} tasks
                 </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="mt-3 gap-1"
+                  onClick={() => setEditOpen(true)}
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
+                  Edit
+                </Button>
               </div>
             </div>
 

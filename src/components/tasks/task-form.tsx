@@ -56,7 +56,8 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   const isRecurring = useWatch({ control, name: 'is_recurring' }) ?? false;
 
   const onSubmit = async (values: FormValues) => {
-    const payload = {
+    const recurrenceRule = values.is_recurring && values.recurrence_rule ? values.recurrence_rule : undefined;
+    const createPayload = {
       title: values.title,
       notes: values.notes || undefined,
       priority: values.priority,
@@ -65,13 +66,24 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       project_id: values.project_id || undefined,
       goal_id: values.goal_id || undefined,
       is_recurring: values.is_recurring,
-      recurrence_rule: (values.is_recurring && values.recurrence_rule ? values.recurrence_rule : undefined) as RecurrenceRule | undefined,
+      recurrence_rule: recurrenceRule as RecurrenceRule | undefined,
     };
 
     if (isEdit) {
-      await updateTask.mutateAsync({ id: task.id, ...payload });
+      await updateTask.mutateAsync({
+        id: task.id,
+        title: values.title,
+        notes: values.notes || null,
+        priority: values.priority,
+        status: values.status,
+        due_date: values.due_date || null,
+        project_id: values.project_id || null,
+        goal_id: values.goal_id || null,
+        is_recurring: values.is_recurring,
+        recurrence_rule: recurrenceRule ?? null,
+      });
     } else {
-      await createTask.mutateAsync(payload);
+      await createTask.mutateAsync(createPayload);
     }
     onClose();
   };

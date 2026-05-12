@@ -6,7 +6,6 @@ import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { NotificationBell } from '@/components/ui/notification-bell';
-import { usePushSubscription } from '@/hooks/use-push';
 
 const supabase = createClient();
 
@@ -17,7 +16,6 @@ interface HeaderProps {
 
 export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuClick?: () => void }) {
   const router = useRouter();
-  const { mutate: subscribe } = usePushSubscription();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

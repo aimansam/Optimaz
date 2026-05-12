@@ -6,6 +6,7 @@ import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from './task-form';
+import { useDeleteTask, useUpdateTask } from '@/hooks/use-tasks';
 import type { Task, TaskStatus } from '@/lib/types';
 
 interface TaskListProps {
@@ -27,22 +28,23 @@ export function TaskList({
 }: TaskListProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const updateTask = useUpdateTask();
+  const deleteTask = useDeleteTask();
+  const bulkPending = updateTask.isPending || deleteTask.isPending;
 
   function toggleSelect(id: string) {
     setSelected((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
-  // ...existing code...
   function clearSelected() {
     setSelected([]);
   }
-  function bulkDelete() {
-    // TODO: Integrate with delete mutation
-    alert(`Delete tasks: ${selected.join(', ')}`);
+  async function bulkDelete() {
+    if (!confirm(`Delete ${selected.length} selected task${selected.length === 1 ? '' : 's'}?`)) return;
+    await Promise.all(selected.map((id) => deleteTask.mutateAsync(id)));
     clearSelected();
   }
-  function bulkComplete() {
-    // TODO: Integrate with complete mutation
-    alert(`Complete tasks: ${selected.join(', ')}`);
+  async function bulkComplete() {
+    await Promise.all(selected.map((id) => updateTask.mutateAsync({ id, status: 'done' })));
     clearSelected();
   }
 
@@ -53,9 +55,9 @@ export function TaskList({
       {selected.length > 0 && (
         <div className="flex items-center gap-2 mb-2 p-2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
           <span className="text-xs font-semibold">{selected.length} selected</span>
-          <Button size="sm" variant="secondary" onClick={bulkComplete}>Mark Complete</Button>
-          <Button size="sm" variant="danger" onClick={bulkDelete}>Delete</Button>
-          <Button size="sm" variant="ghost" onClick={clearSelected}>Clear</Button>
+          <Button size="sm" variant="secondary" onClick={bulkComplete} disabled={bulkPending}>Mark Complete</Button>
+          <Button size="sm" variant="danger" onClick={bulkDelete} disabled={bulkPending}>Delete</Button>
+          <Button size="sm" variant="ghost" onClick={clearSelected} disabled={bulkPending}>Clear</Button>
         </div>
       )}
 

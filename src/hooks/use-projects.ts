@@ -95,7 +95,8 @@ export function useDeleteProject() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects', 'tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 }

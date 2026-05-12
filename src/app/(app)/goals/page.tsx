@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Header } from '@/components/layout/header';
 import { GoalCard } from '@/components/goals/goal-card';
 import { GoalForm } from '@/components/goals/goal-form';
 import { Dialog } from '@/components/ui/dialog';

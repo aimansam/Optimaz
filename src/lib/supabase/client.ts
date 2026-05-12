@@ -6,9 +6,11 @@ const FALLBACK_URL = 'https://placeholder.supabase.co';
 const FALLBACK_KEY = 'placeholder-anon-key';
 
 function resolveUrl(raw: string | undefined): string {
+  if (!raw) return FALLBACK_URL;
+
   try {
-    if (raw) new URL(raw);
-    return raw!;
+    new URL(raw);
+    return raw;
   } catch {
     return FALLBACK_URL;
   }

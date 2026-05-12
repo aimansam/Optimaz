@@ -1,6 +1,5 @@
 'use client';
 
-import { Header } from '@/components/layout/header';
 import { KanbanBoard } from '@/components/kanban/kanban-board';
 import { useTasksByStatus } from '@/hooks/use-tasks';
 

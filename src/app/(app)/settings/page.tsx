@@ -1,6 +1,5 @@
 'use client';
 
-import { Header } from '@/components/layout/header';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { usePushSubscription } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';

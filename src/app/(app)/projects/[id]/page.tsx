@@ -1,7 +1,6 @@
 'use client';
 
 import { use } from 'react';
-import { Header } from '@/components/layout/header';
 import { TaskList } from '@/components/tasks/task-list';
 import { useTasks } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';

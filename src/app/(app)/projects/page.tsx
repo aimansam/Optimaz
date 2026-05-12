@@ -1,20 +1,12 @@
-
-
-'use client';
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Header } from '@/components/layout/header';
 import { useProjects, useCreateProject, useDeleteProject, useUpdateProject } from '@/hooks/use-projects';
 import { useTasks } from '@/hooks/use-tasks';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-
-
 import { MemoizedProjectCard } from '@/components/projects/project-card';
 
 

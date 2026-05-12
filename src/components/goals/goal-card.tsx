@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Trash2, Target, CalendarDays, CheckCircle2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal } from '@/hooks/use-goals';
 import type { Goal } from '@/lib/types';
 
@@ -15,6 +17,7 @@ interface GoalCardProps {
 }
 
 export function GoalCard({ goal }: GoalCardProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const deleteGoal = useDeleteGoal();
   const total = goal.tasks?.length ?? 0;
   const completed = goal.tasks?.filter((t) => t.status === 'done').length ?? 0;
@@ -80,14 +83,21 @@ export function GoalCard({ goal }: GoalCardProps) {
       <button
         onClick={(e) => {
           e.preventDefault();
-          if (confirm('Delete this goal? Tasks linked to it will be unlinked.')) {
-            deleteGoal.mutate(goal.id);
-          }
+          setDeleteOpen(true);
         }}
+        aria-label={`Delete goal ${goal.title}`}
         className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity rounded p-1 hover:bg-red-50 dark:hover:bg-red-900/20"
       >
         <Trash2 className="h-4 w-4 text-red-400" />
       </button>
+      <ConfirmationDialog
+        open={deleteOpen}
+        title="Delete goal"
+        description={`Delete "${goal.title}"? Tasks linked to it will be unlinked.`}
+        pending={deleteGoal.isPending}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => deleteGoal.mutate(goal.id, { onSuccess: () => setDeleteOpen(false) })}
+      />
     </div>
   );
 }

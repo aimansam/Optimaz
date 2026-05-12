@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { TaskForm } from './task-form';
 import { useDeleteTask, useUpdateTask } from '@/hooks/use-tasks';
 import type { Task, TaskStatus } from '@/lib/types';
@@ -27,6 +28,7 @@ export function TaskList({
   showAddButton = true,
 }: TaskListProps) {
   const [addOpen, setAddOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
@@ -39,9 +41,9 @@ export function TaskList({
     setSelected([]);
   }
   async function bulkDelete() {
-    if (!confirm(`Delete ${selected.length} selected task${selected.length === 1 ? '' : 's'}?`)) return;
     await Promise.all(selected.map((id) => deleteTask.mutateAsync(id)));
     clearSelected();
+    setDeleteConfirmOpen(false);
   }
   async function bulkComplete() {
     await Promise.all(selected.map((id) => updateTask.mutateAsync({ id, status: 'done' })));
@@ -56,7 +58,7 @@ export function TaskList({
         <div className="flex items-center gap-2 mb-2 p-2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
           <span className="text-xs font-semibold">{selected.length} selected</span>
           <Button size="sm" variant="secondary" onClick={bulkComplete} disabled={bulkPending}>Mark Complete</Button>
-          <Button size="sm" variant="danger" onClick={bulkDelete} disabled={bulkPending}>Delete</Button>
+          <Button size="sm" variant="danger" onClick={() => setDeleteConfirmOpen(true)} disabled={bulkPending}>Delete</Button>
           <Button size="sm" variant="ghost" onClick={clearSelected} disabled={bulkPending}>Clear</Button>
         </div>
       )}
@@ -103,6 +105,14 @@ export function TaskList({
           onClose={() => setAddOpen(false)}
         />
       </Dialog>
+      <ConfirmationDialog
+        open={deleteConfirmOpen}
+        title="Delete selected tasks"
+        description={`Delete ${selected.length} selected task${selected.length === 1 ? '' : 's'}? This action cannot be undone.`}
+        pending={deleteTask.isPending}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={bulkDelete}
+      />
     </div>
   );
 }

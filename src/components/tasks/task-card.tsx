@@ -6,6 +6,7 @@ import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { TaskForm } from './task-form';
 import { useUpdateTask, useDeleteTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
@@ -26,6 +27,7 @@ const PRIORITY_LEFT_BORDER: Record<string, string> = {
 export function TaskCard({ task, compact = false }: TaskCardProps) {
   // ...existing code...
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
 
@@ -41,7 +43,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   };
 
   const handleDelete = () => {
-    if (confirm('Delete this task?')) deleteTask.mutate(task.id);
+    deleteTask.mutate(task.id, { onSuccess: () => setDeleteOpen(false) });
   };
 
   return (
@@ -169,7 +171,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
               <Edit2 className="h-3.5 w-3.5" />
             </Button>
             {/* Delete */}
-            <Button variant="ghost" size="icon" onClick={handleDelete} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
+            <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -186,6 +188,14 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Task">
         <TaskForm task={task} onClose={() => setEditOpen(false)} />
       </Dialog>
+      <ConfirmationDialog
+        open={deleteOpen}
+        title="Delete task"
+        description={`Delete "${task.title}"? This action cannot be undone.`}
+        pending={deleteTask.isPending}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

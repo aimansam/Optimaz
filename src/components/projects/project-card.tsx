@@ -1,6 +1,7 @@
 
 import React, { memo, useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { Star, Edit2, Archive, Trash2 } from 'lucide-react';
@@ -32,6 +33,7 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: ProjectCardProps) => {
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [editName, setEditName] = useState(project.name);
   const [editColor, setEditColor] = useState(project.color);
   const [editTags, setEditTags] = useState<string[]>(project.tags ?? []);
@@ -134,7 +136,7 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
         )}
         {/* Delete button */}
         <button
-          onClick={() => { if (confirm('Delete this project?')) { deleteProject.mutate(project.id); } }}
+          onClick={() => setDeleteOpen(true)}
           aria-label={`Delete project ${project.name}`}
           title="Delete"
           className="rounded p-1 hover:bg-red-50 dark:hover:bg-red-900/20 focus:ring-2 focus:ring-red-400 focus:outline-none"
@@ -142,6 +144,13 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
           <Trash2 className="h-5 w-5 text-red-400" />
         </button>
       </div>
+      <ConfirmationDialog
+        open={deleteOpen}
+        title="Delete project"
+        description={`Delete "${project.name}"? Tasks linked to this project will remain, but this action cannot be undone.`}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => deleteProject.mutate(project.id)}
+      />
       {/* Edit Dialog */}
       {editOpen && (
         <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Project">

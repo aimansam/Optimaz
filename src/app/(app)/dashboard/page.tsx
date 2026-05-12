@@ -4,7 +4,7 @@
 
 "use client";
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 
 
@@ -22,6 +22,21 @@ import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
 import { useUser } from '@/hooks/use-user';
 import type { TaskStatus } from '@/lib/types';
 
+let hydratedDate: Date | null = null;
+
+function getHydratedDate() {
+	if (!hydratedDate) hydratedDate = new Date();
+	return hydratedDate;
+}
+
+function getServerDateSnapshot() {
+	return null;
+}
+
+function subscribeToDate() {
+	return () => {};
+}
+
 export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
@@ -30,15 +45,16 @@ export default function DashboardPage() {
 	const [filterQuery, setFilterQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
 	const [showAnalytics, setShowAnalytics] = useState(false);
+	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
 
-	const hour = new Date().getHours();
-	const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+	const hour = currentDate?.getHours() ?? 12;
+	const greeting = !currentDate ? 'Hello' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 	const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 		?? user?.user_metadata?.name?.split(' ')[0]
 		?? user?.email?.split('@')[0]
 		?? null;
-	const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-	const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+	const weekday = currentDate?.toLocaleDateString('en-US', { weekday: 'long' }) ?? 'Today';
+	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
 
 	function handleFilter(query: string, status: string) {

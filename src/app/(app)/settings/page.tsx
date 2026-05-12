@@ -96,8 +96,8 @@ export default function SettingsPage() {
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
             <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">About TaskFlow</h2>
             <p className="text-sm text-slate-400">
-              TaskFlow v0.1.0 — Built with Next.js, Supabase, and Tailwind CSS.
-              Install this page on your phone as a PWA for native-like experience.
+              TaskFlow helps you organize projects, goals, tasks, deadlines, and daily progress in one focused workspace.
+              Install it on your phone or desktop for quick access whenever you plan your day.
             </p>
           </section>
         </div>

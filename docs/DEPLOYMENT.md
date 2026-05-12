@@ -44,6 +44,7 @@ NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=0.1
 SENTRY_ORG=your-sentry-org-slug
 SENTRY_PROJECT=your-sentry-project-slug
 SENTRY_AUTH_TOKEN=your-sentry-auth-token
+SENTRY_TEST_TOKEN=your-random-test-token
 ```
 
 ## Database Migrations
@@ -73,7 +74,7 @@ After Vercel deploys, test:
 - Create, favorite, and archive projects.
 - Goals, Kanban, Projects, and Settings pages load.
 - `/manifest.json` and `/sw.js` return `200`.
-- Sentry receives errors after the DSN variables are configured.
+- Sentry receives errors after the DSN variables are configured. To verify it, run `SMOKE_SENTRY_TEST_TOKEN=your-random-test-token npm run test:smoke` or POST to `/api/monitoring/sentry-test` with the `x-sentry-test-token` header.
 
 ## Stable Tags
 

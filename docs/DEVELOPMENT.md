@@ -34,6 +34,7 @@ NEXT_PUBLIC_SENTRY_DSN=your-public-client-dsn
 SENTRY_DSN=your-server-dsn
 SENTRY_TRACES_SAMPLE_RATE=0.1
 NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=0.1
+SENTRY_TEST_TOKEN=your-random-test-token
 ```
 
 Source map uploads during Vercel builds also need:
@@ -109,6 +110,19 @@ The production app currently exposes Google OAuth only. GitHub OAuth was removed
 ## Error Monitoring
 
 Sentry is wired through `src/instrumentation.ts`, `src/instrumentation-client.ts`, and `next.config.mjs`. The SDK stays idle when no DSN is configured, so local development works without a Sentry project. Add the Sentry variables in Vercel before expecting production events or source maps.
+
+After Sentry variables are configured, trigger a server-side verification event with:
+
+```bash
+curl -X POST "$SMOKE_BASE_URL/api/monitoring/sentry-test" \
+  -H "x-sentry-test-token: $SMOKE_SENTRY_TEST_TOKEN"
+```
+
+You can also include the endpoint in smoke tests:
+
+```bash
+SMOKE_SENTRY_TEST_TOKEN=your-random-test-token npm run test:smoke
+```
 
 ## Current Known Audit State
 

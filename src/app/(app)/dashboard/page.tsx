@@ -17,9 +17,13 @@ import { TaskForm } from '@/components/tasks/task-form';
 import { Dialog } from '@/components/ui/dialog';
 import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
 import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
+import { OnboardingPanel } from '@/components/onboarding/onboarding-panel';
 
-import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
+import { useTodayTasks, useOverdueTasks, useTasks } from '@/hooks/use-tasks';
+import { useProjects } from '@/hooks/use-projects';
+import { useGoals } from '@/hooks/use-goals';
 import { useUser } from '@/hooks/use-user';
+import { useUpdateUser } from '@/hooks/use-update-user';
 import type { TaskStatus } from '@/lib/types';
 
 let hydratedDate: Date | null = null;
@@ -40,7 +44,11 @@ function subscribeToDate() {
 export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
+	const { data: allTasks } = useTasks();
+	const { data: projects } = useProjects();
+	const { data: goals } = useGoals();
 	const { data: user } = useUser();
+	const completeOnboarding = useUpdateUser();
 	const [addOpen, setAddOpen] = useState(false);
 	const [filterQuery, setFilterQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
@@ -56,6 +64,7 @@ export default function DashboardPage() {
 	const weekday = currentDate?.toLocaleDateString('en-US', { weekday: 'long' }) ?? 'Today';
 	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
+	const showOnboarding = Boolean(user && !user.user_metadata?.onboarding_completed);
 
 	function handleFilter(query: string, status: string) {
 		setFilterQuery(query);
@@ -67,6 +76,10 @@ export default function DashboardPage() {
 			(!filterQuery || t.title.toLowerCase().includes(filterQuery.toLowerCase())) &&
 			(!filterStatus || t.status === filterStatus)
 		);
+	}
+
+	function dismissOnboarding() {
+		completeOnboarding.mutate({ metadata: { onboarding_completed: true } });
 	}
 
 	return (
@@ -102,6 +115,17 @@ export default function DashboardPage() {
 							</button>
 						</div>
 					</div>
+
+					{showOnboarding && (
+						<OnboardingPanel
+							taskCount={allTasks?.length ?? 0}
+							projectCount={projects?.length ?? 0}
+							goalCount={goals?.length ?? 0}
+							onCreateTask={() => setAddOpen(true)}
+							onComplete={dismissOnboarding}
+							completing={completeOnboarding.isPending}
+						/>
+					)}
 
 					{showAnalytics && (
 						<div className="mb-5">

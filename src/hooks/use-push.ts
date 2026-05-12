@@ -23,8 +23,15 @@ export function usePushSubscription() {
         throw new Error('Push notifications not supported');
       }
 
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidKey) {
+        throw new Error('Push notifications are not configured');
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       const registration = await navigator.serviceWorker.ready;
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
@@ -35,16 +42,16 @@ export function usePushSubscription() {
         keys: { p256dh: string; auth: string };
       };
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
       const response = await fetch('/api/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ endpoint, p256dh: keys.p256dh, auth: keys.auth }),
       });
 
-      if (!response.ok) throw new Error('Failed to save push subscription');
+      if (!response.ok) {
+        const result = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(result?.error ?? 'Failed to save push subscription');
+      }
       return subscription;
     },
   });

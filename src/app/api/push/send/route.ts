@@ -3,11 +3,6 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 
 export async function POST(request: Request) {
-  webpush.setVapidDetails(
-    process.env.VAPID_EMAIL!,
-    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-  );
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -15,7 +10,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const vapidEmail = process.env.VAPID_EMAIL;
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!vapidEmail || !vapidPublicKey || !vapidPrivateKey) {
+    return NextResponse.json({ error: 'Push notifications are not configured' }, { status: 503 });
+  }
+
+  webpush.setVapidDetails(vapidEmail, vapidPublicKey, vapidPrivateKey);
+
   const { title, body } = await request.json();
+
+  if (!title || !body) {
+    return NextResponse.json({ error: 'Missing notification title or body' }, { status: 400 });
+  }
 
   const { data: subscriptions } = await supabase
     .from('push_subscriptions')

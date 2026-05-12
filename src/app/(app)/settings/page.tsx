@@ -10,7 +10,7 @@ import { useUpdateUser } from '@/hooks/use-update-user';
 import React, { useState } from 'react';
 
 export default function SettingsPage() {
-  const { mutate: subscribe, isPending, isSuccess, isError } = usePushSubscription();
+  const { mutate: subscribe, isPending, isSuccess, error: pushError } = usePushSubscription();
   const { data: user } = useUser();
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
@@ -87,8 +87,8 @@ export default function SettingsPage() {
             {isSuccess && (
               <p className="mt-2 text-sm text-green-600 dark:text-green-400">Notifications enabled!</p>
             )}
-            {isError && (
-              <p className="mt-2 text-sm text-red-500">Failed to enable notifications. Check browser permissions.</p>
+            {pushError && (
+              <p className="mt-2 text-sm text-red-500">{pushError.message}</p>
             )}
           </section>
 

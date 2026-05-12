@@ -34,6 +34,18 @@ VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
 ```
 
+Optional for Sentry error monitoring:
+
+```bash
+NEXT_PUBLIC_SENTRY_DSN=your-public-client-dsn
+SENTRY_DSN=your-server-dsn
+SENTRY_TRACES_SAMPLE_RATE=0.1
+NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=0.1
+SENTRY_ORG=your-sentry-org-slug
+SENTRY_PROJECT=your-sentry-project-slug
+SENTRY_AUTH_TOKEN=your-sentry-auth-token
+```
+
 ## Database Migrations
 
 When a change includes files in `supabase/migrations/`, apply them to the remote Supabase project:
@@ -61,6 +73,7 @@ After Vercel deploys, test:
 - Create, favorite, and archive projects.
 - Goals, Kanban, Projects, and Settings pages load.
 - `/manifest.json` and `/sw.js` return `200`.
+- Sentry receives errors after the DSN variables are configured.
 
 ## Stable Tags
 

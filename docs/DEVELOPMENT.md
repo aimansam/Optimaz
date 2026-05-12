@@ -27,6 +27,23 @@ VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
 ```
 
+Optional Sentry variables for production error monitoring:
+
+```bash
+NEXT_PUBLIC_SENTRY_DSN=your-public-client-dsn
+SENTRY_DSN=your-server-dsn
+SENTRY_TRACES_SAMPLE_RATE=0.1
+NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE=0.1
+```
+
+Source map uploads during Vercel builds also need:
+
+```bash
+SENTRY_ORG=your-sentry-org-slug
+SENTRY_PROJECT=your-sentry-project-slug
+SENTRY_AUTH_TOKEN=your-sentry-auth-token
+```
+
 ## Scripts
 
 ```bash
@@ -88,6 +105,10 @@ The base schema is in `supabase/schema.sql`; migrations are the source of truth 
 ## Auth Notes
 
 The production app currently exposes Google OAuth only. GitHub OAuth was removed from the login UI because the provider was not enabled in Supabase.
+
+## Error Monitoring
+
+Sentry is wired through `src/instrumentation.ts`, `src/instrumentation-client.ts`, and `next.config.mjs`. The SDK stays idle when no DSN is configured, so local development works without a Sentry project. Add the Sentry variables in Vercel before expecting production events or source maps.
 
 ## Current Known Audit State
 

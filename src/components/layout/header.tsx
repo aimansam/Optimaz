@@ -38,7 +38,7 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
       </div>
       <div className="flex items-center gap-1.5">
         {actions}
-        <NotificationBell notifications={[]} />
+        <NotificationBell />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign out">
           <LogOut className="h-4 w-4" />

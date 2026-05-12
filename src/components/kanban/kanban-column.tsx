@@ -9,6 +9,8 @@ import type { Task, TaskStatus } from '@/lib/types';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
 
 const COLUMN_DOT: Record<TaskStatus, string> = {
   todo: 'bg-red-500',
@@ -66,9 +68,13 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
             ))}
           </SortableContext>
           {tasks.length === 0 && (
-            <div className="flex flex-1 items-center justify-center py-6 sm:py-10">
-              <p className="text-xs text-slate-400 dark:text-slate-600">Drop tasks here</p>
-            </div>
+            <EmptyState
+              compact
+              icon={<Plus className="h-4 w-4" />}
+              title="No tasks"
+              description="Drop a card here or create one directly in this column."
+              action={<Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}><Plus className="h-3.5 w-3.5" />Add</Button>}
+            />
           )}
         </div>
       </div>

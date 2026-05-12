@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { CheckCircle2, Plus } from 'lucide-react';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { TaskForm } from './task-form';
 import { useDeleteTask, useUpdateTask } from '@/hooks/use-tasks';
 import type { Task, TaskStatus } from '@/lib/types';
@@ -79,15 +80,15 @@ export function TaskList({
       ))}
 
       {tasks.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
-            <span className="text-2xl">✓</span>
-          </div>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{emptyMessage}</p>
-        </div>
+        <EmptyState
+          icon={<CheckCircle2 className="h-6 w-6" />}
+          title={emptyMessage}
+          description={showAddButton ? 'Create a task here when you are ready to plan the next step.' : 'No matching tasks need your attention right now.'}
+          action={showAddButton ? <Button size="sm" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" />Add Task</Button> : undefined}
+        />
       )}
 
-      {showAddButton && (
+      {showAddButton && tasks.length > 0 && (
         <button
           onClick={() => setAddOpen(true)}
           className="group flex w-full items-center gap-2.5 rounded-xl border border-dashed border-slate-200 px-4 py-3 text-sm text-slate-400 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all dark:border-slate-800 dark:hover:border-slate-600 dark:hover:bg-slate-800/40 dark:hover:text-slate-300"

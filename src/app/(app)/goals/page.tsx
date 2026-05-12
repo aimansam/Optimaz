@@ -5,6 +5,7 @@ import { GoalCard } from '@/components/goals/goal-card';
 import { GoalForm } from '@/components/goals/goal-form';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useGoals } from '@/hooks/use-goals';
 import { Plus, Target } from 'lucide-react';
 
@@ -40,12 +41,12 @@ export default function GoalsPage() {
             ))}
           </div>
         ) : goals?.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-20 text-slate-400">
-            <Target className="h-14 w-14" />
-            <p className="text-lg font-medium">No goals yet</p>
-            <p className="text-sm">Create a goal and link tasks to track your progress</p>
-            <Button onClick={() => setAddOpen(true)}>Create your first goal</Button>
-          </div>
+          <EmptyState
+            icon={<Target className="h-6 w-6" />}
+            title="No goals yet"
+            description="Create a goal to group tasks around an outcome and track progress over time."
+            action={<Button onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" />Create Goal</Button>}
+          />
         ) : (
           <div className="space-y-8">
             {/* Active goals */}

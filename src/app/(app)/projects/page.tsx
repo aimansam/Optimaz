@@ -6,7 +6,8 @@ import { useTasks } from '@/hooks/use-tasks';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FolderOpen, Plus } from 'lucide-react';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
 
 
@@ -171,18 +172,12 @@ export default function ProjectsPage() {
             ))}
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
-            <svg width="96" height="96" fill="none" viewBox="0 0 96 96" aria-hidden="true">
-              <rect x="8" y="24" width="80" height="56" rx="8" fill="#f1f5f9" />
-              <rect x="24" y="40" width="48" height="8" rx="4" fill="#cbd5e1" />
-              <rect x="24" y="56" width="32" height="8" rx="4" fill="#cbd5e1" />
-              <rect x="24" y="72" width="16" height="8" rx="4" fill="#cbd5e1" />
-              <rect x="56" y="72" width="16" height="8" rx="4" fill="#e0e7ef" />
-            </svg>
-            <p className="text-lg font-semibold">No projects found</p>
-            <p className="text-sm text-slate-400">Get started by creating your first project.</p>
-            <Button onClick={() => setAddOpen(true)} size="sm">+ Create Project</Button>
-          </div>
+          <EmptyState
+            icon={<FolderOpen className="h-6 w-6" />}
+            title={search.trim() || showArchived ? 'No projects match these filters' : 'No projects yet'}
+            description={search.trim() || showArchived ? 'Adjust your filters or create a new project to organize related tasks.' : 'Create a project to group tasks, track progress, and keep related work together.'}
+            action={<Button onClick={() => setAddOpen(true)} size="sm"><Plus className="h-4 w-4" />Create Project</Button>}
+          />
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filteredProjects.map((project) => (

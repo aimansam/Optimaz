@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/client';
 const supabase = createClient();
 
 export type AnalyticsEventName =
+  | 'feedback_submitted'
   | 'goal_created'
   | 'onboarding_completed'
   | 'project_created'

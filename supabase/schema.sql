@@ -79,6 +79,16 @@ create table if not exists public.analytics_events (
   created_at timestamptz not null default now()
 );
 
+-- Feedback table
+create table if not exists public.feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  category text not null default 'general' check (category in ('general', 'bug', 'idea', 'pricing')),
+  message text not null check (char_length(message) between 3 and 2000),
+  page_path text,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists tasks_goal_id_idx on public.tasks(goal_id);
 create index if not exists goals_user_id_idx on public.goals(user_id);
 create index if not exists tasks_user_id_idx on public.tasks(user_id);
@@ -90,6 +100,9 @@ create index if not exists push_subscriptions_user_id_idx on public.push_subscri
 create index if not exists analytics_events_user_id_idx on public.analytics_events(user_id);
 create index if not exists analytics_events_event_name_idx on public.analytics_events(event_name);
 create index if not exists analytics_events_created_at_idx on public.analytics_events(created_at desc);
+create index if not exists feedback_user_id_idx on public.feedback(user_id);
+create index if not exists feedback_created_at_idx on public.feedback(created_at desc);
+create index if not exists feedback_category_idx on public.feedback(category);
 
 -- Updated_at trigger function
 create or replace function public.handle_updated_at()
@@ -119,6 +132,7 @@ alter table public.tasks enable row level security;
 alter table public.subtasks enable row level security;
 alter table public.push_subscriptions enable row level security;
 alter table public.analytics_events enable row level security;
+alter table public.feedback enable row level security;
 
 -- Goals policies
 create policy "Users can view own goals" on public.goals
@@ -168,4 +182,10 @@ create policy "Users can manage own push subscriptions" on public.push_subscript
 create policy "Users can insert own analytics events" on public.analytics_events
   for insert with check (auth.uid() = user_id);
 create policy "Users can view own analytics events" on public.analytics_events
+  for select using (auth.uid() = user_id);
+
+-- Feedback policies
+create policy "Users can insert own feedback" on public.feedback
+  for insert with check (auth.uid() = user_id);
+create policy "Users can view own feedback" on public.feedback
   for select using (auth.uid() = user_id);

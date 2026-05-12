@@ -6,6 +6,7 @@ import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { NotificationBell } from '@/components/ui/notification-bell';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 
 const supabase = createClient();
 
@@ -38,6 +39,7 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
       </div>
       <div className="flex items-center gap-1.5">
         {actions}
+        <FeedbackButton />
         <NotificationBell />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign out">

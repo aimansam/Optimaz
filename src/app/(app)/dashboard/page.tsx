@@ -20,6 +20,7 @@ import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
 
 import { useTodayTasks, useOverdueTasks } from '@/hooks/use-tasks';
 import { useUser } from '@/hooks/use-user';
+import type { TaskStatus } from '@/lib/types';
 
 export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
@@ -27,7 +28,7 @@ export default function DashboardPage() {
 	const { data: user } = useUser();
 	const [addOpen, setAddOpen] = useState(false);
 	const [filterQuery, setFilterQuery] = useState("");
-	const [filterStatus, setFilterStatus] = useState("");
+	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
 	const [showAnalytics, setShowAnalytics] = useState(false);
 
 	const hour = new Date().getHours();
@@ -42,7 +43,7 @@ export default function DashboardPage() {
 
 	function handleFilter(query: string, status: string) {
 		setFilterQuery(query);
-		setFilterStatus(status);
+		setFilterStatus(status as TaskStatus | "");
 	}
 
 	function filterTasks(tasks: import('@/lib/types').Task[] = []) {
@@ -98,7 +99,12 @@ export default function DashboardPage() {
 
 					{/* Upcoming deadlines section */}
 					<DashboardWidget title="Upcoming Deadlines">
-						<UpcomingTasks days={7} showHeading={false} />
+						<UpcomingTasks
+							days={7}
+							filterQuery={filterQuery}
+							filterStatus={filterStatus}
+							showHeading={false}
+						/>
 					</DashboardWidget>
 
 					{/* Overdue section */}

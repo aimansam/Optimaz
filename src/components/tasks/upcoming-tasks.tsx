@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { TaskList } from "./task-list";
-import type { Task } from "@/lib/types";
+import type { Task, TaskStatus } from "@/lib/types";
 
 function useUpcomingTasks(days: number = 7) {
   return useQuery<Task[]>({
@@ -18,7 +18,7 @@ function useUpcomingTasks(days: number = 7) {
       const { data, error } = await supabase
         .from("tasks")
         .select("*, subtasks(*), project:projects(id,name,color)")
-        .gte("due_date", todayStr)
+        .gt("due_date", todayStr)
         .lte("due_date", endStr)
         .neq("status", "done")
         .order("due_date", { ascending: true });
@@ -28,16 +28,31 @@ function useUpcomingTasks(days: number = 7) {
   });
 }
 
-export function UpcomingTasks({ days = 7, showHeading = true }: { days?: number, showHeading?: boolean }) {
+interface UpcomingTasksProps {
+  days?: number;
+  filterQuery?: string;
+  filterStatus?: TaskStatus | "";
+  showHeading?: boolean;
+}
+
+export function UpcomingTasks({
+  days = 7,
+  filterQuery = "",
+  filterStatus = "",
+  showHeading = true,
+}: UpcomingTasksProps) {
   const { data, isLoading } = useUpcomingTasks(days);
   if (isLoading) return <div className="py-4">Loading upcoming tasks...</div>;
-  if (!data || data.length === 0) return null;
+  const filteredTasks = (data ?? []).filter((task) =>
+    (!filterQuery || task.title.toLowerCase().includes(filterQuery.toLowerCase())) &&
+    (!filterStatus || task.status === filterStatus)
+  );
   return (
     <div className="mb-8">
       {showHeading && (
         <h3 className="mb-2 text-lg font-semibold text-slate-800 dark:text-slate-100">Upcoming Deadlines</h3>
       )}
-      <TaskList tasks={data} />
+      <TaskList tasks={filteredTasks} emptyMessage="No upcoming deadlines." showAddButton={false} />
     </div>
   );
 }

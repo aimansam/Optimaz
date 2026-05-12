@@ -30,5 +30,4 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Resources
 - [Next.js Documentation](https://nextjs.org/docs)
-- [next-pwa](https://github.com/shadowwalker/next-pwa)
 - [Vercel Docs](https://vercel.com/docs)

@@ -35,6 +35,7 @@ npm run lint     # eslint
 npm run build    # production build
 npm run start    # serve a production build
 npm run test:smoke # Playwright smoke tests against the live app by default
+npm run test:smoke:auth-state # create local signed-in Playwright state
 ```
 
 Run `npm run lint` and `npm run build` before pushing to `main`.
@@ -53,10 +54,23 @@ Override the target with `SMOKE_BASE_URL`:
 SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke
 ```
 
-The default run verifies public behavior such as the login page, protected-route redirects, and PWA assets. Authenticated route checks are optional. To run them, save a Playwright storage state for a signed-in account at `tests/.auth/user.json`, then run:
+The default run verifies public behavior such as the login page, protected-route redirects, legal pages, and PWA assets. Authenticated route checks are optional. To create a local storage state, run:
+
+```bash
+npm run test:smoke:auth-state
+```
+
+A headed browser opens. Sign in with Google, wait for the dashboard, and Playwright saves `tests/.auth/user.json`. Then run:
 
 ```bash
 SMOKE_AUTH_STATE=tests/.auth/user.json npm run test:smoke
+```
+
+Override either target as needed:
+
+```bash
+SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke:auth-state
+SMOKE_AUTH_STATE=tests/.auth/user.json SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke
 ```
 
 The `tests/.auth` folder is ignored by git so local sessions are not committed.

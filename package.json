@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:smoke": "playwright test",
+    "test:smoke:auth-state": "node scripts/save-auth-state.mjs",
     "test:smoke:headed": "playwright test --headed"
   },
   "dependencies": {

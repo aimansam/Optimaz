@@ -70,4 +70,13 @@ test.describe('authenticated live smoke', () => {
     await page.getByRole('button', { name: 'Notifications' }).click();
     await expect(page.getByText('Task alerts and recent progress')).toBeVisible();
   });
+
+  test('feedback dialog opens from the header', async ({ page }) => {
+    await page.goto('/dashboard?smoke=feedback');
+
+    await page.getByRole('button', { name: 'Send feedback' }).click();
+    await expect(page.getByRole('heading', { name: 'Send feedback' })).toBeVisible();
+    await expect(page.getByLabel('Category')).toBeVisible();
+    await expect(page.getByLabel('Message')).toBeVisible();
+  });
 });

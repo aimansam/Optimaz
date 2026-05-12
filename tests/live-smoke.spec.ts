@@ -26,6 +26,14 @@ test.describe('public live smoke', () => {
     expect(serviceWorker.ok()).toBe(true);
     expect(manifest.headers()['content-type']).toMatch(/application\/manifest\+json|application\/json/);
   });
+
+  test('legal pages are public', async ({ page }) => {
+    await page.goto('/privacy');
+    await expect(page.getByRole('heading', { name: 'Privacy Policy' })).toBeVisible();
+
+    await page.goto('/terms');
+    await expect(page.getByRole('heading', { name: 'Terms of Service' })).toBeVisible();
+  });
 });
 
 test.describe('authenticated live smoke', () => {

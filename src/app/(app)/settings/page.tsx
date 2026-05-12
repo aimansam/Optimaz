@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { usePushSubscription } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
@@ -99,6 +100,14 @@ export default function SettingsPage() {
               TaskFlow helps you organize projects, goals, tasks, deadlines, and daily progress in one focused workspace.
               Install it on your phone or desktop for quick access whenever you plan your day.
             </p>
+            <div className="mt-3 flex gap-3 text-sm">
+              <Link href="/privacy" className="font-medium text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
+                Privacy
+              </Link>
+              <Link href="/terms" className="font-medium text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
+                Terms
+              </Link>
+            </div>
           </section>
         </div>
       </div>

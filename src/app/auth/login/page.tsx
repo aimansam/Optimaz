@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Zap } from 'lucide-react';
@@ -62,7 +63,10 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-slate-500">
-            By signing in, you agree to our terms of service.
+            By signing in, you agree to the{' '}
+            <Link href="/terms" className="text-slate-300 hover:text-white">terms</Link>
+            {' '}and acknowledge the{' '}
+            <Link href="/privacy" className="text-slate-300 hover:text-white">privacy policy</Link>.
           </p>
         </div>
       </div>

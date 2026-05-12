@@ -5,16 +5,21 @@ import { TaskList } from '@/components/tasks/task-list';
 import { GoalForm } from '@/components/goals/goal-form';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useGoal } from '@/hooks/use-goals';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { useDeleteGoal, useGoal } from '@/hooks/use-goals';
 import { useGoalTasks } from '@/hooks/use-tasks';
-import { CalendarDays, Edit2, CheckCircle2, Target } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CalendarDays, Edit2, CheckCircle2, Target, Trash2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 
 export default function GoalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const router = useRouter();
   const { data: goal, isLoading: goalLoading } = useGoal(id);
   const { data: tasks, isLoading: tasksLoading } = useGoalTasks(id);
+  const deleteGoal = useDeleteGoal();
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const total = tasks?.length ?? 0;
   const completed = tasks?.filter((t) => t.status === 'done').length ?? 0;
@@ -58,16 +63,28 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
                   <CheckCircle2 className="h-3 w-3" />
                   {completed}/{total} tasks
                 </p>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="mt-3 gap-1"
-                  onClick={() => setEditOpen(true)}
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                  Edit
-                </Button>
+                <div className="mt-3 flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="gap-1"
+                    onClick={() => setEditOpen(true)}
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="danger"
+                    className="gap-1"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -106,9 +123,19 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {goal && (
-        <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Goal">
-          <GoalForm goal={goal} onClose={() => setEditOpen(false)} />
-        </Dialog>
+        <>
+          <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Goal">
+            <GoalForm goal={goal} onClose={() => setEditOpen(false)} />
+          </Dialog>
+          <ConfirmationDialog
+            open={deleteOpen}
+            title="Delete goal"
+            description={`Delete "${goal.title}"? Tasks linked to it will be unlinked.`}
+            pending={deleteGoal.isPending}
+            onClose={() => setDeleteOpen(false)}
+            onConfirm={() => deleteGoal.mutate(goal.id, { onSuccess: () => router.push('/goals') })}
+          />
+        </>
       )}
     </>
   );

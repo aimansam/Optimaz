@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 
 const supabase = createClient();
 
@@ -31,8 +32,11 @@ export function useUpdateUser() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
+      if (data.onboarding_completed === true) {
+        void trackEvent('onboarding_completed');
+      }
     },
   });
 }

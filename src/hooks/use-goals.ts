@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 import type { Goal } from '@/lib/types';
 
 const supabase = createClient();
@@ -49,8 +50,9 @@ export function useCreateGoal() {
       if (error) throw error;
       return data as Goal;
     },
-    onSuccess: () => {
+    onSuccess: (goal) => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      void trackEvent('goal_created', { goal_id: goal.id });
     },
   });
 }

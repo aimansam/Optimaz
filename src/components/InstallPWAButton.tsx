@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { trackEvent } from '@/lib/analytics';
 
 // Define the correct type for the beforeinstallprompt event
 interface BeforeInstallPromptEvent extends Event {
@@ -25,6 +26,7 @@ export default function InstallPWAButton() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
+    void trackEvent(outcome === 'accepted' ? 'pwa_install_accepted' : 'pwa_install_dismissed');
     if (outcome === 'accepted') setShow(false);
   };
 

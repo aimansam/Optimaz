@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 
 export function useGoalTasks(goalId: string) {
@@ -114,9 +115,15 @@ export function useCreateTask() {
       if (error) throw error;
       return data as Task;
     },
-    onSuccess: () => {
+    onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      void trackEvent('task_created', {
+        task_id: task.id,
+        has_due_date: Boolean(task.due_date),
+        has_project: Boolean(task.project_id),
+        has_goal: Boolean(task.goal_id),
+      });
     },
   });
 }
@@ -134,9 +141,12 @@ export function useUpdateTask() {
       if (error) throw error;
       return data as Task;
     },
-    onSuccess: () => {
+    onSuccess: (task, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      if (variables.status === 'done') {
+        void trackEvent('task_completed', { task_id: task.id });
+      }
     },
   });
 }

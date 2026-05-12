@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 import type { Project } from '@/lib/types';
 
 const supabase = createClient();
@@ -35,8 +36,9 @@ export function useCreateProject() {
       if (error) throw error;
       return data as Project;
     },
-    onSuccess: () => {
+    onSuccess: (project) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      void trackEvent('project_created', { project_id: project.id });
     },
   });
 }

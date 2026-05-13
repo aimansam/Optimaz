@@ -67,7 +67,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
           <Input
             value={title}
             onChange={event => setTitle(event.target.value)}
-            placeholder="Reach 20 active beta users"
+            placeholder="Exercise three times each week"
             autoFocus
             disabled={createGoal.isPending}
             className="bg-white dark:bg-slate-900"
@@ -78,7 +78,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
           <Textarea
             value={description}
             onChange={event => setDescription(event.target.value)}
-            placeholder="Invite first testers, watch activation, and resolve the top onboarding blockers."
+            placeholder="Keep workouts simple, schedule them ahead, and track progress every Sunday."
             rows={4}
             autoFocus
             disabled={createGoal.isPending}

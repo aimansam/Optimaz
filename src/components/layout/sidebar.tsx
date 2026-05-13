@@ -19,6 +19,12 @@ const NAV_ITEMS = [
 export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   const pathname = usePathname();
   const { data: projects } = useProjects();
+  const activeProject = projects?.find(project => pathname === `/projects/${project.id}`);
+  const baseProjects = projects?.slice(0, activeProject && projects.indexOf(activeProject) >= 5 ? 5 : 6) ?? [];
+  const visibleProjects = activeProject && !baseProjects.some(project => project.id === activeProject.id)
+    ? [...baseProjects, activeProject]
+    : baseProjects;
+  const hiddenProjectCount = Math.max((projects?.length ?? 0) - visibleProjects.length, 0);
 
   return (
     <>
@@ -83,7 +89,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
             <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
               Projects
             </p>
-            {projects.map((project) => {
+            {visibleProjects.map((project) => {
               const active = pathname === `/projects/${project.id}`;
               return (
                 <Link
@@ -105,6 +111,14 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                 </Link>
               );
             })}
+            <Link
+              href="/projects"
+              className="mt-1 flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800/70 dark:hover:text-slate-200"
+              onClick={() => setOpen(false)}
+            >
+              <span>View all projects</span>
+              {hiddenProjectCount > 0 && <span>+{hiddenProjectCount}</span>}
+            </Link>
           </div>
         )}
         </nav>

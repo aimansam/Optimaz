@@ -46,19 +46,29 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>('');
 
   const steps = useMemo(() => [
-    { label: 'Task', question: 'What task do you want to add?' },
-    { label: 'Details', question: 'Anything important to remember?' },
-    { label: 'Priority', question: 'How important is this task?' },
-    { label: 'Status', question: 'Where should this task start?' },
-    { label: 'Date', question: 'When should this be due?' },
-    { label: 'Project', question: 'Which project should this belong to?' },
-    { label: 'Goal', question: 'Does this support a goal?' },
-    { label: 'Repeat', question: 'Should this task repeat?' },
-    { label: 'Review', question: 'Ready to create this task?' },
+    { label: 'Task', question: 'What task do you want to add?', optional: false },
+    { label: 'Details', question: 'Anything important to remember?', optional: true },
+    { label: 'Priority', question: 'How important is this task?', optional: false },
+    { label: 'Status', question: 'Where should this task start?', optional: false },
+    { label: 'Date', question: 'When should this be due?', optional: true },
+    { label: 'Project', question: 'Which project should this belong to?', optional: true },
+    { label: 'Goal', question: 'Does this support a goal?', optional: true },
+    { label: 'Repeat', question: 'Should this task repeat?', optional: true },
+    { label: 'Review', question: 'Ready to create this task?', optional: false },
   ], []);
 
   const isLastStep = step === steps.length - 1;
+  const currentStep = steps[step];
   const canContinue = step !== 0 || title.trim().length > 0;
+  const stepHasValue = (
+    step === 1 ? notes.trim().length > 0
+    : step === 4 ? dueDate.length > 0
+    : step === 5 ? projectId.length > 0
+    : step === 6 ? goalId.length > 0
+    : step === 7 ? recurrenceRule.length > 0
+    : true
+  );
+  const nextLabel = currentStep.optional && !stepHasValue ? 'Skip' : 'Next';
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -87,10 +97,18 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
-        <div className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-          <ListChecks className="h-4 w-4" />
-          <span>{steps[step].question}</span>
+        <div className="mb-3 flex items-start justify-between gap-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="flex min-w-0 items-center gap-2">
+            <ListChecks className="h-4 w-4 shrink-0" />
+            <span>{currentStep.question}</span>
+          </div>
+          <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+            Step {step + 1} of {steps.length}
+          </span>
         </div>
+        {currentStep.optional && (
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Optional. Leave it blank and continue if it does not matter right now.</p>
+        )}
         <div className="mb-3 flex gap-1">
           {steps.map((item, index) => (
             <div
@@ -189,7 +207,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           )}
           <Button type="submit" disabled={!canContinue || createTask.isPending}>
             {isLastStep ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-            {isLastStep ? (createTask.isPending ? 'Creating...' : 'Create task') : 'Next'}
+            {isLastStep ? (createTask.isPending ? 'Creating...' : 'Create task') : nextLabel}
           </Button>
         </div>
       </div>

@@ -67,7 +67,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
           <Input
             value={title}
             onChange={event => setTitle(event.target.value)}
-            placeholder="Example: Launch TaskFlow beta"
+            placeholder="Reach 20 active beta users"
             autoFocus
             disabled={createGoal.isPending}
             className="bg-white dark:bg-slate-900"
@@ -78,7 +78,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
           <Textarea
             value={description}
             onChange={event => setDescription(event.target.value)}
-            placeholder="Optional success notes"
+            placeholder="Invite first testers, watch activation, and resolve the top onboarding blockers."
             rows={4}
             autoFocus
             disabled={createGoal.isPending}

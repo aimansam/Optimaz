@@ -104,7 +104,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           <Input
             value={title}
             onChange={event => setTitle(event.target.value)}
-            placeholder="Example: Submit beta launch checklist"
+            placeholder="Review beta user feedback from Monday calls"
             autoFocus
             disabled={createTask.isPending}
             className="bg-white dark:bg-slate-900"
@@ -115,7 +115,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           <Textarea
             value={notes}
             onChange={event => setNotes(event.target.value)}
-            placeholder="Optional details"
+            placeholder="Summarize the top 3 issues, add labels, and send fixes to the beta group."
             rows={4}
             autoFocus
             disabled={createTask.isPending}

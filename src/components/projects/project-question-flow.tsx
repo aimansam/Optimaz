@@ -75,7 +75,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           <Input
             value={name}
             onChange={event => setName(event.target.value)}
-            placeholder="Example: TaskFlow beta launch"
+            placeholder="May beta feedback cleanup"
             autoFocus
             disabled={createProject.isPending}
             className="bg-white dark:bg-slate-900"
@@ -86,7 +86,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           <Textarea
             value={description}
             onChange={event => setDescription(event.target.value)}
-            placeholder="Optional project notes"
+            placeholder="Track reported bugs, UX friction, and fixes before the next invite batch."
             rows={4}
             autoFocus
             disabled={createProject.isPending}
@@ -117,7 +117,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           <Input
             value={tagInput}
             onChange={event => setTagInput(event.target.value)}
-            placeholder="Optional, comma-separated tags"
+            placeholder="beta, feedback, ux"
             autoFocus
             disabled={createProject.isPending}
             className="bg-white dark:bg-slate-900"

@@ -79,7 +79,7 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
         </div>
       </div>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="max-w-lg min-h-0">
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
         <TaskQuestionFlow defaultStatus={id} onClose={() => setAddOpen(false)} />
       </Dialog>
     </>

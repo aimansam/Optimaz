@@ -109,7 +109,7 @@ export function TaskList({
         </button>
       )}
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="max-w-lg min-h-0">
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
         <TaskQuestionFlow
           defaultStatus={defaultStatus}
           defaultProjectId={defaultProjectId}

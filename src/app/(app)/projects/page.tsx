@@ -172,7 +172,7 @@ export default function ProjectsPage() {
           </div>
         )}
       </div>
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Project" className="max-w-lg min-h-0">
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Project" className="min-h-0 sm:max-w-lg">
         <ProjectQuestionFlow onClose={() => setAddOpen(false)} />
       </Dialog>
     </>

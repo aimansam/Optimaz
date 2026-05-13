@@ -52,7 +52,7 @@ export function FeedbackButton() {
         <MessageSquare className="h-4 w-4" />
       </Button>
 
-      <Dialog open={open} onClose={closeDialog} title="Send feedback" className="max-w-lg min-h-0">
+      <Dialog open={open} onClose={closeDialog} title="Send feedback" className="min-h-0 sm:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="feedbackCategory" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">

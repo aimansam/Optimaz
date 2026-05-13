@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 const authState = process.env.SMOKE_AUTH_STATE;
-const sentryTestToken = process.env.SMOKE_SENTRY_TEST_TOKEN;
 
 test.describe('public live smoke', () => {
   test('login page exposes Google sign-in only', async ({ page }) => {
@@ -36,25 +35,12 @@ test.describe('public live smoke', () => {
     await expect(page.getByRole('heading', { name: 'Terms of Service' })).toBeVisible();
   });
 
-  test('Sentry verification endpoint captures a test event when enabled', async ({ request }) => {
-    test.skip(!sentryTestToken, 'Set SMOKE_SENTRY_TEST_TOKEN to verify Sentry event capture.');
-
-    const response = await request.post('/api/monitoring/sentry-test', {
-      headers: {
-        'x-sentry-test-token': sentryTestToken,
-      },
+  test('monitoring endpoint validates payloads', async ({ request }) => {
+    const response = await request.post('/api/monitoring/errors', {
+      data: {},
     });
-    const body = await response.json();
 
-    expect(response.ok()).toBe(true);
-    expect(body.eventId).toEqual(expect.any(String));
-    expect(body.flushed).toBe(true);
-  });
-
-  test('Sentry verification endpoint is closed without token', async ({ request }) => {
-    const response = await request.post('/api/monitoring/sentry-test');
-
-    expect([404, 405]).toContain(response.status());
+    expect([400, 405]).toContain(response.status());
   });
 });
 

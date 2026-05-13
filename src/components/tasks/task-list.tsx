@@ -30,6 +30,7 @@ export function TaskList({
 }: TaskListProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
@@ -40,6 +41,7 @@ export function TaskList({
   }
   function clearSelected() {
     setSelected([]);
+    setSelectionMode(false);
   }
   async function bulkDelete() {
     await Promise.all(selected.map((id) => deleteTask.mutateAsync(id)));
@@ -54,25 +56,34 @@ export function TaskList({
   return (
     <div className="space-y-2">
 
-      {/* Bulk actions toolbar */}
-      {selected.length > 0 && (
-        <div className="flex items-center gap-2 mb-2 p-2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <span className="text-xs font-semibold">{selected.length} selected</span>
-          <Button size="sm" variant="secondary" onClick={bulkComplete} disabled={bulkPending}>Mark Complete</Button>
-          <Button size="sm" variant="danger" onClick={() => setDeleteConfirmOpen(true)} disabled={bulkPending}>Delete</Button>
-          <Button size="sm" variant="ghost" onClick={clearSelected} disabled={bulkPending}>Clear</Button>
+      {tasks.length > 0 && !selectionMode && (
+        <div className="flex justify-end">
+          <Button size="sm" variant="ghost" onClick={() => setSelectionMode(true)}>Select tasks</Button>
         </div>
       )}
 
-      {/* Task list with checkboxes */}
+      {selectionMode && (
+        <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-800/70">
+          <span className="mr-auto text-xs font-semibold text-slate-600 dark:text-slate-300">
+            {selected.length > 0 ? `${selected.length} selected` : 'Select tasks'}
+          </span>
+          <Button size="sm" variant="secondary" onClick={bulkComplete} disabled={bulkPending || selected.length === 0}>Mark Complete</Button>
+          <Button size="sm" variant="danger" onClick={() => setDeleteConfirmOpen(true)} disabled={bulkPending || selected.length === 0}>Delete</Button>
+          <Button size="sm" variant="ghost" onClick={clearSelected} disabled={bulkPending}>Done</Button>
+        </div>
+      )}
+
       {tasks.map((task) => (
         <div key={task.id} className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={selected.includes(task.id)}
-            onChange={() => toggleSelect(task.id)}
-            className="accent-emerald-500 h-4 w-4 rounded border-slate-300 dark:border-slate-700"
-          />
+          {selectionMode && (
+            <input
+              type="checkbox"
+              checked={selected.includes(task.id)}
+              onChange={() => toggleSelect(task.id)}
+              aria-label={`Select ${task.title}`}
+              className="h-4 w-4 rounded border-slate-300 accent-emerald-500 dark:border-slate-700"
+            />
+          )}
           <div className="flex-1">
             <TaskCard task={task} />
           </div>
@@ -98,7 +109,7 @@ export function TaskList({
         </button>
       )}
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task">
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="max-w-lg min-h-0">
         <TaskQuestionFlow
           defaultStatus={defaultStatus}
           defaultProjectId={defaultProjectId}

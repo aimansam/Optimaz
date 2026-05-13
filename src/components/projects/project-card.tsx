@@ -90,7 +90,7 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
         <span>Overdue: {overdue}</span>
       </div>
       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{percent}% complete</div>
-      <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         {/* Favorite button */}
         <button
           aria-label={project.favorite ? `Unfavorite project ${project.name}` : `Favorite project ${project.name}`}

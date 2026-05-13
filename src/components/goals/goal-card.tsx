@@ -86,7 +86,7 @@ export function GoalCard({ goal }: GoalCardProps) {
           setDeleteOpen(true);
         }}
         aria-label={`Delete goal ${goal.title}`}
-        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity rounded p-1 hover:bg-red-50 dark:hover:bg-red-900/20"
+        className="absolute right-3 top-3 rounded p-1 opacity-100 transition-opacity hover:bg-red-50 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 dark:hover:bg-red-900/20"
       >
         <Trash2 className="h-4 w-4 text-red-400" />
       </button>

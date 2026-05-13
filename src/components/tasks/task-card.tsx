@@ -155,7 +155,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="flex items-center gap-0.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
             {/* Quick complete/incomplete */}
             <Button
               variant={isDone ? "ghost" : "secondary"}
@@ -167,11 +167,11 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
               <Check className="h-3.5 w-3.5" />
             </Button>
             {/* Edit */}
-            <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)} className="h-7 w-7 rounded-lg">
+            <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)} className="h-7 w-7 rounded-lg" aria-label="Edit task">
               <Edit2 className="h-3.5 w-3.5" />
             </Button>
             {/* Delete */}
-            <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
+            <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30" aria-label="Delete task">
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>

@@ -80,7 +80,7 @@ export default function GoalsPage() {
         )}
       </div>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Goal">
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Goal" className="max-w-lg min-h-0">
         <GoalQuestionFlow onClose={() => setAddOpen(false)} />
       </Dialog>
     </>

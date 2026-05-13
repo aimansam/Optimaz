@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Zap } from 'lucide-react';
+import { CheckCircle2, FolderOpen, Target, Zap } from 'lucide-react';
 
 const supabase = createClient();
 
@@ -20,12 +20,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a0a0f] p-4">
-      {/* Background glow orbs */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/4 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-[120px]" />
-        <div className="absolute right-1/4 bottom-1/3 h-64 w-64 rounded-full bg-white/5 blur-[100px]" />
-      </div>
-
       <div className="relative w-full max-w-sm">
         {/* Card */}
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl">
@@ -36,8 +30,21 @@ export default function LoginPage() {
             </div>
             <div className="text-center">
               <h1 className="text-2xl font-bold tracking-tight text-white">TaskFlow</h1>
-              <p className="mt-1 text-sm text-slate-400">Your productivity, synced everywhere</p>
+              <p className="mt-1 text-sm text-slate-400">Plan tasks, projects, and goals in one quiet workspace</p>
             </div>
+          </div>
+
+          <div className="mb-5 grid grid-cols-3 gap-2 text-center text-[11px] text-slate-400">
+            {[
+              [CheckCircle2, 'Tasks'],
+              [FolderOpen, 'Projects'],
+              [Target, 'Goals'],
+            ].map(([Icon, label]) => (
+              <div key={label as string} className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-2">
+                <Icon className="mx-auto mb-1 h-3.5 w-3.5 text-slate-300" />
+                <span>{label as string}</span>
+              </div>
+            ))}
           </div>
 
           <div className="space-y-3">

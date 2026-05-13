@@ -51,7 +51,8 @@ export function SubtaskList({ task }: { task: Task }) {
           </span>
           <button
             onClick={() => deleteSubtask.mutate(subtask.id)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label={`Delete ${subtask.title}`}
+            className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
           >
             <Trash2 className="h-3 w-3 text-red-400" />
           </button>

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { TaskForm } from './task-form';
+import { TaskPrompt } from './task-prompt';
 import { useDeleteTask, useUpdateTask } from '@/hooks/use-tasks';
 import type { Task, TaskStatus } from '@/lib/types';
 
@@ -98,8 +98,8 @@ export function TaskList({
         </button>
       )}
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="New Task">
-        <TaskForm
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Task">
+        <TaskPrompt
           defaultStatus={defaultStatus}
           defaultProjectId={defaultProjectId}
           defaultGoalId={defaultGoalId}

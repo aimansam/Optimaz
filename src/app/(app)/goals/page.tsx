@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GoalCard } from '@/components/goals/goal-card';
-import { GoalForm } from '@/components/goals/goal-form';
+import { GoalPrompt } from '@/components/goals/goal-prompt';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -80,8 +80,8 @@ export default function GoalsPage() {
         )}
       </div>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="New Goal">
-        <GoalForm onClose={() => setAddOpen(false)} />
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Goal">
+        <GoalPrompt onClose={() => setAddOpen(false)} />
       </Dialog>
     </>
   );

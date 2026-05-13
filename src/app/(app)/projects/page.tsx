@@ -1,17 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useProjects, useCreateProject, useDeleteProject, useUpdateProject } from '@/hooks/use-projects';
+import { useProjects, useDeleteProject, useUpdateProject } from '@/hooks/use-projects';
 import { useTasks } from '@/hooks/use-tasks';
 import { Dialog } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FolderOpen, Plus } from 'lucide-react';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
-
-
-const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
+import { ProjectPrompt } from '@/components/projects/project-prompt';
 
 function ProjectCardSkeleton() {
   return (
@@ -38,32 +35,15 @@ function ProjectCardSkeleton() {
 
 export default function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
-  const createProject = useCreateProject();
   const deleteProject = useDeleteProject();
   const { data: allTasks } = useTasks();
   const updateProject = useUpdateProject();
   const [addOpen, setAddOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [color, setColor] = useState(COLORS[0]);
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
   // Collect all unique tags from all projects for suggestions
   const allTags: string[] = Array.from(new Set((projects ?? []).flatMap(p => p.tags ?? [])));
   const [sortBy, setSortBy] = useState<'name' | 'activity' | 'completion' | 'favorite'>('name');
   const [search, setSearch] = useState('');
   // Removed filterTag state: Project type does not have tags
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    await createProject.mutateAsync({ name: name.trim(), color, tags });
-    setName('');
-    setColor(COLORS[0]);
-    setTags([]);
-    setTagInput('');
-    setAddOpen(false);
-  };
-
 
   // Show/hide archived projects toggle
   const [showArchived, setShowArchived] = useState(false);
@@ -192,96 +172,8 @@ export default function ProjectsPage() {
           </div>
         )}
       </div>
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="New Project">
-        <form onSubmit={handleCreate} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Name *</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Project name" autoFocus />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Color</label>
-            <div className="flex flex-wrap gap-2">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className="h-7 w-7 rounded-full border-2 transition-transform hover:scale-110"
-                  style={{
-                    backgroundColor: c,
-                    borderColor: color === c ? 'white' : 'transparent',
-                    boxShadow: color === c ? `0 0 0 3px ${c}` : 'none',
-                  }}
-                  aria-label={`Select color ${c}`}
-                >
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Tags</label>
-            {/* Tag suggestions (chips) */}
-            {allTags.filter(t => !tags.includes(t) && (!tagInput.trim() || t.toLowerCase().includes(tagInput.trim().toLowerCase()))).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-2">
-                {allTags.filter(t => !tags.includes(t) && (!tagInput.trim() || t.toLowerCase().includes(tagInput.trim().toLowerCase()))).map(tag => (
-                  <button
-                    key={tag}
-                    type="button"
-                    className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 border border-transparent hover:border-blue-400"
-                    style={{ transition: 'border 0.2s' }}
-                    onClick={() => {
-                      setTags([...tags, tag]);
-                      setTagInput('');
-                    }}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            )}
-            {/* Divider if there are selected tags and suggestions */}
-            {tags.length > 0 && allTags.filter(t => !tags.includes(t)).length > 0 && (
-              <div className="h-px bg-slate-200 dark:bg-slate-700 my-2" />
-            )}
-            {/* Selected tags (chips) */}
-            <div className="flex flex-wrap gap-2 mb-2">
-              {tags.map((tag, i) => (
-                <span key={i} className="flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-xs text-blue-700 dark:text-blue-200 border border-blue-300 dark:border-blue-700">
-                  {tag}
-                  <button type="button" className="ml-1 text-red-400 hover:text-red-600" onClick={() => setTags(tags.filter((_, idx) => idx !== i))}>&times;</button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2 w-full">
-              <Input
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-                placeholder="Add tag"
-                onKeyDown={e => {
-                  if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
-                    e.preventDefault();
-                    if (!tags.includes(tagInput.trim())) {
-                      setTags([...tags, tagInput.trim()]);
-                    }
-                    setTagInput('');
-                  }
-                }}
-              />
-              <Button type="button" size="sm" className="bg-blue-500 text-white hover:bg-blue-600" onClick={() => {
-                if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-                  setTags([...tags, tagInput.trim()]);
-                  setTagInput('');
-                }
-              }}>Add</Button>
-            </div>
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={!name.trim() || createProject.isPending}>
-              {createProject.isPending ? 'Creating...' : 'Create Project'}
-            </Button>
-          </div>
-        </form>
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Project">
+        <ProjectPrompt onClose={() => setAddOpen(false)} />
       </Dialog>
     </>
   );

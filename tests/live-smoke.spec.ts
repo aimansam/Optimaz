@@ -70,6 +70,9 @@ test.describe('authenticated live smoke', () => {
     await page.goto('/settings?smoke=1');
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
+    await expect(page.getByText('Export your data')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
   });
 
   test('notification center opens from the header', async ({ page }) => {

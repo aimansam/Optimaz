@@ -4,17 +4,25 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { usePushSubscription } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Bell, Palette, User } from 'lucide-react';
+import { Bell, Download, Palette, Trash2, User } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
+import { useDeleteAccount, useExportAccountData } from '@/hooks/use-account-controls';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { mutate: subscribe, isPending, isSuccess, error: pushError } = usePushSubscription();
   const { data: user } = useUser();
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
+  const exportAccountData = useExportAccountData();
+  const deleteAccount = useDeleteAccount();
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   // Keep input in sync if user changes
   React.useEffect(() => {
@@ -56,6 +64,49 @@ export default function SettingsPage() {
                 {saveError && <span className="text-xs text-red-500">Error saving name</span>}
               </div>
             </form>
+          </section>
+
+          {/* Account */}
+          <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-4 flex items-center gap-2">
+              <User className="h-5 w-5 text-slate-400" />
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Account</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Export your data</p>
+                  <p className="text-xs text-slate-400">Download your profile, projects, tasks, goals, feedback, and account activity.</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => exportAccountData.mutate()}
+                  disabled={exportAccountData.isPending}
+                >
+                  <Download className="h-4 w-4" />
+                  {exportAccountData.isPending ? 'Exporting...' : 'Export'}
+                </Button>
+              </div>
+              {exportAccountData.isError && (
+                <p className="text-xs text-red-500">{exportAccountData.error.message}</p>
+              )}
+              {exportAccountData.isSuccess && (
+                <p className="text-xs text-green-600 dark:text-green-400">Export downloaded.</p>
+              )}
+
+              <div className="flex flex-col gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/60 dark:bg-red-950/20 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-red-700 dark:text-red-300">Delete account</p>
+                  <p className="text-xs text-red-500 dark:text-red-300/80">Permanently remove your account and TaskFlow data.</p>
+                </div>
+                <Button type="button" variant="danger" size="sm" onClick={() => setDeleteDialogOpen(true)}>
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </Button>
+              </div>
+            </div>
           </section>
 
           {/* Appearance */}
@@ -111,6 +162,64 @@ export default function SettingsPage() {
           </section>
         </div>
       </div>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          if (!deleteAccount.isPending) {
+            setDeleteDialogOpen(false);
+            setDeleteConfirmation('');
+          }
+        }}
+        title="Delete Account"
+        className="max-w-md min-h-0"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            This permanently deletes your TaskFlow account, projects, tasks, goals, feedback, and notifications. Export your data first if you need a copy.
+          </p>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="deleteConfirmation">
+              Type DELETE to confirm
+            </label>
+            <Input
+              id="deleteConfirmation"
+              value={deleteConfirmation}
+              onChange={event => setDeleteConfirmation(event.target.value)}
+              disabled={deleteAccount.isPending}
+              autoComplete="off"
+            />
+          </div>
+          {deleteAccount.isError && (
+            <p className="text-sm text-red-500">{deleteAccount.error.message}</p>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setDeleteConfirmation('');
+              }}
+              disabled={deleteAccount.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              disabled={deleteConfirmation !== 'DELETE' || deleteAccount.isPending}
+              onClick={() => deleteAccount.mutate(undefined, {
+                onSuccess: () => {
+                  router.push('/auth/login');
+                  router.refresh();
+                },
+              })}
+            >
+              {deleteAccount.isPending ? 'Deleting...' : 'Delete account'}
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 }

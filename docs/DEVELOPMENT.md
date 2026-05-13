@@ -25,7 +25,10 @@ Optional push notification variables:
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
 VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+`SUPABASE_SERVICE_ROLE_KEY` is only used by server routes that need Supabase admin permissions, such as account deletion. Do not expose it to the browser.
 
 ## Scripts
 

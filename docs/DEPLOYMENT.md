@@ -32,7 +32,10 @@ Optional for push notifications:
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
 VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+`SUPABASE_SERVICE_ROLE_KEY` is required for account deletion. Keep it server-only in Vercel and never expose it with a `NEXT_PUBLIC_` prefix.
 
 ## Database Migrations
 

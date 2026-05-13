@@ -41,6 +41,16 @@ function subscribeToDate() {
 	return () => {};
 }
 
+function isOnboardingSnoozed(value: unknown, nowMs: number) {
+	return typeof value === 'string' && Date.parse(value) > nowMs;
+}
+
+function getTomorrowIso() {
+	const tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	return tomorrow.toISOString();
+}
+
 export default function DashboardPage() {
 	const { data: todayTasks, isLoading: loadingToday } = useTodayTasks();
 	const { data: overdueTasks, isLoading: loadingOverdue } = useOverdueTasks();
@@ -48,12 +58,13 @@ export default function DashboardPage() {
 	const { data: projects } = useProjects();
 	const { data: goals } = useGoals();
 	const { data: user } = useUser();
-	const completeOnboarding = useUpdateUser();
+	const updateOnboarding = useUpdateUser();
 	const [addOpen, setAddOpen] = useState(false);
 	const [filterQuery, setFilterQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
 	const [showAnalytics, setShowAnalytics] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
+	const currentTime = currentDate?.getTime() ?? 0;
 
 	const hour = currentDate?.getHours() ?? 12;
 	const greeting = !currentDate ? 'Hello' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -64,7 +75,11 @@ export default function DashboardPage() {
 	const weekday = currentDate?.toLocaleDateString('en-US', { weekday: 'long' }) ?? 'Today';
 	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
-	const showOnboarding = Boolean(user && !user.user_metadata?.onboarding_completed);
+	const showOnboarding = Boolean(
+		user
+		&& !user.user_metadata?.onboarding_completed
+		&& !isOnboardingSnoozed(user.user_metadata?.onboarding_deferred_until, currentTime)
+	);
 
 	function handleFilter(query: string, status: string) {
 		setFilterQuery(query);
@@ -79,7 +94,11 @@ export default function DashboardPage() {
 	}
 
 	function dismissOnboarding() {
-		completeOnboarding.mutate({ metadata: { onboarding_completed: true } });
+		updateOnboarding.mutate({ metadata: { onboarding_completed: true } });
+	}
+
+	function snoozeOnboarding() {
+		updateOnboarding.mutate({ metadata: { onboarding_deferred_until: getTomorrowIso() } });
 	}
 
 	return (
@@ -122,8 +141,9 @@ export default function DashboardPage() {
 							projectCount={projects?.length ?? 0}
 							goalCount={goals?.length ?? 0}
 							onCreateTask={() => setAddOpen(true)}
+							onSnooze={snoozeOnboarding}
 							onComplete={dismissOnboarding}
-							completing={completeOnboarding.isPending}
+							completing={updateOnboarding.isPending}
 						/>
 					)}
 

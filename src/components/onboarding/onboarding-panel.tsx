@@ -9,6 +9,7 @@ interface OnboardingPanelProps {
   projectCount: number;
   goalCount: number;
   onCreateTask: () => void;
+  onSnooze: () => void;
   onComplete: () => void;
   completing?: boolean;
 }
@@ -54,9 +55,9 @@ export function OnboardingPanel(props: OnboardingPanelProps) {
         </div>
         <button
           type="button"
-          onClick={props.onComplete}
+          onClick={props.onSnooze}
           disabled={props.completing}
-          aria-label="Dismiss onboarding"
+          aria-label="Remind me later"
           className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50 dark:hover:bg-slate-900 dark:hover:text-slate-200"
         >
           <X className="h-4 w-4" />
@@ -115,9 +116,16 @@ export function OnboardingPanel(props: OnboardingPanelProps) {
 
       <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-3 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{completedSteps}/3 complete</p>
-        <Button size="sm" variant={isComplete ? 'primary' : 'secondary'} onClick={props.onComplete} disabled={props.completing}>
-          {isComplete ? 'Finish setup' : 'Hide for now'}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {!isComplete && (
+            <Button size="sm" variant="secondary" onClick={props.onSnooze} disabled={props.completing}>
+              Remind me later
+            </Button>
+          )}
+          <Button size="sm" variant={isComplete ? 'primary' : 'ghost'} onClick={props.onComplete} disabled={props.completing}>
+            {isComplete ? 'Finish setup' : 'Skip setup'}
+          </Button>
+        </div>
       </div>
     </section>
   );

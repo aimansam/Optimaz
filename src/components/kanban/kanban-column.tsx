@@ -8,7 +8,7 @@ import { KanbanCard } from './kanban-card';
 import type { Task, TaskStatus } from '@/lib/types';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
-import { TaskPrompt } from '@/components/tasks/task-prompt';
+import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 
@@ -79,8 +79,8 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
         </div>
       </div>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Task">
-        <TaskPrompt defaultStatus={id} onClose={() => setAddOpen(false)} />
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task">
+        <TaskQuestionFlow defaultStatus={id} onClose={() => setAddOpen(false)} />
       </Dialog>
     </>
   );

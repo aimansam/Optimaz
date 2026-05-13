@@ -13,7 +13,7 @@ import { Plus, BarChart3 } from 'lucide-react';
 import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
 import { TaskList } from '@/components/tasks/task-list';
-import { TaskPrompt } from '@/components/tasks/task-prompt';
+import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Dialog } from '@/components/ui/dialog';
 import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
 import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
@@ -188,8 +188,8 @@ export default function DashboardPage() {
 				</div>
 			</div>
 
-			<Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Task">
-				<TaskPrompt onClose={() => setAddOpen(false)} />
+			<Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task">
+				<TaskQuestionFlow onClose={() => setAddOpen(false)} />
 			</Dialog>
 				<InstallPWAButton />
 		</>

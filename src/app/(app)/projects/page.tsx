@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FolderOpen, Plus } from 'lucide-react';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
-import { ProjectPrompt } from '@/components/projects/project-prompt';
+import { ProjectQuestionFlow } from '@/components/projects/project-question-flow';
 
 function ProjectCardSkeleton() {
   return (
@@ -172,8 +172,8 @@ export default function ProjectsPage() {
           </div>
         )}
       </div>
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Prompt Project">
-        <ProjectPrompt onClose={() => setAddOpen(false)} />
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Project">
+        <ProjectQuestionFlow onClose={() => setAddOpen(false)} />
       </Dialog>
     </>
   );

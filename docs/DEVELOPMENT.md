@@ -26,9 +26,11 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
 VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+TASKFLOW_ADMIN_EMAILS=you@example.com,teammate@example.com
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is only used by server routes that need Supabase admin permissions, such as account deletion. Do not expose it to the browser.
+`TASKFLOW_ADMIN_EMAILS` is a comma-separated allowlist for the protected `/admin` insights page.
 
 ## Scripts
 

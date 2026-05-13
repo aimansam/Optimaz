@@ -13,6 +13,7 @@ function getPageTitle(pathname: string) {
   if (pathname === '/projects') return 'Projects';
   if (pathname.startsWith('/projects/')) return 'Project';
   if (pathname === '/settings') return 'Settings';
+  if (pathname === '/admin') return 'Admin';
   return 'TaskFlow';
 }
 

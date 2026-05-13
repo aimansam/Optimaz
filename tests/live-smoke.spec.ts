@@ -16,6 +16,9 @@ test.describe('public live smoke', () => {
 
     await expect(page).toHaveURL(/\/auth\/login/);
     await expect(page.getByRole('button', { name: /continue with google/i })).toBeVisible();
+
+    await page.goto('/admin');
+    await expect(page).toHaveURL(/\/auth\/login/);
   });
 
   test('PWA assets are available', async ({ request }) => {

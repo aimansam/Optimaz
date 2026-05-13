@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isPublicPage = pathname === '/privacy' || pathname === '/terms';
+  const isPublicPage = pathname === '/privacy' || pathname === '/terms' || pathname === '/pricing';
 
   if (isPublicPage) {
     return NextResponse.next({ request });

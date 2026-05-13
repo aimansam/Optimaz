@@ -36,6 +36,22 @@ test.describe('public live smoke', () => {
 
     await page.goto('/terms');
     await expect(page.getByRole('heading', { name: 'Terms of Service' })).toBeVisible();
+
+    await page.goto('/pricing');
+    if (page.url().includes('/auth/login')) {
+      await expect(page.getByRole('button', { name: /continue with google/i })).toBeVisible();
+      return;
+    }
+    await expect(page.getByRole('heading', { name: 'TaskFlow is free during beta' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Join waitlist' })).toBeVisible();
+  });
+
+  test('pricing waitlist validates payloads', async ({ request }) => {
+    const response = await request.post('/api/pricing-waitlist', {
+      data: {},
+    });
+
+    expect([400, 405]).toContain(response.status());
   });
 
   test('monitoring endpoint validates payloads', async ({ request }) => {

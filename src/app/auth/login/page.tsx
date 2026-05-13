@@ -68,6 +68,10 @@ export default function LoginPage() {
             {' '}and acknowledge the{' '}
             <Link href="/privacy" className="text-slate-300 hover:text-white">privacy policy</Link>.
           </p>
+          <p className="mt-3 text-center text-xs text-slate-500">
+            Curious about paid features?{' '}
+            <Link href="/pricing" className="text-slate-300 hover:text-white">Join the pricing waitlist</Link>.
+          </p>
         </div>
       </div>
     </div>

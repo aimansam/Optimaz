@@ -104,7 +104,6 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           <Input
             value={title}
             onChange={event => setTitle(event.target.value)}
-            placeholder="Prepare slides for tomorrow's meeting"
             autoFocus
             disabled={createTask.isPending}
             className="bg-white dark:bg-slate-900"
@@ -115,7 +114,6 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           <Textarea
             value={notes}
             onChange={event => setNotes(event.target.value)}
-            placeholder="Add the latest numbers, check the agenda, and send the deck before 5 PM."
             rows={4}
             autoFocus
             disabled={createTask.isPending}

@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateTask } from '@/hooks/use-tasks';
-import type { Priority, TaskStatus } from '@/lib/types';
+import { useProjects } from '@/hooks/use-projects';
+import { useGoals } from '@/hooks/use-goals';
+import type { Priority, RecurrenceRule, TaskStatus } from '@/lib/types';
 
 interface TaskQuestionFlowProps {
   defaultStatus?: TaskStatus;
@@ -17,20 +19,41 @@ interface TaskQuestionFlowProps {
 }
 
 const PRIORITIES: Priority[] = ['low', 'medium', 'high', 'urgent'];
+const STATUSES: { value: TaskStatus; label: string }[] = [
+  { value: 'todo', label: 'To Do' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'done', label: 'Done' },
+];
+const RECURRENCE_OPTIONS: { value: RecurrenceRule | ''; label: string }[] = [
+  { value: '', label: 'No repeat' },
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+];
 
 export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, defaultGoalId, onClose }: TaskQuestionFlowProps) {
   const createTask = useCreateTask();
+  const { data: projects } = useProjects();
+  const { data: goals } = useGoals();
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
+  const [status, setStatus] = useState<TaskStatus>(defaultStatus);
   const [dueDate, setDueDate] = useState('');
+  const [projectId, setProjectId] = useState(defaultProjectId ?? '');
+  const [goalId, setGoalId] = useState(defaultGoalId ?? '');
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>('');
 
   const steps = useMemo(() => [
     { label: 'Task', question: 'What task do you want to add?' },
     { label: 'Details', question: 'Anything important to remember?' },
     { label: 'Priority', question: 'How important is this task?' },
+    { label: 'Status', question: 'Where should this task start?' },
     { label: 'Date', question: 'When should this be due?' },
+    { label: 'Project', question: 'Which project should this belong to?' },
+    { label: 'Goal', question: 'Does this support a goal?' },
+    { label: 'Repeat', question: 'Should this task repeat?' },
     { label: 'Review', question: 'Ready to create this task?' },
   ], []);
 
@@ -51,10 +74,12 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
       title: title.trim(),
       notes: notes.trim() || undefined,
       priority,
-      status: defaultStatus,
+      status,
       due_date: dueDate || undefined,
-      project_id: defaultProjectId,
-      goal_id: defaultGoalId,
+      project_id: projectId || undefined,
+      goal_id: goalId || undefined,
+      is_recurring: Boolean(recurrenceRule),
+      recurrence_rule: recurrenceRule || undefined,
     });
     onClose();
   }
@@ -105,6 +130,12 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
         )}
 
         {step === 3 && (
+          <Select value={status} onChange={event => setStatus(event.target.value as TaskStatus)} disabled={createTask.isPending} autoFocus>
+            {STATUSES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </Select>
+        )}
+
+        {step === 4 && (
           <Input
             type="date"
             value={dueDate}
@@ -115,11 +146,35 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
           />
         )}
 
-        {step === 4 && (
+        {step === 5 && (
+          <Select value={projectId} onChange={event => setProjectId(event.target.value)} disabled={createTask.isPending} autoFocus>
+            <option value="">No project</option>
+            {projects?.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}
+          </Select>
+        )}
+
+        {step === 6 && (
+          <Select value={goalId} onChange={event => setGoalId(event.target.value)} disabled={createTask.isPending} autoFocus>
+            <option value="">No goal</option>
+            {goals?.map(goal => <option key={goal.id} value={goal.id}>{goal.title}</option>)}
+          </Select>
+        )}
+
+        {step === 7 && (
+          <Select value={recurrenceRule} onChange={event => setRecurrenceRule(event.target.value as RecurrenceRule | '')} disabled={createTask.isPending} autoFocus>
+            {RECURRENCE_OPTIONS.map(item => <option key={item.value || 'none'} value={item.value}>{item.label}</option>)}
+          </Select>
+        )}
+
+        {step === 8 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
             <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
             {notes.trim() && <p className="text-slate-500 dark:text-slate-400">{notes}</p>}
-            <p className="text-xs text-slate-400">Priority: {priority}{dueDate ? ` · Due: ${dueDate}` : ''}</p>
+            <p className="text-xs text-slate-400">
+              Priority: {priority} · Status: {STATUSES.find(item => item.value === status)?.label}
+              {dueDate ? ` · Due: ${dueDate}` : ''}
+              {recurrenceRule ? ` · Repeats ${recurrenceRule}` : ''}
+            </p>
           </div>
         )}
       </div>

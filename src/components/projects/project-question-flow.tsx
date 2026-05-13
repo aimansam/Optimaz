@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateProject } from '@/hooks/use-projects';
 
-const DEFAULT_COLOR = '#6366f1';
+const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
 
 function parseTags(value: string) {
   return value
@@ -21,12 +21,14 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [color, setColor] = useState(COLORS[0]);
   const [tagInput, setTagInput] = useState('');
 
   const tags = parseTags(tagInput);
   const steps = useMemo(() => [
     { label: 'Project', question: 'What project do you want to add?' },
     { label: 'Details', question: 'What is this project about?' },
+    { label: 'Color', question: 'What color should mark this project?' },
     { label: 'Tags', question: 'Any tags for this project?' },
     { label: 'Review', question: 'Ready to create this project?' },
   ], []);
@@ -47,7 +49,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
     await createProject.mutateAsync({
       name: name.trim(),
       description: description.trim() || undefined,
-      color: DEFAULT_COLOR,
+      color,
       tags,
     });
     onClose();
@@ -93,6 +95,25 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
         )}
 
         {step === 2 && (
+          <div className="flex flex-wrap gap-2">
+            {COLORS.map(item => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setColor(item)}
+                className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                style={{
+                  backgroundColor: item,
+                  borderColor: color === item ? 'white' : 'transparent',
+                  boxShadow: color === item ? `0 0 0 3px ${item}` : 'none',
+                }}
+                aria-label={`Select project color ${item}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {step === 3 && (
           <Input
             value={tagInput}
             onChange={event => setTagInput(event.target.value)}
@@ -103,9 +124,12 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           />
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="font-medium text-slate-900 dark:text-slate-100">{name}</p>
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+              <p className="font-medium text-slate-900 dark:text-slate-100">{name}</p>
+            </div>
             {description.trim() && <p className="text-slate-500 dark:text-slate-400">{description}</p>}
             {tags.length > 0 && <p className="text-xs text-slate-400">Tags: {tags.join(', ')}</p>}
           </div>

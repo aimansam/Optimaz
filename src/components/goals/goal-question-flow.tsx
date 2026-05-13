@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateGoal } from '@/hooks/use-goals';
 
-const DEFAULT_COLOR = '#6366f1';
+const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
 
 export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
   const createGoal = useCreateGoal();
@@ -15,11 +15,13 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [color, setColor] = useState(COLORS[0]);
 
   const steps = useMemo(() => [
     { label: 'Goal', question: 'What goal do you want to add?' },
     { label: 'Why', question: 'What does success look like?' },
     { label: 'Date', question: 'Is there a target date?' },
+    { label: 'Color', question: 'What color should mark this goal?' },
     { label: 'Review', question: 'Ready to create this goal?' },
   ], []);
 
@@ -40,7 +42,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
       title: title.trim(),
       description: description.trim() || undefined,
       due_date: dueDate || undefined,
-      color: DEFAULT_COLOR,
+      color,
     });
     onClose();
   }
@@ -96,8 +98,30 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
         )}
 
         {step === 3 && (
+          <div className="flex flex-wrap gap-2">
+            {COLORS.map(item => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setColor(item)}
+                className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                style={{
+                  backgroundColor: item,
+                  borderColor: color === item ? 'white' : 'transparent',
+                  boxShadow: color === item ? `0 0 0 3px ${item}` : 'none',
+                }}
+                aria-label={`Select goal color ${item}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {step === 4 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+              <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
+            </div>
             {description.trim() && <p className="text-slate-500 dark:text-slate-400">{description}</p>}
             {dueDate && <p className="text-xs text-slate-400">Target date: {dueDate}</p>}
           </div>

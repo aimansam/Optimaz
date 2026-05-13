@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -24,6 +25,19 @@ function isValidSource(source: unknown): source is ErrorSource {
 }
 
 export async function POST(request: NextRequest) {
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: 'monitoring-errors',
+    maxRequests: 20,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many error reports' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    );
+  }
+
   let payload: ErrorPayload;
 
   try {

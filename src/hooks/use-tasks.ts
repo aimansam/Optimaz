@@ -5,15 +5,19 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 
-export function useGoalTasks(goalId: string) {
+const DEFAULT_TASK_QUERY_LIMIT = 500;
+const DASHBOARD_TASK_QUERY_LIMIT = 100;
+
+export function useGoalTasks(goalId: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
-    queryKey: ['tasks', 'goal', goalId],
+    queryKey: ['tasks', 'goal', goalId, limit],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .eq('goal_id', goalId)
-        .order('position', { ascending: true });
+        .order('position', { ascending: true })
+        .limit(limit);
       if (error) throw error;
       return data as Task[];
     },
@@ -22,14 +26,15 @@ export function useGoalTasks(goalId: string) {
 
 const supabase = createClient();
 
-export function useTasks(projectId?: string) {
+export function useTasks(projectId?: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
-    queryKey: ['tasks', projectId],
+    queryKey: ['tasks', projectId, limit],
     queryFn: async () => {
       let query = supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true })
+        .limit(limit);
 
       if (projectId) query = query.eq('project_id', projectId);
 
@@ -40,23 +45,24 @@ export function useTasks(projectId?: string) {
   });
 }
 
-export function useTasksByStatus() {
+export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
-    queryKey: ['tasks', 'all'],
+    queryKey: ['tasks', 'all', limit],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true })
+        .limit(limit);
       if (error) throw error;
       return data as Task[];
     },
   });
 }
 
-export function useTodayTasks() {
+export function useTodayTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
   return useQuery({
-    queryKey: ['tasks', 'today'],
+    queryKey: ['tasks', 'today', limit],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
@@ -64,16 +70,17 @@ export function useTodayTasks() {
         .select('*, subtasks(*), project:projects(id,name,color)')
         .eq('due_date', today)
         .neq('status', 'done')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true })
+        .limit(limit);
       if (error) throw error;
       return data as Task[];
     },
   });
 }
 
-export function useOverdueTasks() {
+export function useOverdueTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
   return useQuery({
-    queryKey: ['tasks', 'overdue'],
+    queryKey: ['tasks', 'overdue', limit],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
@@ -81,7 +88,8 @@ export function useOverdueTasks() {
         .select('*, subtasks(*), project:projects(id,name,color)')
         .lt('due_date', today)
         .neq('status', 'done')
-        .order('due_date', { ascending: true });
+        .order('due_date', { ascending: true })
+        .limit(limit);
       if (error) throw error;
       return data as Task[];
     },

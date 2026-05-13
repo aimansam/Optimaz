@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { TaskList } from "./task-list";
 import type { Task, TaskStatus } from "@/lib/types";
 
+const UPCOMING_TASK_LIMIT = 100;
+
 function useUpcomingTasks(days: number = 7) {
   return useQuery<Task[]>({
     queryKey: ["tasks", "upcoming", days],
@@ -21,7 +23,8 @@ function useUpcomingTasks(days: number = 7) {
         .gt("due_date", todayStr)
         .lte("due_date", endStr)
         .neq("status", "done")
-        .order("due_date", { ascending: true });
+        .order("due_date", { ascending: true })
+        .limit(UPCOMING_TASK_LIMIT);
       if (error) throw error;
       return data as Task[];
     },

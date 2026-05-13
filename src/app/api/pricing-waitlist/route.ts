@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -21,6 +22,19 @@ function normalizeIntent(value: unknown) {
 }
 
 export async function POST(request: NextRequest) {
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: 'pricing-waitlist',
+    maxRequests: 10,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many waitlist attempts' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    );
+  }
+
   let payload: PricingWaitlistPayload;
 
   try {

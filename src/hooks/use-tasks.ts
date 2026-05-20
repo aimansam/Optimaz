@@ -65,6 +65,24 @@ export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT, includeArchiv
   });
 }
 
+export function useRecurringTasks(limit = DEFAULT_TASK_QUERY_LIMIT) {
+  return useQuery({
+    queryKey: ['tasks', 'recurring', limit],
+    queryFn: async () => {
+      const { data, error } = await applyActiveTaskFilter(supabase
+        .from('tasks')
+        .select('*, subtasks(*), project:projects(id,name,color), goal:goals(id,title,color)')
+        .eq('is_recurring', true)
+        .order('recurrence_rule', { ascending: true })
+        .order('due_date', { ascending: true })
+        .order('position', { ascending: true })
+        .limit(limit));
+      if (error) throw error;
+      return data as Task[];
+    },
+  });
+}
+
 export function useTodayTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', 'today', limit],

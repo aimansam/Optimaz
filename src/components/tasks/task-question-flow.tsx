@@ -15,6 +15,7 @@ interface TaskQuestionFlowProps {
   defaultStatus?: TaskStatus;
   defaultProjectId?: string;
   defaultGoalId?: string;
+  defaultRecurrenceRule?: RecurrenceRule | '';
   onClose: () => void;
 }
 
@@ -31,7 +32,7 @@ const RECURRENCE_OPTIONS: { value: RecurrenceRule | ''; label: string }[] = [
   { value: 'monthly', label: 'Monthly' },
 ];
 
-export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, defaultGoalId, onClose }: TaskQuestionFlowProps) {
+export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, defaultGoalId, defaultRecurrenceRule = '', onClose }: TaskQuestionFlowProps) {
   const createTask = useCreateTask();
   const { data: projects } = useProjects();
   const { data: goals } = useGoals();
@@ -44,7 +45,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const [dueTime, setDueTime] = useState('');
   const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [goalId, setGoalId] = useState(defaultGoalId ?? '');
-  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>('');
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>(defaultRecurrenceRule);
 
   const steps = useMemo(() => [
     { label: 'Task', question: 'What task do you want to add?', optional: false },

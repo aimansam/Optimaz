@@ -2,7 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Edit2, GripVertical, RefreshCw, RotateCcw } from 'lucide-react';
+import { Archive, ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Edit2, GripVertical, RefreshCw, RotateCcw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
 import { SubtaskList } from '@/components/tasks/subtask-list';
-import { useUpdateTask } from '@/hooks/use-tasks';
+import { useArchiveTask, useRestoreTask, useUpdateTask } from '@/hooks/use-tasks';
 
 const PRIORITY_BORDER: Record<string, string> = {
   low: 'border-l-blue-400',
@@ -30,6 +30,8 @@ function getAdjacentStatus(status: TaskStatus, direction: -1 | 1) {
 export function KanbanCard({ task }: { task: Task }) {
   const [editOpen, setEditOpen] = useState(false);
   const updateTask = useUpdateTask();
+  const archiveTask = useArchiveTask();
+  const restoreTask = useRestoreTask();
   const { attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: { task },
@@ -42,6 +44,7 @@ export function KanbanCard({ task }: { task: Task }) {
 
   const priority = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.due_date) && task.status !== 'done';
+  const isArchived = Boolean(task.archived_at);
   const previousStatus = getAdjacentStatus(task.status, -1);
   const nextStatus = getAdjacentStatus(task.status, 1);
 
@@ -199,6 +202,34 @@ export function KanbanCard({ task }: { task: Task }) {
                 {task.status === 'done' ? <RotateCcw className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
                 {task.status === 'done' ? 'Reopen' : 'Done'}
               </Button>
+              {task.status === 'done' && !isArchived && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-[11px]"
+                  onClick={() => archiveTask.mutate(task.id)}
+                  disabled={archiveTask.isPending}
+                  aria-label={`Archive ${task.title}`}
+                >
+                  <Archive className="h-3 w-3" />
+                  Archive
+                </Button>
+              )}
+              {isArchived && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="h-7 px-2 text-[11px]"
+                  onClick={() => restoreTask.mutate(task.id)}
+                  disabled={restoreTask.isPending}
+                  aria-label={`Restore ${task.title}`}
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Restore
+                </Button>
+              )}
             </div>
 		  </div>
 		</div>

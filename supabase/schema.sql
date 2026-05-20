@@ -25,6 +25,8 @@ create table if not exists public.tasks (
   status text not null default 'todo' check (status in ('todo', 'in_progress', 'done')),
   due_date date,
   position integer not null default 0,
+  completed_at timestamptz,
+  archived_at timestamptz,
   -- Recurring
   is_recurring boolean not null default false,
   recurrence_rule text, -- 'daily' | 'weekly' | 'monthly'
@@ -95,6 +97,9 @@ create index if not exists tasks_user_id_idx on public.tasks(user_id);
 create index if not exists tasks_project_id_idx on public.tasks(project_id);
 create index if not exists tasks_status_idx on public.tasks(status);
 create index if not exists tasks_due_date_idx on public.tasks(due_date);
+create index if not exists tasks_active_user_status_idx on public.tasks(user_id, status, position) where archived_at is null;
+create index if not exists tasks_user_completed_at_idx on public.tasks(user_id, completed_at desc) where completed_at is not null;
+create index if not exists tasks_user_archived_at_idx on public.tasks(user_id, archived_at desc) where archived_at is not null;
 create index if not exists subtasks_task_id_idx on public.subtasks(task_id);
 create index if not exists push_subscriptions_user_id_idx on public.push_subscriptions(user_id);
 create index if not exists analytics_events_user_id_idx on public.analytics_events(user_id);

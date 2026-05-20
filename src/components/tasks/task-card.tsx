@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Trash2, Edit2, CalendarDays, RefreshCw } from 'lucide-react';
+import { Archive, Check, Trash2, Edit2, CalendarDays, RefreshCw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { TaskForm } from './task-form';
-import { useUpdateTask, useDeleteTask } from '@/hooks/use-tasks';
+import { useArchiveTask, useUpdateTask, useDeleteTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
 import { SubtaskList } from './subtask-list2';
 
@@ -29,11 +29,13 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const updateTask = useUpdateTask();
+  const archiveTask = useArchiveTask();
   const deleteTask = useDeleteTask();
 
   const priority = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.due_date) && task.status !== 'done';
   const isDone = task.status === 'done';
+  const isArchived = Boolean(task.archived_at);
   const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
   const totalSubtasks = task.subtasks?.length ?? 0;
   const percentComplete = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
@@ -170,6 +172,18 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
             <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)} className="h-7 w-7 rounded-lg" aria-label="Edit task">
               <Edit2 className="h-3.5 w-3.5" />
             </Button>
+            {isDone && !isArchived && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => archiveTask.mutate(task.id)}
+                disabled={archiveTask.isPending}
+                className="h-7 w-7 rounded-lg"
+                aria-label="Archive task"
+              >
+                <Archive className="h-3.5 w-3.5" />
+              </Button>
+            )}
             {/* Delete */}
             <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)} className="h-7 w-7 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30" aria-label="Delete task">
               <Trash2 className="h-3.5 w-3.5" />

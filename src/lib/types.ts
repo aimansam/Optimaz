@@ -38,6 +38,8 @@ export interface Task {
   status: TaskStatus;
   due_date: string | null;
   position: number;
+  completed_at: string | null;
+  archived_at: string | null;
   is_recurring: boolean;
   recurrence_rule: RecurrenceRule | null;
   created_at: string;

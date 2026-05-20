@@ -11,20 +11,21 @@ import { useTasksByStatus } from '@/hooks/use-tasks';
 import type { Priority } from '@/lib/types';
 
 type DueFilter = 'all' | 'overdue' | 'today' | 'upcoming' | 'no_date';
-type DoneFilter = 'show' | 'hide';
+type DoneFilter = 'show' | 'hide' | 'archived';
 
 function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
 }
 
 export default function KanbanPage() {
-  const { data: tasks, isLoading } = useTasksByStatus();
   const { data: projects } = useProjects();
   const [query, setQuery] = useState('');
   const [projectId, setProjectId] = useState('');
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
+  const showArchived = doneFilter === 'archived';
+  const { data: tasks, isLoading } = useTasksByStatus(undefined, showArchived);
 
   const filteredTasks = useMemo(() => {
     const today = getDateKey(new Date());
@@ -38,7 +39,11 @@ export default function KanbanPage() {
         || task.project?.name.toLowerCase().includes(normalizedQuery);
       const matchesProject = !projectId || task.project_id === projectId;
       const matchesPriority = !priority || task.priority === priority;
-      const matchesDone = doneFilter === 'show' || task.status !== 'done';
+      const matchesDone = (
+        doneFilter === 'show' ? !task.archived_at
+        : doneFilter === 'hide' ? task.status !== 'done' && !task.archived_at
+        : Boolean(task.archived_at)
+      );
       const matchesDue = (
         dueFilter === 'all'
         || (dueFilter === 'no_date' && !dueDate)
@@ -127,6 +132,7 @@ export default function KanbanPage() {
               <Select value={doneFilter} onChange={event => setDoneFilter(event.target.value as DoneFilter)}>
                 <option value="show">Show done</option>
                 <option value="hide">Hide done</option>
+                <option value="archived">Archived done</option>
               </Select>
             </label>
           </div>

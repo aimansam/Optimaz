@@ -8,16 +8,20 @@ import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 const DEFAULT_TASK_QUERY_LIMIT = 500;
 const DASHBOARD_TASK_QUERY_LIMIT = 100;
 
+function applyActiveTaskFilter<T extends { is: (column: string, value: null) => T }>(query: T) {
+  return query.is('archived_at', null);
+}
+
 export function useGoalTasks(goalId: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', 'goal', goalId, limit],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .eq('goal_id', goalId)
         .order('position', { ascending: true })
-        .limit(limit);
+        .limit(limit));
       if (error) throw error;
       return data as Task[];
     },
@@ -30,11 +34,11 @@ export function useTasks(projectId?: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', projectId, limit],
     queryFn: async () => {
-      let query = supabase
+      let query = applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .order('position', { ascending: true })
-        .limit(limit);
+        .limit(limit));
 
       if (projectId) query = query.eq('project_id', projectId);
 
@@ -45,15 +49,16 @@ export function useTasks(projectId?: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   });
 }
 
-export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT) {
+export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT, includeArchived = false) {
   return useQuery({
-    queryKey: ['tasks', 'all', limit],
+    queryKey: ['tasks', 'all', limit, includeArchived],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const query = supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .order('position', { ascending: true })
         .limit(limit);
+      const { data, error } = await (includeArchived ? query : applyActiveTaskFilter(query));
       if (error) throw error;
       return data as Task[];
     },
@@ -65,13 +70,13 @@ export function useTodayTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
     queryKey: ['tasks', 'today', limit],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
+      const { data, error } = await applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .eq('due_date', today)
         .neq('status', 'done')
         .order('position', { ascending: true })
-        .limit(limit);
+        .limit(limit));
       if (error) throw error;
       return data as Task[];
     },
@@ -83,13 +88,13 @@ export function useOverdueTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
     queryKey: ['tasks', 'overdue', limit],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
+      const { data, error } = await applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
         .lt('due_date', today)
         .neq('status', 'done')
         .order('due_date', { ascending: true })
-        .limit(limit);
+        .limit(limit));
       if (error) throw error;
       return data as Task[];
     },
@@ -117,7 +122,11 @@ export function useCreateTask() {
 
       const { data, error } = await supabase
         .from('tasks')
-        .insert({ ...input, user_id: user.id })
+        .insert({
+          ...input,
+          user_id: user.id,
+          completed_at: input.status === 'done' ? new Date().toISOString() : null,
+        })
         .select()
         .single();
       if (error) throw error;
@@ -140,9 +149,15 @@ export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
+      const normalizedUpdates = { ...updates };
+      if ('status' in updates) {
+        normalizedUpdates.completed_at = updates.status === 'done' ? new Date().toISOString() : null;
+        if (updates.status !== 'done') normalizedUpdates.archived_at = null;
+      }
+
       const { data, error } = await supabase
         .from('tasks')
-        .update(updates)
+        .update(normalizedUpdates)
         .eq('id', id)
         .select()
         .single();
@@ -169,6 +184,49 @@ export function useDeleteTask() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+    },
+  });
+}
+
+export function useArchiveTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({ status: 'done', completed_at: now, archived_at: now })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Task;
+    },
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      void trackEvent('task_archived', { task_id: task.id });
+    },
+  });
+}
+
+export function useRestoreTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({ archived_at: null })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Task;
+    },
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      void trackEvent('task_restored', { task_id: task.id });
     },
   });
 }

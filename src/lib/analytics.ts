@@ -10,7 +10,9 @@ export type AnalyticsEventName =
   | 'pwa_install_accepted'
   | 'pwa_install_dismissed'
   | 'task_completed'
-  | 'task_created';
+  | 'task_created'
+  | 'task_archived'
+  | 'task_restored';
 
 export async function trackEvent(eventName: AnalyticsEventName, metadata: Record<string, unknown> = {}) {
   try {

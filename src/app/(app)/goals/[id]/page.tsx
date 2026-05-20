@@ -9,9 +9,8 @@ import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal, useGoal } from '@/hooks/use-goals';
 import { useGoalTasks } from '@/hooks/use-tasks';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CalendarDays, Edit2, CheckCircle2, FolderOpen, Plus, Target, Trash2 } from 'lucide-react';
+import { CalendarDays, Edit2, CheckCircle2, Plus, Target, Trash2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 import type { TaskStatus } from '@/lib/types';
 
@@ -61,15 +60,6 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{goal.title}</h2>
                 {goal.description && (
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{goal.description}</p>
-                )}
-                {goal.project && (
-                  <Link
-                    href={`/projects/${goal.project.id}`}
-                    className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/70 px-2 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:text-white"
-                  >
-                    <FolderOpen className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{goal.project.parent_project_id ? 'Sub: ' : ''}{goal.project.name}</span>
-                  </Link>
                 )}
                 {goal.due_date && (
                   <p className={cn('mt-1 flex items-center gap-1 text-sm', overdue ? 'text-red-500' : 'text-slate-400')}>
@@ -125,7 +115,7 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
               </p>
             )}
 
-            <div className="mt-5 grid gap-3 text-center sm:grid-cols-4">
+            <div className="mt-5 grid gap-3 text-center sm:grid-cols-3">
               <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
                 <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{todo}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">To Do</p>
@@ -137,10 +127,6 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
               <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
                 <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{completed}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Done</p>
-              </div>
-              <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
-                <p className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">{goal.project ? goal.project.name : 'None'}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Project</p>
               </div>
             </div>
           </div>
@@ -204,7 +190,6 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
           <Dialog open={addTaskOpen} onClose={() => setAddTaskOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
             <TaskQuestionFlow
               defaultGoalId={id}
-              defaultProjectId={goal.project_id ?? undefined}
               onClose={() => setAddTaskOpen(false)}
             />
           </Dialog>

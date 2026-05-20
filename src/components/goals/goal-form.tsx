@@ -3,10 +3,8 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateGoal, useUpdateGoal } from '@/hooks/use-goals';
-import { useProjects } from '@/hooks/use-projects';
 import type { Goal } from '@/lib/types';
 
 const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
@@ -21,16 +19,13 @@ interface FormValues {
   description: string;
   color: string;
   due_date: string;
-  project_id: string;
 }
 
 export function GoalForm({ goal, onClose }: GoalFormProps) {
   'use no memo';
   const createGoal = useCreateGoal();
   const updateGoal = useUpdateGoal();
-  const { data: projects } = useProjects();
   const isEdit = !!goal;
-  const activeProjects = (projects ?? []).filter(project => !project.archived);
 
   const { register, handleSubmit, control, setValue, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
@@ -38,7 +33,6 @@ export function GoalForm({ goal, onClose }: GoalFormProps) {
       description: goal?.description ?? '',
       color: goal?.color ?? COLORS[0],
       due_date: goal?.due_date ?? '',
-      project_id: goal?.project_id ?? '',
     },
   });
 
@@ -50,11 +44,10 @@ export function GoalForm({ goal, onClose }: GoalFormProps) {
       description: values.description || undefined,
       color: values.color,
       due_date: values.due_date || undefined,
-      project_id: values.project_id || undefined,
     };
 
     if (isEdit) {
-      await updateGoal.mutateAsync({ id: goal.id, ...payload, project_id: values.project_id || null });
+      await updateGoal.mutateAsync({ id: goal.id, ...payload });
     } else {
       await createGoal.mutateAsync(payload);
     }
@@ -76,16 +69,6 @@ export function GoalForm({ goal, onClose }: GoalFormProps) {
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Target Date</label>
         <Input type="date" {...register('due_date')} />
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Project</label>
-        <Select {...register('project_id')}>
-          <option value="">No project</option>
-          {activeProjects.map((project) => (
-            <option key={project.id} value={project.id}>{project.parent_project_id ? `Sub: ${project.name}` : project.name}</option>
-          ))}
-        </Select>
       </div>
 
       <div>

@@ -238,7 +238,7 @@ export default function KanbanPage() {
                 <option value="">All goals</option>
                 {activeGoals.map(goal => (
                   <option key={goal.id} value={goal.id}>
-                    {goal.project ? `${goal.project.parent_project_id ? 'Sub: ' : ''}${goal.project.name} / ${goal.title}` : goal.title}
+                    {goal.title}
                   </option>
                 ))}
               </Select>

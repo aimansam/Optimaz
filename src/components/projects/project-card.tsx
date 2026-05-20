@@ -29,13 +29,12 @@ type ProjectCardProps = {
   project: Project;
   allTasks?: Task[];
   rollupProjectIds?: string[];
-  linkedGoalCount?: number;
   subprojectCount?: number;
   updateProject: { mutate: (data: { id: string; color?: string; name?: string; favorite?: boolean; archived?: boolean; tags?: string[] }) => void };
   deleteProject: { mutate: (id: string) => void };
 };
 
-const ProjectCard = ({ project, allTasks, rollupProjectIds = [], linkedGoalCount = 0, subprojectCount = 0, updateProject, deleteProject }: ProjectCardProps) => {
+const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount = 0, updateProject, deleteProject }: ProjectCardProps) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editName, setEditName] = useState(project.name);
@@ -104,9 +103,6 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], linkedGoalCount
         <span>Completed: {completed}</span>
         <span>Overdue: {overdue}</span>
       </div>
-      {linkedGoalCount > 0 && (
-        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Goals: {linkedGoalCount}</div>
-      )}
       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{percent}% complete</div>
       <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         {/* Favorite button */}

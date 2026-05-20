@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useProjects, useDeleteProject, useUpdateProject } from '@/hooks/use-projects';
 import { useTasks } from '@/hooks/use-tasks';
-import { useGoals } from '@/hooks/use-goals';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -38,7 +37,6 @@ export default function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
   const deleteProject = useDeleteProject();
   const { data: allTasks } = useTasks();
-  const { data: goals } = useGoals();
   const updateProject = useUpdateProject();
   const [addOpen, setAddOpen] = useState(false);
   // Collect all unique tags from all projects for suggestions
@@ -191,7 +189,6 @@ export default function ProjectsPage() {
                       project={project}
                       allTasks={allTasks ?? []}
                       rollupProjectIds={subprojects.map((subproject) => subproject.id)}
-                      linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id && [project.id, ...subprojects.map((subproject) => subproject.id)].includes(goal.project_id)).length}
                       subprojectCount={subprojects.length}
                       updateProject={updateProject}
                       deleteProject={deleteProject}
@@ -206,7 +203,6 @@ export default function ProjectsPage() {
                             key={subproject.id}
                             project={subproject}
                             allTasks={allTasks ?? []}
-                            linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id === subproject.id).length}
                             updateProject={updateProject}
                             deleteProject={deleteProject}
                           />
@@ -226,7 +222,6 @@ export default function ProjectsPage() {
                       key={project.id}
                       project={project}
                       allTasks={allTasks ?? []}
-                      linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id === project.id).length}
                       updateProject={updateProject}
                       deleteProject={deleteProject}
                     />

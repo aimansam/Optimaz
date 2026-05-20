@@ -5,7 +5,6 @@ export type RecurrenceRule = 'daily' | 'weekly' | 'monthly';
 export interface Goal {
   id: string;
   user_id: string;
-  project_id: string | null;
   title: string;
   description: string | null;
   color: string;
@@ -13,7 +12,6 @@ export interface Goal {
   created_at: string;
   updated_at: string;
   tasks?: Task[];
-  project?: Project | null;
 }
 
 export interface Project {

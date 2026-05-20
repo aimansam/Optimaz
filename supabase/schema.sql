@@ -51,7 +51,6 @@ create table if not exists public.subtasks (
 create table if not exists public.goals (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  project_id uuid references public.projects(id) on delete set null,
   title text not null,
   description text,
   color text not null default '#6366f1',
@@ -106,7 +105,6 @@ create table if not exists public.saved_views (
 
 create index if not exists tasks_goal_id_idx on public.tasks(goal_id);
 create index if not exists goals_user_id_idx on public.goals(user_id);
-create index if not exists goals_user_project_idx on public.goals(user_id, project_id);
 create index if not exists tasks_user_id_idx on public.tasks(user_id);
 create index if not exists tasks_project_id_idx on public.tasks(project_id);
 create index if not exists tasks_status_idx on public.tasks(status);

@@ -54,19 +54,15 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   });
 
   const isRecurring = useWatch({ control, name: 'is_recurring' }) ?? false;
-  const selectedGoalId = useWatch({ control, name: 'goal_id' }) ?? '';
-
   const onSubmit = async (values: FormValues) => {
     const recurrenceRule = values.is_recurring && values.recurrence_rule ? values.recurrence_rule : undefined;
-    const linkedGoalProjectId = goals?.find((goal) => goal.id === selectedGoalId)?.project_id ?? '';
-    const resolvedProjectId = values.project_id || linkedGoalProjectId;
     const createPayload = {
       title: values.title,
       notes: values.notes || undefined,
       priority: values.priority,
       status: values.status,
       due_date: values.due_date || undefined,
-      project_id: resolvedProjectId || undefined,
+      project_id: values.project_id || undefined,
       goal_id: values.goal_id || undefined,
       is_recurring: values.is_recurring,
       recurrence_rule: recurrenceRule as RecurrenceRule | undefined,
@@ -80,7 +76,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
         priority: values.priority,
         status: values.status,
         due_date: values.due_date || null,
-        project_id: resolvedProjectId || null,
+        project_id: values.project_id || null,
         goal_id: values.goal_id || null,
         is_recurring: values.is_recurring,
         recurrence_rule: recurrenceRule ?? null,

@@ -44,7 +44,6 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [goalId, setGoalId] = useState(defaultGoalId ?? '');
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>('');
-  const linkedGoalProjectId = goals?.find(goal => goal.id === goalId)?.project_id ?? '';
 
   const steps = useMemo(() => [
     { label: 'Task', question: 'What task do you want to add?', optional: false },
@@ -87,7 +86,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
       priority,
       status,
       due_date: dueDate || undefined,
-      project_id: projectId || linkedGoalProjectId || undefined,
+      project_id: projectId || undefined,
       goal_id: goalId || undefined,
       is_recurring: Boolean(recurrenceRule),
       recurrence_rule: recurrenceRule || undefined,
@@ -171,12 +170,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
         )}
 
         {step === 6 && (
-          <Select value={goalId} onChange={event => {
-            const nextGoalId = event.target.value;
-            setGoalId(nextGoalId);
-            const linkedGoal = goals?.find(goal => goal.id === nextGoalId);
-            if (!projectId && linkedGoal?.project_id) setProjectId(linkedGoal.project_id);
-          }} disabled={createTask.isPending} autoFocus>
+          <Select value={goalId} onChange={event => setGoalId(event.target.value)} disabled={createTask.isPending} autoFocus>
             <option value="">No goal</option>
             {goals?.map(goal => <option key={goal.id} value={goal.id}>{goal.title}</option>)}
           </Select>

@@ -224,7 +224,7 @@ export default function DashboardPage() {
 												<span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
 												<span className="min-w-0 flex-1">
 													<span className="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
-													<span className="block truncate text-xs text-slate-500 dark:text-slate-400">{goal.project ? goal.project.name : 'No project'}{goal.due_date ? ` · ${goal.due_date}` : ''}</span>
+													<span className="block truncate text-xs text-slate-500 dark:text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
 												</span>
 												<span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400">{percent}%</span>
 											</Link>

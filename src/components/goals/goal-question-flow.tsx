@@ -4,48 +4,23 @@ import { useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateGoal } from '@/hooks/use-goals';
-import { useProjects } from '@/hooks/use-projects';
 
 const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
 
 export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
   const createGoal = useCreateGoal();
-  const { data: projects } = useProjects();
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [projectId, setProjectId] = useState('');
   const [color, setColor] = useState(COLORS[0]);
-
-  const projectOptions = useMemo(() => {
-    const activeProjects = (projects ?? []).filter(project => !project.archived);
-    const topLevelProjects = activeProjects.filter(project => !project.parent_project_id);
-    const subprojectsByParent = new Map<string, typeof activeProjects>();
-
-    for (const project of activeProjects) {
-      if (!project.parent_project_id) continue;
-      const current = subprojectsByParent.get(project.parent_project_id) ?? [];
-      current.push(project);
-      subprojectsByParent.set(project.parent_project_id, current);
-    }
-
-    return topLevelProjects.map(project => ({
-      project,
-      subprojects: subprojectsByParent.get(project.id) ?? [],
-    }));
-  }, [projects]);
-
-  const selectedProject = projects?.find(project => project.id === projectId);
 
   const steps = useMemo(() => [
     { label: 'Goal', question: 'What goal do you want to add?' },
     { label: 'Why', question: 'What does success look like?' },
     { label: 'Date', question: 'Is there a target date?' },
-    { label: 'Project', question: 'Which project does this goal support?' },
     { label: 'Color', question: 'What color should mark this goal?' },
     { label: 'Review', question: 'Ready to create this goal?' },
   ], []);
@@ -67,7 +42,6 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
       title: title.trim(),
       description: description.trim() || undefined,
       due_date: dueDate || undefined,
-      project_id: projectId || undefined,
       color,
     });
     onClose();
@@ -124,20 +98,6 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
         )}
 
         {step === 3 && (
-          <Select value={projectId} onChange={event => setProjectId(event.target.value)} disabled={createGoal.isPending} autoFocus>
-            <option value="">No project</option>
-            {projectOptions.map(({ project, subprojects }) => (
-              <optgroup key={project.id} label={project.name}>
-                <option value={project.id}>{project.name}</option>
-                {subprojects.map(subproject => (
-                  <option key={subproject.id} value={subproject.id}>Sub: {subproject.name}</option>
-                ))}
-              </optgroup>
-            ))}
-          </Select>
-        )}
-
-        {step === 4 && (
           <div className="flex flex-wrap gap-2">
             {COLORS.map(item => (
               <button
@@ -156,7 +116,7 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
@@ -164,7 +124,6 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
             </div>
             {description.trim() && <p className="text-slate-500 dark:text-slate-400">{description}</p>}
             {dueDate && <p className="text-xs text-slate-400">Target date: {dueDate}</p>}
-            {selectedProject && <p className="text-xs text-slate-400">Project: {selectedProject.name}</p>}
           </div>
         )}
       </div>

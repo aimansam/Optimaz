@@ -7,7 +7,7 @@ import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useRecurringTasks, useUpdateTask } from '@/hooks/use-tasks';
+import { useRecurringTasks, useTasksByStatus, useUpdateTask } from '@/hooks/use-tasks';
 import { isOverdue } from '@/lib/utils';
 import type { RecurrenceRule, Task } from '@/lib/types';
 
@@ -32,8 +32,13 @@ function isDueToday(task: Task) {
   return task.due_date === today;
 }
 
+function getRoutineHistoryKey(task: Task) {
+  return [task.title.trim().toLowerCase(), task.project_id ?? '', task.goal_id ?? ''].join('::');
+}
+
 export default function RoutinesPage() {
   const { data: routines = [], isLoading, error } = useRecurringTasks();
+  const { data: allTasks = [] } = useTasksByStatus(undefined, true);
   const updateTask = useUpdateTask();
   const [addOpen, setAddOpen] = useState(false);
   const [filter, setFilter] = useState<RoutineFilter>('all');
@@ -51,6 +56,21 @@ export default function RoutinesPage() {
   const filteredRoutines = useMemo(() => (
     filter === 'all' ? routines : routines.filter(task => task.recurrence_rule === filter)
   ), [filter, routines]);
+
+  const historyByRoutine = useMemo(() => {
+    const grouped = new Map<string, Task[]>();
+    for (const task of allTasks) {
+      if (task.status !== 'done' || !task.completed_at) continue;
+      const key = getRoutineHistoryKey(task);
+      grouped.set(key, [...(grouped.get(key) ?? []), task]);
+    }
+
+    for (const [key, tasks] of grouped) {
+      grouped.set(key, [...tasks].sort((a, b) => (b.completed_at ?? '').localeCompare(a.completed_at ?? '')));
+    }
+
+    return grouped;
+  }, [allTasks]);
 
   function pauseRoutine(task: Task) {
     updateTask.mutate({ id: task.id, is_recurring: false, recurrence_rule: null, recurrence_weekdays: null });
@@ -156,7 +176,13 @@ export default function RoutinesPage() {
                     </div>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {groupTasks.map(task => (
-                        <RoutineCard key={task.id} task={task} onPause={pauseRoutine} pausePending={updateTask.isPending} />
+                        <RoutineCard
+                          key={task.id}
+                          task={task}
+                          history={historyByRoutine.get(getRoutineHistoryKey(task)) ?? []}
+                          onPause={pauseRoutine}
+                          pausePending={updateTask.isPending}
+                        />
                       ))}
                     </div>
                   </section>

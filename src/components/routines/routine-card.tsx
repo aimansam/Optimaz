@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarDays, CheckCircle2, Edit2, ListChecks, PauseCircle, Repeat2 } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Edit2, History, ListChecks, PauseCircle, Repeat2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
@@ -12,6 +12,7 @@ import type { Task } from '@/lib/types';
 
 interface RoutineCardProps {
   task: Task;
+  history?: Task[];
   onPause: (task: Task) => void;
   pausePending?: boolean;
 }
@@ -27,14 +28,22 @@ function getNextLabel(task: Task) {
   return formatDate(task.due_date, task.due_time);
 }
 
-export function RoutineCard({ task, onPause, pausePending = false }: RoutineCardProps) {
+function formatCompletedAt(value: string | null) {
+  if (!value) return 'Unknown date';
+  return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+export function RoutineCard({ task, history = [], onPause, pausePending = false }: RoutineCardProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const updateTask = useUpdateTask();
   const priority = PRIORITY_CONFIG[task.priority];
   const completedSubtasks = task.subtasks?.filter(subtask => subtask.completed).length ?? 0;
   const totalSubtasks = task.subtasks?.length ?? 0;
   const subtaskPercent = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
   const hasChecklist = totalSubtasks > 0;
+  const lastCompleted = history[0];
+  const recentHistory = history.slice(0, 8);
 
   return (
     <>
@@ -92,6 +101,18 @@ export function RoutineCard({ task, onPause, pausePending = false }: RoutineCard
               No checklist
             </span>
           )}
+
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(true)}
+            className="flex w-full items-center justify-between gap-3 rounded-lg bg-slate-50 px-2.5 py-2 text-left transition-colors hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-800/70"
+          >
+            <span className="flex min-w-0 items-center gap-1.5">
+              <History className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{history.length} completion{history.length === 1 ? '' : 's'}</span>
+            </span>
+            <span className="shrink-0 text-slate-400">{lastCompleted ? formatCompletedAt(lastCompleted.completed_at) : 'No history'}</span>
+          </button>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
@@ -114,6 +135,35 @@ export function RoutineCard({ task, onPause, pausePending = false }: RoutineCard
 
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} title="Edit Routine">
         <TaskForm task={task} onClose={() => setEditOpen(false)} />
+      </Dialog>
+      <Dialog open={historyOpen} onClose={() => setHistoryOpen(false)} title="Routine History" className="min-h-0 sm:max-w-lg">
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{task.title}</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              {history.length > 0 ? `${history.length} completed occurrence${history.length === 1 ? '' : 's'} found.` : 'No completed occurrences yet.'}
+            </p>
+          </div>
+          {recentHistory.length > 0 ? (
+            <div className="space-y-2">
+              {recentHistory.map(item => (
+                <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{item.title}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Due {item.due_date ? formatDate(item.due_date, item.due_time) : 'without date'}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-300">
+                    {formatCompletedAt(item.completed_at)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              Complete this routine once to start building history.
+            </div>
+          )}
+        </div>
       </Dialog>
     </>
   );

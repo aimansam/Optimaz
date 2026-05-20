@@ -56,8 +56,8 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
       tabIndex={0}
       aria-label={`Project card for ${project.name}`}
     >
-      <Link href={`/projects/${project.id}`} className="block pr-20 focus:outline-none focus:underline">
-        <div className="mb-4 flex items-start gap-3">
+      <Link href={`/projects/${project.id}`} className="block focus:outline-none focus:underline">
+        <div className="mb-4 flex items-start gap-3 pr-20">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: project.color + '20' }}
@@ -105,11 +105,13 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
             <span className="text-xs text-slate-500 dark:text-slate-400">Progress</span>
             <span className="text-xs font-semibold" style={{ color: project.color }}>{percent}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
-            <div
-              className="h-2 rounded-full transition-all duration-500"
-              style={{ width: `${percent}%`, backgroundColor: project.color }}
-            />
+          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+            {percent > 0 && (
+              <div
+                className="h-2 rounded-full transition-all duration-500"
+                style={{ width: `${percent}%`, backgroundColor: project.color }}
+              />
+            )}
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Filter, RotateCcw, Search } from 'lucide-react';
+import { ChevronDown, Filter, RotateCcw, Search } from 'lucide-react';
 import { KanbanBoard } from '@/components/kanban/kanban-board';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ export default function KanbanPage() {
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
+  const [showFilters, setShowFilters] = useState(false);
   const showArchived = doneFilter === 'archived';
   const { data: tasks, isLoading } = useTasksByStatus(undefined, showArchived);
 
@@ -56,7 +57,9 @@ export default function KanbanPage() {
     });
   }, [doneFilter, dueFilter, priority, projectId, query, tasks]);
 
-  const hasFilters = Boolean(query || projectId || priority || dueFilter !== 'all' || doneFilter !== 'show');
+  const trimmedQuery = query.trim();
+  const hasFilters = Boolean(trimmedQuery || projectId || priority || dueFilter !== 'all' || doneFilter !== 'show');
+  const activeFilterCount = [trimmedQuery, projectId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
 
   function resetFilters() {
     setQuery('');
@@ -70,22 +73,33 @@ export default function KanbanPage() {
     <>
 
       <div className="flex-1 min-w-0 overflow-x-auto overflow-y-hidden p-2 sm:p-4 md:p-6">
-        <div className="mb-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:mb-4 sm:p-4">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
               <Filter className="h-4 w-4 text-slate-500" />
               Kanban filters
               <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                 {filteredTasks.length}/{tasks?.length ?? 0}
               </span>
+              {activeFilterCount > 0 && (
+                <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs font-medium text-white dark:bg-white dark:text-slate-900">
+                  {activeFilterCount} active
+                </span>
+              )}
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={!hasFilters}>
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reset
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={!hasFilters}>
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset
+              </Button>
+              <Button type="button" variant="secondary" size="sm" onClick={() => setShowFilters(current => !current)} aria-expanded={showFilters}>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                {showFilters ? 'Hide filters' : 'Show filters'}
+              </Button>
+            </div>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
+          {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
             <label className="relative block">
               <span className="sr-only">Search Kanban tasks</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -135,7 +149,7 @@ export default function KanbanPage() {
                 <option value="archived">Archived done</option>
               </Select>
             </label>
-          </div>
+          </div>}
         </div>
 
         {isLoading ? (

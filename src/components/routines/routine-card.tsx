@@ -34,6 +34,7 @@ export function RoutineCard({ task, onPause, pausePending = false }: RoutineCard
   const completedSubtasks = task.subtasks?.filter(subtask => subtask.completed).length ?? 0;
   const totalSubtasks = task.subtasks?.length ?? 0;
   const subtaskPercent = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+  const hasChecklist = totalSubtasks > 0;
 
   return (
     <>
@@ -63,29 +64,40 @@ export function RoutineCard({ task, onPause, pausePending = false }: RoutineCard
         </div>
 
         <div className="mb-3 space-y-2 text-xs text-slate-500 dark:text-slate-400">
-          <div className="flex items-center justify-between gap-3">
-            <span className="flex min-w-0 items-center gap-1.5">
-              <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Next: {getNextLabel(task)}</span>
-            </span>
-            <span className="shrink-0 capitalize">{getCadenceLabel(task)}</span>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">Next: {getNextLabel(task)}</span>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <Repeat2 className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate capitalize">{getCadenceLabel(task)}</span>
+          </div>
+
+          {hasChecklist ? (
+            <>
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-1.5">
+                  <ListChecks className="h-3.5 w-3.5" />
+                  {completedSubtasks}/{totalSubtasks} checks
+                </span>
+                <span className="font-semibold text-slate-500 dark:text-slate-400">{subtaskPercent}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
+                <div className="h-2 rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${subtaskPercent}%` }} />
+              </div>
+            </>
+          ) : (
+            <span className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
               <ListChecks className="h-3.5 w-3.5" />
-              {completedSubtasks}/{totalSubtasks} checks
+              No checklist
             </span>
-            <span className="font-semibold text-slate-500 dark:text-slate-400">{subtaskPercent}%</span>
-          </div>
-          <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className="h-2 rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${subtaskPercent}%` }} />
-          </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
           <Button type="button" variant="secondary" size="sm" onClick={() => updateTask.mutate({ id: task.id, status: 'done' })} disabled={updateTask.isPending}>
             <CheckCircle2 className="h-3.5 w-3.5" />
-            Done
+            {updateTask.isPending ? 'Completing...' : 'Complete today'}
           </Button>
           <div className="flex items-center gap-1">
             <Button type="button" variant="ghost" size="sm" onClick={() => setEditOpen(true)}>

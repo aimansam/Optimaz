@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useRecurringTasks, useUpdateTask } from '@/hooks/use-tasks';
+import { isOverdue } from '@/lib/utils';
 import type { RecurrenceRule, Task } from '@/lib/types';
 
 type RoutineFilter = 'all' | RecurrenceRule;
@@ -25,6 +26,12 @@ const ROUTINE_GROUPS: { value: RecurrenceRule; label: string }[] = [
   { value: 'monthly', label: 'Monthly routines' },
 ];
 
+function isDueToday(task: Task) {
+  if (!task.due_date) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return task.due_date === today;
+}
+
 export default function RoutinesPage() {
   const { data: routines = [], isLoading, error } = useRecurringTasks();
   const updateTask = useUpdateTask();
@@ -36,7 +43,9 @@ export default function RoutinesPage() {
     daily: routines.filter(task => task.recurrence_rule === 'daily').length,
     weekly: routines.filter(task => task.recurrence_rule === 'weekly').length,
     monthly: routines.filter(task => task.recurrence_rule === 'monthly').length,
-    active: routines.filter(task => task.status !== 'done').length,
+    dueToday: routines.filter(isDueToday).length,
+    overdue: routines.filter(task => isOverdue(task.due_date, task.due_time)).length,
+    withChecklist: routines.filter(task => (task.subtasks?.length ?? 0) > 0).length,
   }), [routines]);
 
   const filteredRoutines = useMemo(() => (
@@ -50,7 +59,7 @@ export default function RoutinesPage() {
   return (
     <>
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-end gap-2">
             <Button onClick={() => setAddOpen(true)}>
               <Plus className="h-4 w-4" />
@@ -58,38 +67,38 @@ export default function RoutinesPage() {
             </Button>
           </div>
 
-          <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 <Repeat2 className="h-4 w-4 text-slate-500" />
                 Total routines
               </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.all}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Daily, weekly, and monthly</p>
+              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.all}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">All active cadences</p>
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20 sm:p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 <CheckCircle2 className="h-4 w-4" />
-                Ready
+                Due today
               </div>
-              <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.active}</p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Current routine instances</p>
+              <p className="mt-2 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.dueToday}</p>
+              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Scheduled for today</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 <CalendarClock className="h-4 w-4 text-slate-500" />
-                Daily
+                Overdue
               </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.daily}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Everyday habits</p>
+              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.overdue}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Needs attention</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 <CalendarClock className="h-4 w-4 text-slate-500" />
-                Weekly + monthly
+                With checklist
               </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.weekly + stats.monthly}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Longer cadence work</p>
+              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.withChecklist}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Routines with steps</p>
             </div>
           </div>
 

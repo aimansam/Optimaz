@@ -6,6 +6,7 @@ import { useDisablePushSubscription, usePushSubscription, useSendTestPushNotific
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { AlertTriangle, Bell, BellOff, CheckCircle2, Palette, Send, Trash2, User, XCircle } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
@@ -38,6 +39,7 @@ export default function SettingsPage() {
   const [quietHoursEnabled, setQuietHoursEnabled] = useState(quietHours?.enabled ?? false);
   const [quietHoursStart, setQuietHoursStart] = useState(quietHours?.start ?? '22:00');
   const [quietHoursEnd, setQuietHoursEnd] = useState(quietHours?.end ?? '07:00');
+  const [leadTimeMinutes, setLeadTimeMinutes] = useState(String(user?.user_metadata?.notification_lead_time_minutes ?? 60));
   const accountName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? 'Signed in user';
   const avatarUrl = user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
   const accountInitial = accountName.trim().charAt(0).toUpperCase() || 'U';
@@ -56,6 +58,10 @@ export default function SettingsPage() {
     setQuietHoursStart(settings?.start ?? '22:00');
     setQuietHoursEnd(settings?.end ?? '07:00');
   }, [user?.user_metadata?.notification_quiet_hours]);
+
+  React.useEffect(() => {
+    setLeadTimeMinutes(String(user?.user_metadata?.notification_lead_time_minutes ?? 60));
+  }, [user?.user_metadata?.notification_lead_time_minutes]);
 
   React.useEffect(() => {
     let active = true;
@@ -306,6 +312,7 @@ export default function SettingsPage() {
                 event.preventDefault();
                 quietHoursUpdate.mutate({
                   metadata: {
+                    notification_lead_time_minutes: Number(leadTimeMinutes),
                     notification_quiet_hours: {
                       enabled: quietHoursEnabled,
                       start: quietHoursStart,
@@ -316,6 +323,22 @@ export default function SettingsPage() {
                 });
               }}
             >
+              <div className="mb-5">
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="notificationLeadTime">
+                  Reminder timing
+                </label>
+                <Select
+                  id="notificationLeadTime"
+                  value={leadTimeMinutes}
+                  onChange={(event) => setLeadTimeMinutes(event.target.value)}
+                  disabled={quietHoursUpdate.isPending}
+                >
+                  <option value="0">At due time</option>
+                  <option value="15">15 minutes before</option>
+                  <option value="60">1 hour before</option>
+                  <option value="1440">1 day before</option>
+                </Select>
+              </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Quiet hours</p>

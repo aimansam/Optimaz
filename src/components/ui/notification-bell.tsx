@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AlertTriangle, Bell, CalendarClock, CheckCircle2 } from "lucide-react";
-import { useTasks } from "@/hooks/use-tasks";
+import { useNotificationTasks } from "@/hooks/use-tasks";
 import { cn, formatDate } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 
@@ -106,7 +106,7 @@ const TONE_ICONS = {
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const { data: tasks, isLoading } = useTasks();
+  const { data: tasks, isLoading } = useNotificationTasks();
   const notifications = useMemo(() => buildNotifications(tasks), [tasks]);
   const unreadCount = notifications.filter(n => !n.read).length;
 

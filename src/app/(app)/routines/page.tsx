@@ -7,7 +7,7 @@ import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useRecurringTasks, useTasksByStatus, useUpdateTask } from '@/hooks/use-tasks';
+import { useRecurringTasks, useRoutineHistoryTasks, useUpdateTask } from '@/hooks/use-tasks';
 import { isOverdue } from '@/lib/utils';
 import type { RecurrenceRule, Task } from '@/lib/types';
 
@@ -38,7 +38,7 @@ function getRoutineHistoryKey(task: Task) {
 
 export default function RoutinesPage() {
   const { data: routines = [], isLoading, error } = useRecurringTasks();
-  const { data: allTasks = [] } = useTasksByStatus(undefined, true);
+  const { data: allTasks = [] } = useRoutineHistoryTasks();
   const updateTask = useUpdateTask();
   const [addOpen, setAddOpen] = useState(false);
   const [filter, setFilter] = useState<RoutineFilter>('all');

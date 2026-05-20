@@ -7,7 +7,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { TaskActions } from '@/components/tasks/task-actions';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
-import { useTasksByStatus } from '@/hooks/use-tasks';
+import { useScheduledTasks } from '@/hooks/use-tasks';
 import { cn, formatDate, isOverdue, PRIORITY_CONFIG } from '@/lib/utils';
 import type { Task } from '@/lib/types';
 
@@ -76,7 +76,7 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [view, setView] = useState<CalendarView>('month');
   const [addOpen, setAddOpen] = useState(false);
-  const { data: tasks = [], isLoading, error } = useTasksByStatus(undefined, true);
+  const { data: tasks = [], isLoading, error } = useScheduledTasks();
 
   const monthDays = useMemo(() => getMonthDays(monthDate), [monthDate]);
   const weekDays = useMemo(() => getWeekDays(selectedDate), [selectedDate]);

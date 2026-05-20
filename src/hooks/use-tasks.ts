@@ -6,8 +6,12 @@ import { trackEvent } from '@/lib/analytics';
 import { getNextRecurringDueDate } from '@/lib/recurrence';
 import type { Subtask, Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 
-const DEFAULT_TASK_QUERY_LIMIT = 500;
+const DEFAULT_TASK_QUERY_LIMIT = 300;
 const DASHBOARD_TASK_QUERY_LIMIT = 100;
+const NOTIFICATION_TASK_QUERY_LIMIT = 80;
+const ROUTINE_HISTORY_TASK_QUERY_LIMIT = 200;
+const SCHEDULED_TASK_QUERY_LIMIT = 300;
+const NOTIFICATION_TASK_SELECT = 'id, user_id, project_id, goal_id, title, notes, priority, status, due_date, due_time, due_timezone, position, completed_at, archived_at, is_recurring, recurrence_rule, recurrence_weekdays, created_at, updated_at';
 
 function applyActiveTaskFilter<T extends { is: (column: string, value: null) => T }>(query: T) {
   return query.is('archived_at', null);
@@ -62,6 +66,75 @@ export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT, includeArchiv
       const { data, error } = await (includeArchived ? query : applyActiveTaskFilter(query));
       if (error) throw error;
       return data as Task[];
+    },
+  });
+}
+
+export function useScheduledTasks(limit = SCHEDULED_TASK_QUERY_LIMIT, includeArchived = true) {
+  return useQuery({
+    queryKey: ['tasks', 'scheduled', limit, includeArchived],
+    queryFn: async () => {
+      const query = supabase
+        .from('tasks')
+        .select('*, subtasks(*), project:projects(id,name,color), goal:goals(id,title,color)')
+        .not('due_date', 'is', null)
+        .order('due_date', { ascending: true })
+        .order('due_time', { ascending: true, nullsFirst: false })
+        .limit(limit);
+      const { data, error } = await (includeArchived ? query : applyActiveTaskFilter(query));
+      if (error) throw error;
+      return data as Task[];
+    },
+  });
+}
+
+export function useRoutineHistoryTasks(limit = ROUTINE_HISTORY_TASK_QUERY_LIMIT) {
+  return useQuery({
+    queryKey: ['tasks', 'routine-history', limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*, subtasks(*), project:projects(id,name,color), goal:goals(id,title,color)')
+        .eq('status', 'done')
+        .not('completed_at', 'is', null)
+        .order('completed_at', { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return data as Task[];
+    },
+  });
+}
+
+export function useNotificationTasks(limit = NOTIFICATION_TASK_QUERY_LIMIT) {
+  return useQuery({
+    queryKey: ['tasks', 'notifications', limit],
+    queryFn: async () => {
+      const upcoming = new Date();
+      upcoming.setDate(upcoming.getDate() + 7);
+      const upcomingKey = upcoming.toISOString().split('T')[0];
+      const completedSince = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
+
+      const [activeResult, completedResult] = await Promise.all([
+        applyActiveTaskFilter(supabase
+          .from('tasks')
+          .select(NOTIFICATION_TASK_SELECT)
+          .neq('status', 'done')
+          .lte('due_date', upcomingKey)
+          .order('due_date', { ascending: true })
+          .order('due_time', { ascending: true, nullsFirst: false })
+          .limit(limit)),
+        applyActiveTaskFilter(supabase
+          .from('tasks')
+          .select(NOTIFICATION_TASK_SELECT)
+          .eq('status', 'done')
+          .gte('updated_at', completedSince)
+          .order('updated_at', { ascending: false })
+          .limit(Math.min(limit, 24))),
+      ]);
+
+      if (activeResult.error) throw activeResult.error;
+      if (completedResult.error) throw completedResult.error;
+      return [...(activeResult.data ?? []), ...(completedResult.data ?? [])] as Task[];
     },
   });
 }

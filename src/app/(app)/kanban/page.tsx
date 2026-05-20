@@ -27,6 +27,7 @@ type KanbanFilterState = {
 type SavedKanbanView = { id: string; name: string; filters: KanbanFilterState };
 
 const KANBAN_FILTER_VISIBILITY_KEY = 'taskflow:kanban:filters-open';
+const KANBAN_TASK_QUERY_LIMIT = 300;
 
 function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
@@ -55,7 +56,7 @@ export default function KanbanPage() {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(KANBAN_FILTER_VISIBILITY_KEY) === 'true';
   });
-  const { data: tasks, isLoading } = useTasksByStatus(undefined, true);
+  const { data: tasks, isLoading } = useTasksByStatus(KANBAN_TASK_QUERY_LIMIT, true);
 
   function toggleFilters() {
     setShowFilters(current => {

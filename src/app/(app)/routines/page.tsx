@@ -62,7 +62,7 @@ export default function RoutinesPage() {
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Recurring work</p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Routines</h1>
               <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-                Review repeated tasks, keep today focused, and pause routines that no longer need to repeat.
+                Review repeated tasks, keep today focused, and let completed routines roll into their next occurrence.
               </p>
             </div>
             <Button onClick={() => setAddOpen(true)}>
@@ -83,10 +83,10 @@ export default function RoutinesPage() {
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
               <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 <CheckCircle2 className="h-4 w-4" />
-                Active
+                Ready
               </div>
               <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.active}</p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Not marked done yet</p>
+              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Current routine instances</p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">

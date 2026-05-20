@@ -8,6 +8,19 @@ import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 const DEFAULT_TASK_QUERY_LIMIT = 500;
 const DASHBOARD_TASK_QUERY_LIMIT = 100;
 
+function getNextRecurringDueDate(dueDate: string | null, rule: RecurrenceRule) {
+  if (!dueDate) return null;
+
+  const nextDate = new Date(`${dueDate}T00:00:00`);
+  if (Number.isNaN(nextDate.getTime())) return null;
+
+  if (rule === 'daily') nextDate.setDate(nextDate.getDate() + 1);
+  if (rule === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+  if (rule === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
+
+  return nextDate.toISOString().split('T')[0];
+}
+
 function applyActiveTaskFilter<T extends { is: (column: string, value: null) => T }>(query: T) {
   return query.is('archived_at', null);
 }
@@ -73,6 +86,7 @@ export function useRecurringTasks(limit = DEFAULT_TASK_QUERY_LIMIT) {
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color), goal:goals(id,title,color)')
         .eq('is_recurring', true)
+        .neq('status', 'done')
         .order('recurrence_rule', { ascending: true })
         .order('due_date', { ascending: true })
         .order('position', { ascending: true })
@@ -170,6 +184,19 @@ export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
+      let previousTask: Pick<Task, 'status' | 'is_recurring' | 'recurrence_rule'> | null = null;
+
+      if (updates.status === 'done') {
+        const { data: existingTask, error: existingTaskError } = await supabase
+          .from('tasks')
+          .select('status, is_recurring, recurrence_rule')
+          .eq('id', id)
+          .single();
+
+        if (existingTaskError) throw existingTaskError;
+        previousTask = existingTask as Pick<Task, 'status' | 'is_recurring' | 'recurrence_rule'>;
+      }
+
       const normalizedUpdates = { ...updates };
       if ('status' in updates) {
         normalizedUpdates.completed_at = updates.status === 'done' ? new Date().toISOString() : null;
@@ -183,7 +210,42 @@ export function useUpdateTask() {
         .select()
         .single();
       if (error) throw error;
-      return data as Task;
+      const updatedTask = data as Task;
+
+      const shouldCreateNextOccurrence = updates.status === 'done'
+        && previousTask?.status !== 'done'
+        && updatedTask.is_recurring
+        && updatedTask.recurrence_rule;
+
+      if (!shouldCreateNextOccurrence) return updatedTask;
+
+      const nextDueDate = getNextRecurringDueDate(updatedTask.due_date, updatedTask.recurrence_rule as RecurrenceRule);
+      const { error: nextTaskError } = await supabase.from('tasks').insert({
+        user_id: updatedTask.user_id,
+        project_id: updatedTask.project_id,
+        goal_id: updatedTask.goal_id,
+        title: updatedTask.title,
+        notes: updatedTask.notes,
+        priority: updatedTask.priority,
+        status: 'todo',
+        due_date: nextDueDate,
+        due_time: updatedTask.due_time,
+        due_timezone: updatedTask.due_timezone,
+        position: updatedTask.position,
+        is_recurring: true,
+        recurrence_rule: updatedTask.recurrence_rule,
+      });
+
+      if (nextTaskError) throw nextTaskError;
+
+      const { error: pauseCompletedTaskError } = await supabase
+        .from('tasks')
+        .update({ is_recurring: false, recurrence_rule: null })
+        .eq('id', updatedTask.id);
+
+      if (pauseCompletedTaskError) throw pauseCompletedTaskError;
+
+      return { ...updatedTask, is_recurring: false, recurrence_rule: null } as Task;
     },
     onSuccess: (task, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

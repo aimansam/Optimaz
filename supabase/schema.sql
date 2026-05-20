@@ -103,6 +103,17 @@ create table if not exists public.saved_views (
   updated_at timestamptz not null default now()
 );
 
+-- Notification deliveries table
+create table if not exists public.notification_deliveries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  task_id uuid not null references public.tasks(id) on delete cascade,
+  delivery_type text not null check (delivery_type in ('task_reminder')),
+  reminder_key text not null,
+  sent_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
 create index if not exists tasks_goal_id_idx on public.tasks(goal_id);
 create index if not exists goals_user_id_idx on public.goals(user_id);
 create index if not exists tasks_user_id_idx on public.tasks(user_id);
@@ -124,6 +135,8 @@ create index if not exists feedback_created_at_idx on public.feedback(created_at
 create index if not exists feedback_category_idx on public.feedback(category);
 create index if not exists saved_views_user_type_idx on public.saved_views(user_id, view_type, updated_at desc);
 create unique index if not exists saved_views_user_type_name_idx on public.saved_views(user_id, view_type, name);
+create unique index if not exists notification_deliveries_unique_reminder_idx on public.notification_deliveries(user_id, task_id, delivery_type, reminder_key);
+create index if not exists notification_deliveries_user_sent_idx on public.notification_deliveries(user_id, sent_at desc);
 
 -- Updated_at trigger function
 create or replace function public.handle_updated_at()
@@ -159,6 +172,7 @@ alter table public.push_subscriptions enable row level security;
 alter table public.analytics_events enable row level security;
 alter table public.feedback enable row level security;
 alter table public.saved_views enable row level security;
+alter table public.notification_deliveries enable row level security;
 
 -- Goals policies
 create policy "Users can view own goals" on public.goals
@@ -225,3 +239,7 @@ create policy "Users can update own saved views" on public.saved_views
   for update using (auth.uid() = user_id);
 create policy "Users can delete own saved views" on public.saved_views
   for delete using (auth.uid() = user_id);
+
+-- Notification delivery policies
+create policy "Users can view own notification deliveries" on public.notification_deliveries
+  for select using (auth.uid() = user_id);

@@ -83,7 +83,6 @@ export function useSendTestPushNotification() {
           title: 'TaskFlow test notification',
           body: 'Notifications are working on this device.',
           url: '/settings',
-          ignoreQuietHours: true,
         }),
       });
 

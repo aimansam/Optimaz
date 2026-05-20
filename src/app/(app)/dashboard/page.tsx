@@ -63,7 +63,7 @@ export default function DashboardPage() {
 	const [addOpen, setAddOpen] = useState(false);
 	const [filterQuery, setFilterQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
-	const [showGoalFocus, setShowGoalFocus] = useState(true);
+	const [showGoalFocus, setShowGoalFocus] = useState(false);
 	const [showAnalytics, setShowAnalytics] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
 	const currentTime = currentDate?.getTime() ?? 0;

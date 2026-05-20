@@ -2,6 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 
+type PushDeliveryError = {
+  statusCode?: number;
+};
+
+function isExpiredPushSubscription(reason: unknown) {
+  const statusCode = (reason as PushDeliveryError | null)?.statusCode;
+  return statusCode === 404 || statusCode === 410;
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,13 +45,33 @@ export async function POST(request: Request) {
   }
 
   const results = await Promise.allSettled(
-    subscriptions.map((sub) =>
+    subscriptions.map((subscription) =>
       webpush.sendNotification(
-        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        { endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } },
         JSON.stringify({ title, body, url })
       )
     )
   );
 
-  return NextResponse.json({ sent: results.filter((r) => r.status === 'fulfilled').length });
+  const expiredEndpoints = results.flatMap((result, index) => {
+    if (result.status === 'rejected' && isExpiredPushSubscription(result.reason)) {
+      return subscriptions[index].endpoint;
+    }
+
+    return [];
+  });
+
+  if (expiredEndpoints.length > 0) {
+    await supabase
+      .from('push_subscriptions')
+      .delete()
+      .eq('user_id', user.id)
+      .in('endpoint', expiredEndpoints);
+  }
+
+  return NextResponse.json({
+    sent: results.filter((result) => result.status === 'fulfilled').length,
+    failed: results.filter((result) => result.status === 'rejected').length,
+    removed: expiredEndpoints.length,
+  });
 }

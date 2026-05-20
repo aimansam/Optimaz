@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BarChart3, CalendarClock, CheckCircle2, PauseCircle, Plus, Repeat2 } from 'lucide-react';
+import { CalendarClock, CheckCircle2, PauseCircle, Plus, Repeat2 } from 'lucide-react';
 import { TaskCard } from '@/components/tasks/task-card';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,6 @@ export default function RoutinesPage() {
   const { data: routines = [], isLoading, error } = useRecurringTasks();
   const updateTask = useUpdateTask();
   const [addOpen, setAddOpen] = useState(false);
-  const [showStats, setShowStats] = useState(false);
   const [filter, setFilter] = useState<RoutineFilter>('all');
 
   const stats = useMemo(() => ({
@@ -66,54 +65,46 @@ export default function RoutinesPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="p-6">
           <div className="mb-5 flex flex-wrap items-center justify-end gap-2">
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={() => setShowStats(current => !current)} aria-expanded={showStats}>
-                <BarChart3 className="h-4 w-4" />
-                {showStats ? 'Hide stats' : 'Show stats'}
-              </Button>
-              <Button onClick={() => setAddOpen(true)}>
-                <Plus className="h-4 w-4" />
-                Add routine
-              </Button>
-            </div>
+            <Button onClick={() => setAddOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Add routine
+            </Button>
           </div>
 
-          {showStats && (
-            <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <Repeat2 className="h-4 w-4 text-slate-500" />
-                  Total routines
-                </div>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.all}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Daily, weekly, and monthly</p>
+          <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <Repeat2 className="h-4 w-4 text-slate-500" />
+                Total routines
               </div>
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-                <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Ready
-                </div>
-                <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.active}</p>
-                <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Current routine instances</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <CalendarClock className="h-4 w-4 text-slate-500" />
-                  Daily
-                </div>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.daily}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Everyday habits</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <CalendarClock className="h-4 w-4 text-slate-500" />
-                  Weekly + monthly
-                </div>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.weekly + stats.monthly}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Longer cadence work</p>
-              </div>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.all}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Daily, weekly, and monthly</p>
             </div>
-          )}
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                <CheckCircle2 className="h-4 w-4" />
+                Ready
+              </div>
+              <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.active}</p>
+              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Current routine instances</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <CalendarClock className="h-4 w-4 text-slate-500" />
+                Daily
+              </div>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.daily}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Everyday habits</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <CalendarClock className="h-4 w-4 text-slate-500" />
+                Weekly + monthly
+              </div>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.weekly + stats.monthly}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Longer cadence work</p>
+            </div>
+          </div>
 
           <div className="mb-5 flex flex-wrap gap-1.5 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950">
             {ROUTINE_FILTERS.map(item => (

@@ -4,7 +4,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { Star, Edit2, Archive, Trash2 } from 'lucide-react';
+import { AlertTriangle, Archive, CheckCircle2, Edit2, FolderOpen, Layers, Star, Trash2 } from 'lucide-react';
 
 type Project = {
   id: string;
@@ -52,73 +52,106 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
 
   return (
     <div
-      className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow dark:border-slate-700 dark:bg-slate-900 focus-within:ring-2 focus-within:ring-blue-500"
+      className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-blue-500 dark:border-slate-700 dark:bg-slate-900"
       tabIndex={0}
       aria-label={`Project card for ${project.name}`}
     >
-      <div className="flex items-center gap-3">
-        <span
-          className="h-4 w-4 rounded-full shrink-0"
-          style={{ backgroundColor: project.color }}
-        />
-        <Link href={`/projects/${project.id}`} className="flex-1 min-w-0 focus:outline-none focus:underline">
-          <p className="font-medium text-slate-900 dark:text-slate-100 truncate">{project.name}</p>
-        </Link>
-      </div>
-      {project.description && (
-        <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{project.description}</p>
-      )}
-      {project.parent_project_id && (
-        <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-          Subproject
-        </span>
-      )}
-      {!project.parent_project_id && subprojectCount > 0 && (
-        <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-          Includes {subprojectCount} subproject{subprojectCount === 1 ? '' : 's'}
-        </span>
-      )}
-      {project.tags && project.tags.length > 0 && (
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {project.tags.map((tag, i) => (
-            <span key={i} className="px-2 py-0.5 rounded-full bg-slate-200 text-xs text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+      <Link href={`/projects/${project.id}`} className="block pr-20 focus:outline-none focus:underline">
+        <div className="mb-4 flex items-start gap-3">
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+            style={{ backgroundColor: project.color + '20' }}
+          >
+            <FolderOpen className="h-5 w-5" style={{ color: project.color }} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{project.name}</p>
+              {project.favorite && <Star className="h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400" />}
+            </div>
+            {project.description && (
+              <p className="mt-0.5 line-clamp-2 text-xs text-slate-400">{project.description}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {project.parent_project_id && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <Layers className="h-3 w-3" />
+              Subproject
+            </span>
+          )}
+          {!project.parent_project_id && subprojectCount > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <Layers className="h-3 w-3" />
+              {subprojectCount} subproject{subprojectCount === 1 ? '' : 's'}
+            </span>
+          )}
+          {project.archived && (
+            <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              Archived
+            </span>
+          )}
+          {project.tags?.slice(0, 3).map((tag) => (
+            <span key={tag} className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
               {tag}
             </span>
           ))}
         </div>
-      )}
-      {projectTasks.length > 0 && (
-        <div className="text-xs text-slate-400 mt-1">
-          Last activity: {new Date(Math.max(...projectTasks.map((t) => new Date(t.updated_at).getTime()))).toLocaleDateString()}
+
+        <div className="mb-3">
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-xs text-slate-500 dark:text-slate-400">Progress</span>
+            <span className="text-xs font-semibold" style={{ color: project.color }}>{percent}%</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
+            <div
+              className="h-2 rounded-full transition-all duration-500"
+              style={{ width: `${percent}%`, backgroundColor: project.color }}
+            />
+          </div>
         </div>
-      )}
-      <div className="mt-2 h-2 w-28 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-        <div
-          className="h-2 rounded-full bg-emerald-500 transition-all"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-      <div className="flex gap-3 text-xs text-slate-500 dark:text-slate-400 mt-1">
-        <span>Total: {projectTasks.length}</span>
-        <span>Completed: {completed}</span>
-        <span>Overdue: {overdue}</span>
-      </div>
-      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{percent}% complete</div>
-      <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
-        {/* Favorite button */}
+
+        <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
+          <span className="flex items-center gap-1">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {completed}/{projectTasks.length} tasks
+          </span>
+          {overdue > 0 && (
+            <span className="flex items-center gap-1 text-red-500">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {overdue} overdue
+            </span>
+          )}
+        </div>
+
+        {projectTasks.length > 0 && (
+          <div className="mt-2 text-xs text-slate-400">
+            Last activity: {new Date(Math.max(...projectTasks.map((t) => new Date(t.updated_at).getTime()))).toLocaleDateString()}
+          </div>
+        )}
+
+        {percent === 100 && projectTasks.length > 0 && (
+          <div className="mt-3 rounded-lg bg-green-50 px-3 py-1.5 text-center text-xs font-medium text-green-600 dark:bg-green-900/20 dark:text-green-400">
+            Project Complete!
+          </div>
+        )}
+      </Link>
+
+      <div className="absolute right-3 top-3 z-10 flex gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           aria-label={project.favorite ? `Unfavorite project ${project.name}` : `Favorite project ${project.name}`}
-          title={project.favorite ? "Unfavorite" : "Favorite"}
-          className={`rounded p-1 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 focus:ring-2 focus:ring-yellow-400 focus:outline-none ${project.favorite ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-400' : ''}`}
+          title={project.favorite ? 'Unfavorite' : 'Favorite'}
+          className="rounded p-1 hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:hover:bg-yellow-900/20"
           onClick={() => updateProject.mutate({ id: project.id, favorite: !project.favorite })}
         >
-          <Star className={`h-5 w-5 ${project.favorite ? 'text-yellow-400 fill-yellow-400' : 'text-yellow-400'}`} />
+          <Star className={`h-4 w-4 ${project.favorite ? 'fill-yellow-400 text-yellow-400' : 'text-yellow-400'}`} />
         </button>
-        {/* Edit button opens dialog */}
         <button
           aria-label={`Edit project ${project.name}`}
           title="Edit"
-          className="rounded p-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          className="rounded p-1 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:hover:bg-blue-900/20"
           onClick={() => {
             setEditName(project.name);
             setEditColor(project.color);
@@ -126,36 +159,23 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
             setEditOpen(true);
           }}
         >
-          <Edit2 className="h-5 w-5 text-blue-400" />
+          <Edit2 className="h-4 w-4 text-blue-400" />
         </button>
-        {/* Archive/Unarchive button */}
-        {project.archived ? (
-          <button
-            aria-label={`Unarchive project ${project.name}`}
-            title="Unarchive"
-            className="rounded p-1 bg-green-50 dark:bg-green-900/20 border border-green-400 focus:ring-2 focus:ring-green-400 focus:outline-none"
-            onClick={() => updateProject.mutate({ id: project.id, archived: false })}
-          >
-            <Archive className="h-5 w-5 text-green-500 rotate-180" />
-          </button>
-        ) : (
-          <button
-            aria-label={`Archive project ${project.name}`}
-            title="Archive"
-            className="rounded p-1 hover:bg-slate-100 dark:hover:bg-slate-800/50 focus:ring-2 focus:ring-slate-400 focus:outline-none"
-            onClick={() => updateProject.mutate({ id: project.id, archived: true })}
-          >
-            <Archive className="h-5 w-5 text-slate-400" />
-          </button>
-        )}
-        {/* Delete button */}
+        <button
+          aria-label={project.archived ? `Unarchive project ${project.name}` : `Archive project ${project.name}`}
+          title={project.archived ? 'Unarchive' : 'Archive'}
+          className="rounded p-1 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:hover:bg-slate-800/50"
+          onClick={() => updateProject.mutate({ id: project.id, archived: !project.archived })}
+        >
+          <Archive className={`h-4 w-4 ${project.archived ? 'rotate-180 text-green-500' : 'text-slate-400'}`} />
+        </button>
         <button
           onClick={() => setDeleteOpen(true)}
           aria-label={`Delete project ${project.name}`}
           title="Delete"
-          className="rounded p-1 hover:bg-red-50 dark:hover:bg-red-900/20 focus:ring-2 focus:ring-red-400 focus:outline-none"
+          className="rounded p-1 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 dark:hover:bg-red-900/20"
         >
-          <Trash2 className="h-5 w-5 text-red-400" />
+          <Trash2 className="h-4 w-4 text-red-400" />
         </button>
       </div>
       <ConfirmationDialog

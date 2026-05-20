@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
-import { usePushSubscription } from '@/hooks/use-push';
+import { usePushSubscription, useSendTestPushNotification } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Bell, CheckCircle2, Palette, Trash2, User, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, CheckCircle2, Palette, Send, Trash2, User, XCircle } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
 import { useDeleteAccount } from '@/hooks/use-account-controls';
@@ -16,6 +16,7 @@ import React, { useState } from 'react';
 export default function SettingsPage() {
   const router = useRouter();
   const { mutate: subscribe, data: pushSubscription, isPending, isSuccess, error: pushError } = usePushSubscription();
+  const testPush = useSendTestPushNotification();
   const { data: user } = useUser();
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
   const deleteAccount = useDeleteAccount();
@@ -217,14 +218,28 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-            <Button onClick={() => subscribe()} disabled={pushButtonDisabled}>
-              {pushButtonLabel}
-            </Button>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button onClick={() => subscribe()} disabled={pushButtonDisabled}>
+                {pushButtonLabel}
+              </Button>
+              {pushStatus === 'enabled' && (
+                <Button type="button" variant="secondary" onClick={() => testPush.mutate()} disabled={testPush.isPending}>
+                  <Send className="h-4 w-4" />
+                  {testPush.isPending ? 'Sending...' : 'Send test'}
+                </Button>
+              )}
+            </div>
             {isSuccess && (
               <p className="mt-2 text-sm text-green-600 dark:text-green-400">Notifications enabled!</p>
             )}
             {pushError && (
               <p className="mt-2 text-sm text-red-500">{pushError.message}</p>
+            )}
+            {testPush.isSuccess && (
+              <p className="mt-2 text-sm text-green-600 dark:text-green-400">Test notification sent.</p>
+            )}
+            {testPush.isError && (
+              <p className="mt-2 text-sm text-red-500">{testPush.error.message}</p>
             )}
           </section>
 

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   webpush.setVapidDetails(vapidEmail, vapidPublicKey, vapidPrivateKey);
 
-  const { title, body } = await request.json();
+  const { title, body, url } = await request.json();
 
   if (!title || !body) {
     return NextResponse.json({ error: 'Missing notification title or body' }, { status: 400 });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     subscriptions.map((sub) =>
       webpush.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-        JSON.stringify({ title, body })
+        JSON.stringify({ title, body, url })
       )
     )
   );

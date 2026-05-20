@@ -72,3 +72,31 @@ export function usePushSubscription() {
     },
   });
 }
+
+export function useSendTestPushNotification() {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/push/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'TaskFlow test notification',
+          body: 'Notifications are working on this device.',
+          url: '/settings',
+        }),
+      });
+
+      const result = await response.json().catch(() => null) as { error?: string; sent?: number; message?: string } | null;
+
+      if (!response.ok) {
+        throw new Error(result?.error ?? 'Could not send test notification');
+      }
+
+      if (result?.sent === 0 || result?.message === 'No subscriptions found') {
+        throw new Error('No subscribed devices found');
+      }
+
+      return result;
+    },
+  });
+}

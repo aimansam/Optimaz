@@ -16,3 +16,35 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
+self.addEventListener('push', (event) => {
+  const payload = event.data?.json() ?? {};
+  const title = payload.title || 'TaskFlow';
+  const options = {
+    body: payload.body || 'You have a new TaskFlow notification.',
+    icon: '/icon-192x192.png',
+    badge: '/icon-192x192.png',
+    data: {
+      url: payload.url || '/dashboard',
+    },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/dashboard';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const matchingClient = clients.find((client) => client.url.includes(targetUrl));
+
+      if (matchingClient) {
+        return matchingClient.focus();
+      }
+
+      return self.clients.openWindow(targetUrl);
+    })
+  );
+});

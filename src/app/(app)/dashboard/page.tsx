@@ -63,6 +63,7 @@ export default function DashboardPage() {
 	const [addOpen, setAddOpen] = useState(false);
 	const [filterQuery, setFilterQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
+	const [showGoalFocus, setShowGoalFocus] = useState(true);
 	const [showAnalytics, setShowAnalytics] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
 	const currentTime = currentDate?.getTime() ?? 0;
@@ -143,6 +144,15 @@ export default function DashboardPage() {
 							</button>
 							<button
 								type="button"
+								aria-label={showGoalFocus ? 'Hide Goal Focus' : 'Show Goal Focus'}
+								className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 ${showGoalFocus ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+								onClick={() => setShowGoalFocus((v) => !v)}
+							>
+								<Target className="h-5 w-5" />
+								<span className="hidden sm:inline">Goals</span>
+							</button>
+							<button
+								type="button"
 								aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
 								className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
 								onClick={() => setShowAnalytics((v) => !v)}
@@ -172,18 +182,7 @@ export default function DashboardPage() {
 						</div>
 					)}
 
-					<DashboardWidget
-						title="Goal Focus"
-						action={(
-							<Link
-								href="/goals"
-								className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-							>
-								<Target className="h-5 w-5" />
-								<span className="hidden sm:inline">Goals</span>
-							</Link>
-						)}
-					>
+					{showGoalFocus && <DashboardWidget title="Goal Focus">
 						<div className="grid gap-3 sm:grid-cols-3">
 							<div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
 								<div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
@@ -234,7 +233,7 @@ export default function DashboardPage() {
 								</div>
 							</div>
 						)}
-					</DashboardWidget>
+					</DashboardWidget>}
 
 					{/* Upcoming deadlines section */}
 					<DashboardWidget title="Upcoming Deadlines">

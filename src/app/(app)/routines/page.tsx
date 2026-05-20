@@ -64,15 +64,8 @@ export default function RoutinesPage() {
   return (
     <>
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-5xl px-3 py-4 sm:px-4 md:px-6 md:py-8">
-          <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Recurring work</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Routines</h1>
-              <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-                Review repeated tasks, keep today focused, and let completed routines roll into their next occurrence.
-              </p>
-            </div>
+        <div className="p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-end gap-2">
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="secondary" onClick={() => setShowStats(current => !current)} aria-expanded={showStats}>
                 <BarChart3 className="h-4 w-4" />
@@ -144,7 +137,7 @@ export default function RoutinesPage() {
               description={error.message || 'Refresh the page and try again.'}
             />
           ) : isLoading ? (
-            <div className="grid gap-3 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, index) => (
                 <div key={index} className="h-44 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
               ))}
@@ -174,7 +167,7 @@ export default function RoutinesPage() {
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">{group.label} ({groupTasks.length})</h2>
                     </div>
-                    <div className="grid gap-3 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {groupTasks.map(task => (
                         <div key={task.id} className="space-y-2">
                           <TaskCard task={task} />

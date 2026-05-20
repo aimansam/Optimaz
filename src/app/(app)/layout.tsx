@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/header';
 
 function getPageTitle(pathname: string) {
   if (pathname === '/dashboard') return 'Today';
+  if (pathname === '/calendar') return 'Calendar';
   if (pathname === '/goals') return 'Goals';
   if (pathname.startsWith('/goals/')) return 'Goal';
   if (pathname === '/routines') return 'Routines';

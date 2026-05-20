@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Kanban, FolderOpen, Repeat2, Settings, Target, Zap } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, Kanban, FolderOpen, Repeat2, Settings, Target, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProjects } from '@/hooks/use-projects';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Today', icon: LayoutDashboard },
+  { href: '/calendar', label: 'Calendar', icon: CalendarDays },
   { href: '/goals', label: 'Goals', icon: Target },
   { href: '/routines', label: 'Routines', icon: Repeat2 },
   { href: '/kanban', label: 'Kanban', icon: Kanban },

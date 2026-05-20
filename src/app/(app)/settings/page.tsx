@@ -13,6 +13,13 @@ import { useDeleteAccount } from '@/hooks/use-account-controls';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
+type QuietHoursSettings = {
+  enabled?: boolean;
+  start?: string;
+  end?: string;
+  timeZone?: string;
+};
+
 export default function SettingsPage() {
   const router = useRouter();
   const { mutate: subscribe, data: pushSubscription, isPending, isSuccess, error: pushError, reset: resetPushSubscription } = usePushSubscription();
@@ -20,12 +27,17 @@ export default function SettingsPage() {
   const disablePush = useDisablePushSubscription();
   const { data: user } = useUser();
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
+  const quietHoursUpdate = useUpdateUser();
   const deleteAccount = useDeleteAccount();
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [pushStatus, setPushStatus] = useState<'checking' | 'unsupported' | 'denied' | 'available' | 'enabled'>('checking');
   const [pushDevice, setPushDevice] = useState('This device');
+  const quietHours = user?.user_metadata?.notification_quiet_hours as QuietHoursSettings | undefined;
+  const [quietHoursEnabled, setQuietHoursEnabled] = useState(quietHours?.enabled ?? false);
+  const [quietHoursStart, setQuietHoursStart] = useState(quietHours?.start ?? '22:00');
+  const [quietHoursEnd, setQuietHoursEnd] = useState(quietHours?.end ?? '07:00');
   const accountName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? 'Signed in user';
   const avatarUrl = user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
   const accountInitial = accountName.trim().charAt(0).toUpperCase() || 'U';
@@ -37,6 +49,13 @@ export default function SettingsPage() {
   React.useEffect(() => {
     setDisplayName(user?.user_metadata?.full_name ?? '');
   }, [user?.user_metadata?.full_name]);
+
+  React.useEffect(() => {
+    const settings = user?.user_metadata?.notification_quiet_hours as QuietHoursSettings | undefined;
+    setQuietHoursEnabled(settings?.enabled ?? false);
+    setQuietHoursStart(settings?.start ?? '22:00');
+    setQuietHoursEnd(settings?.end ?? '07:00');
+  }, [user?.user_metadata?.notification_quiet_hours]);
 
   React.useEffect(() => {
     let active = true;
@@ -281,6 +300,67 @@ export default function SettingsPage() {
             {disablePush.isError && (
               <p className="mt-2 text-sm text-red-500">{disablePush.error.message}</p>
             )}
+            <form
+              className="mt-5 border-t border-slate-100 pt-5 dark:border-slate-800"
+              onSubmit={(event) => {
+                event.preventDefault();
+                quietHoursUpdate.mutate({
+                  metadata: {
+                    notification_quiet_hours: {
+                      enabled: quietHoursEnabled,
+                      start: quietHoursStart,
+                      end: quietHoursEnd,
+                      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    },
+                  },
+                });
+              }}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Quiet hours</p>
+                  <p className="text-xs text-slate-400">Pause reminder notifications during your rest window.</p>
+                </div>
+                <label className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={quietHoursEnabled}
+                    onChange={(event) => setQuietHoursEnabled(event.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-800"
+                  />
+                  Enabled
+                </label>
+              </div>
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400" htmlFor="quietHoursStart">Start</label>
+                  <Input
+                    id="quietHoursStart"
+                    type="time"
+                    value={quietHoursStart}
+                    onChange={(event) => setQuietHoursStart(event.target.value)}
+                    disabled={!quietHoursEnabled || quietHoursUpdate.isPending}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400" htmlFor="quietHoursEnd">End</label>
+                  <Input
+                    id="quietHoursEnd"
+                    type="time"
+                    value={quietHoursEnd}
+                    onChange={(event) => setQuietHoursEnd(event.target.value)}
+                    disabled={!quietHoursEnabled || quietHoursUpdate.isPending}
+                  />
+                </div>
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <Button type="submit" size="sm" disabled={quietHoursUpdate.isPending}>
+                  {quietHoursUpdate.isPending ? 'Saving...' : 'Save quiet hours'}
+                </Button>
+                {quietHoursUpdate.isSuccess && <span className="text-xs text-green-600 dark:text-green-400">Saved!</span>}
+                {quietHoursUpdate.isError && <span className="text-xs text-red-500">Could not save quiet hours</span>}
+              </div>
+            </form>
           </section>
 
           {/* About */}

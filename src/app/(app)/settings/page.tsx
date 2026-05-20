@@ -6,7 +6,7 @@ import { usePushSubscription } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Bell, Palette, Trash2, User } from 'lucide-react';
+import { AlertTriangle, Bell, Palette, Trash2, User } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
 import { useDeleteAccount } from '@/hooks/use-account-controls';
@@ -150,9 +150,24 @@ export default function SettingsPage() {
         className="max-w-md min-h-0"
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            This permanently deletes your TaskFlow account, projects, tasks, goals, feedback, and notifications.
-          </p>
+          <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/60 dark:bg-red-950/20">
+            <div className="flex gap-2">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+              <div>
+                <p className="text-sm font-medium text-red-700 dark:text-red-300">This cannot be undone.</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300/80">
+                  TaskFlow will permanently remove your account and all workspace data.
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-red-700 dark:text-red-300 sm:grid-cols-3">
+              {['Projects', 'Tasks', 'Subtasks', 'Goals', 'Feedback', 'Notifications'].map((item) => (
+                <span key={item} className="rounded-md bg-white/70 px-2 py-1 text-center dark:bg-red-950/40">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="deleteConfirmation">
               Type DELETE to confirm

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 import { getNextRecurringDueDate } from '@/lib/recurrence';
-import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
+import type { Subtask, Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 
 const DEFAULT_TASK_QUERY_LIMIT = 500;
 const DASHBOARD_TASK_QUERY_LIMIT = 100;
@@ -208,25 +208,52 @@ export function useUpdateTask() {
 
       if (!shouldCreateNextOccurrence) return updatedTask;
 
+      const { data: recurringSubtasks, error: recurringSubtasksError } = await supabase
+        .from('subtasks')
+        .select('title, position')
+        .eq('task_id', updatedTask.id)
+        .order('position', { ascending: true });
+
+      if (recurringSubtasksError) throw recurringSubtasksError;
+      const subtaskTemplates = (recurringSubtasks ?? []) as Pick<Subtask, 'title' | 'position'>[];
+
       const nextDueDate = getNextRecurringDueDate(updatedTask.due_date, updatedTask.recurrence_rule as RecurrenceRule, updatedTask.recurrence_weekdays);
-      const { error: nextTaskError } = await supabase.from('tasks').insert({
-        user_id: updatedTask.user_id,
-        project_id: updatedTask.project_id,
-        goal_id: updatedTask.goal_id,
-        title: updatedTask.title,
-        notes: updatedTask.notes,
-        priority: updatedTask.priority,
-        status: 'todo',
-        due_date: nextDueDate,
-        due_time: updatedTask.due_time,
-        due_timezone: updatedTask.due_timezone,
-        position: updatedTask.position,
-        is_recurring: true,
-        recurrence_rule: updatedTask.recurrence_rule,
-        recurrence_weekdays: updatedTask.recurrence_rule === 'weekly' ? updatedTask.recurrence_weekdays : null,
-      });
+      const { data: nextTask, error: nextTaskError } = await supabase
+        .from('tasks')
+        .insert({
+          user_id: updatedTask.user_id,
+          project_id: updatedTask.project_id,
+          goal_id: updatedTask.goal_id,
+          title: updatedTask.title,
+          notes: updatedTask.notes,
+          priority: updatedTask.priority,
+          status: 'todo',
+          due_date: nextDueDate,
+          due_time: updatedTask.due_time,
+          due_timezone: updatedTask.due_timezone,
+          position: updatedTask.position,
+          is_recurring: true,
+          recurrence_rule: updatedTask.recurrence_rule,
+          recurrence_weekdays: updatedTask.recurrence_rule === 'weekly' ? updatedTask.recurrence_weekdays : null,
+        })
+        .select('id')
+        .single();
 
       if (nextTaskError) throw nextTaskError;
+
+      if (subtaskTemplates.length > 0) {
+        const { error: nextSubtasksError } = await supabase.from('subtasks').insert(
+          subtaskTemplates.map(subtask => ({
+            task_id: nextTask.id,
+            user_id: updatedTask.user_id,
+            title: subtask.title,
+            completed: false,
+            position: subtask.position,
+          }))
+        );
+
+        if (nextSubtasksError) throw nextSubtasksError;
+      }
 
       const { error: pauseCompletedTaskError } = await supabase
         .from('tasks')

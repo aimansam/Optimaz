@@ -45,6 +45,7 @@ export interface Task {
   archived_at: string | null;
   is_recurring: boolean;
   recurrence_rule: RecurrenceRule | null;
+  recurrence_weekdays: number[] | null;
   created_at: string;
   updated_at: string;
   subtasks?: Subtask[];

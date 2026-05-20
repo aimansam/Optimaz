@@ -33,6 +33,7 @@ create table if not exists public.tasks (
   -- Recurring
   is_recurring boolean not null default false,
   recurrence_rule text, -- 'daily' | 'weekly' | 'monthly'
+  recurrence_weekdays integer[] check (recurrence_weekdays is null or recurrence_weekdays <@ array[0,1,2,3,4,5,6]), -- Sunday 0 through Saturday 6
   -- Metadata
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

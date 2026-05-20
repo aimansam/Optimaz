@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Archive, ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Edit2, GripVertical, RefreshCw, RotateCcw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
+import { getWeekdayLabel } from '@/lib/recurrence';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { Task, TaskStatus } from '@/lib/types';
@@ -136,7 +137,12 @@ export function KanbanCard({ task }: { task: Task }) {
                   {formatDate(task.due_date, task.due_time)}
                 </span>
               )}
-              {task.is_recurring && <RefreshCw className="h-3 w-3 text-slate-400" />}
+              {task.is_recurring && (
+                <RefreshCw
+                  className="h-3 w-3 text-slate-400"
+                  aria-label={`Recurring ${task.recurrence_rule}${task.recurrence_rule === 'weekly' && getWeekdayLabel(task.recurrence_weekdays) ? ` on ${getWeekdayLabel(task.recurrence_weekdays)}` : ''}`}
+                />
+              )}
               {totalSubtasks > 0 && (
                 <div className="flex flex-col gap-0.5 min-w-20">
                   <div className="flex items-center gap-1">

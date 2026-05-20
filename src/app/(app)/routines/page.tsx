@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useRecurringTasks, useUpdateTask } from '@/hooks/use-tasks';
+import { getWeekdayLabel } from '@/lib/recurrence';
 import { formatDate } from '@/lib/utils';
 import type { RecurrenceRule, Task } from '@/lib/types';
 
@@ -31,6 +32,12 @@ function getNextLabel(task: Task) {
   return formatDate(task.due_date, task.due_time);
 }
 
+function getCadenceLabel(task: Task) {
+  if (task.recurrence_rule !== 'weekly') return task.recurrence_rule;
+  const weekdays = getWeekdayLabel(task.recurrence_weekdays);
+  return weekdays ? `weekly on ${weekdays}` : 'weekly';
+}
+
 export default function RoutinesPage() {
   const { data: routines = [], isLoading, error } = useRecurringTasks();
   const updateTask = useUpdateTask();
@@ -50,7 +57,7 @@ export default function RoutinesPage() {
   ), [filter, routines]);
 
   function pauseRoutine(task: Task) {
-    updateTask.mutate({ id: task.id, is_recurring: false, recurrence_rule: null });
+    updateTask.mutate({ id: task.id, is_recurring: false, recurrence_rule: null, recurrence_weekdays: null });
   }
 
   return (
@@ -163,7 +170,7 @@ export default function RoutinesPage() {
                         <div key={task.id} className="space-y-2">
                           <TaskCard task={task} />
                           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
-                            <span>Next: {getNextLabel(task)}</span>
+                            <span>Next: {getNextLabel(task)} · {getCadenceLabel(task)}</span>
                             <Button type="button" variant="ghost" size="sm" onClick={() => pauseRoutine(task)} disabled={updateTask.isPending}>
                               <PauseCircle className="h-3.5 w-3.5" />
                               Pause

@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/select';
 import { useCreateTask, useUpdateTask } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
+import { WEEKDAYS, getWeekdayLabel, normalizeWeekdays } from '@/lib/recurrence';
 import type { Task, Priority, TaskStatus, RecurrenceRule } from '@/lib/types';
 import { SubtaskList } from './subtask-list2';
 
@@ -30,6 +31,7 @@ interface FormValues {
   goal_id: string;
   is_recurring: boolean;
   recurrence_rule: RecurrenceRule | '';
+  recurrence_weekdays: number[];
 }
 
 export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoalId, task, onClose }: TaskFormProps) {
@@ -40,7 +42,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   const updateTask = useUpdateTask();
   const isEdit = !!task;
 
-  const { register, handleSubmit, control, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, control, setValue, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
       title: task?.title ?? '',
       notes: task?.notes ?? '',
@@ -52,12 +54,27 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       goal_id: task?.goal_id ?? defaultGoalId ?? '',
       is_recurring: task?.is_recurring ?? false,
       recurrence_rule: task?.recurrence_rule ?? '',
+      recurrence_weekdays: task?.recurrence_weekdays ?? [],
     },
   });
 
   const isRecurring = useWatch({ control, name: 'is_recurring' }) ?? false;
+  const recurrenceRule = useWatch({ control, name: 'recurrence_rule' }) ?? '';
+  const selectedWeekdays = useWatch({ control, name: 'recurrence_weekdays' }) ?? [];
+
+  function toggleWeekday(day: number) {
+    setValue(
+      'recurrence_weekdays',
+      selectedWeekdays.includes(day)
+        ? selectedWeekdays.filter(item => item !== day)
+        : normalizeWeekdays([...selectedWeekdays, day]),
+      { shouldDirty: true }
+    );
+  }
+
   const onSubmit = async (values: FormValues) => {
     const recurrenceRule = values.is_recurring && values.recurrence_rule ? values.recurrence_rule : undefined;
+    const recurrenceWeekdays = recurrenceRule === 'weekly' ? normalizeWeekdays(values.recurrence_weekdays) : null;
     const createPayload = {
       title: values.title,
       notes: values.notes || undefined,
@@ -70,6 +87,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       goal_id: values.goal_id || undefined,
       is_recurring: values.is_recurring,
       recurrence_rule: recurrenceRule as RecurrenceRule | undefined,
+      recurrence_weekdays: recurrenceWeekdays,
     };
 
     if (isEdit) {
@@ -86,6 +104,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
         goal_id: values.goal_id || null,
         is_recurring: values.is_recurring,
         recurrence_rule: recurrenceRule ?? null,
+        recurrence_weekdays: recurrenceWeekdays,
       });
     } else {
       await createTask.mutateAsync(createPayload);
@@ -181,12 +200,44 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Recurring task</span>
         </label>
         {isRecurring && (
-          <Select {...register('recurrence_rule')}>
-            <option value="">Select frequency</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </Select>
+          <div className="space-y-3">
+            <Select {...register('recurrence_rule')}>
+              <option value="">Select frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </Select>
+            {recurrenceRule === 'weekly' && (
+              <div className="space-y-2">
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                  {WEEKDAYS.map(day => {
+                    const selected = selectedWeekdays.includes(day.value);
+                    return (
+                      <Button
+                        key={day.value}
+                        type="button"
+                        variant={selected ? 'secondary' : 'ghost'}
+                        size="sm"
+                        className="h-9 px-2"
+                        onClick={() => toggleWeekday(day.value)}
+                        aria-pressed={selected}
+                      >
+                        {day.short}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button type="button" variant="secondary" size="sm" onClick={() => setValue('recurrence_weekdays', WEEKDAYS.map(day => day.value), { shouldDirty: true })}>
+                    Sunday to Saturday
+                  </Button>
+                  {selectedWeekdays.length > 0 && (
+                    <span className="text-xs text-slate-500 dark:text-slate-400">{getWeekdayLabel(selectedWeekdays)}</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 

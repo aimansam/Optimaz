@@ -3,23 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
+import { getNextRecurringDueDate } from '@/lib/recurrence';
 import type { Task, TaskStatus, Priority, RecurrenceRule } from '@/lib/types';
 
 const DEFAULT_TASK_QUERY_LIMIT = 500;
 const DASHBOARD_TASK_QUERY_LIMIT = 100;
-
-function getNextRecurringDueDate(dueDate: string | null, rule: RecurrenceRule) {
-  if (!dueDate) return null;
-
-  const nextDate = new Date(`${dueDate}T00:00:00`);
-  if (Number.isNaN(nextDate.getTime())) return null;
-
-  if (rule === 'daily') nextDate.setDate(nextDate.getDate() + 1);
-  if (rule === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-  if (rule === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-
-  return nextDate.toISOString().split('T')[0];
-}
 
 function applyActiveTaskFilter<T extends { is: (column: string, value: null) => T }>(query: T) {
   return query.is('archived_at', null);
@@ -145,6 +133,7 @@ interface CreateTaskInput {
   goal_id?: string;
   is_recurring?: boolean;
   recurrence_rule?: RecurrenceRule;
+  recurrence_weekdays?: number[] | null;
 }
 
 export function useCreateTask() {
@@ -219,7 +208,7 @@ export function useUpdateTask() {
 
       if (!shouldCreateNextOccurrence) return updatedTask;
 
-      const nextDueDate = getNextRecurringDueDate(updatedTask.due_date, updatedTask.recurrence_rule as RecurrenceRule);
+      const nextDueDate = getNextRecurringDueDate(updatedTask.due_date, updatedTask.recurrence_rule as RecurrenceRule, updatedTask.recurrence_weekdays);
       const { error: nextTaskError } = await supabase.from('tasks').insert({
         user_id: updatedTask.user_id,
         project_id: updatedTask.project_id,
@@ -234,18 +223,19 @@ export function useUpdateTask() {
         position: updatedTask.position,
         is_recurring: true,
         recurrence_rule: updatedTask.recurrence_rule,
+        recurrence_weekdays: updatedTask.recurrence_rule === 'weekly' ? updatedTask.recurrence_weekdays : null,
       });
 
       if (nextTaskError) throw nextTaskError;
 
       const { error: pauseCompletedTaskError } = await supabase
         .from('tasks')
-        .update({ is_recurring: false, recurrence_rule: null })
+        .update({ is_recurring: false, recurrence_rule: null, recurrence_weekdays: null })
         .eq('id', updatedTask.id);
 
       if (pauseCompletedTaskError) throw pauseCompletedTaskError;
 
-      return { ...updatedTask, is_recurring: false, recurrence_rule: null } as Task;
+      return { ...updatedTask, is_recurring: false, recurrence_rule: null, recurrence_weekdays: null } as Task;
     },
     onSuccess: (task, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

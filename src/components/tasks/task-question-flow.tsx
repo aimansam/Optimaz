@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCreateTask } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
+import { WEEKDAYS, getWeekdayLabel, normalizeWeekdays } from '@/lib/recurrence';
 import type { Priority, RecurrenceRule, TaskStatus } from '@/lib/types';
 
 interface TaskQuestionFlowProps {
@@ -46,6 +47,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [goalId, setGoalId] = useState(defaultGoalId ?? '');
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>(defaultRecurrenceRule);
+  const [recurrenceWeekdays, setRecurrenceWeekdays] = useState<number[]>([]);
 
   const steps = useMemo(() => [
     { label: 'Task', question: 'What task do you want to add?', optional: false },
@@ -56,6 +58,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
     { label: 'Project', question: 'Which project should this belong to?', optional: true },
     { label: 'Goal', question: 'Does this support a goal?', optional: true },
     { label: 'Repeat', question: 'Should this task repeat?', optional: true },
+    { label: 'Days', question: 'Which days should this repeat?', optional: true },
     { label: 'Review', question: 'Ready to create this task?', optional: false },
   ], []);
 
@@ -68,15 +71,43 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
     : step === 5 ? projectId.length > 0
     : step === 6 ? goalId.length > 0
     : step === 7 ? recurrenceRule.length > 0
+    : step === 8 ? recurrenceWeekdays.length > 0
     : true
   );
   const nextLabel = currentStep.optional && !stepHasValue ? 'Skip' : 'Next';
+
+  function goToPreviousStep() {
+    setStep(current => {
+      if (current === 9 && recurrenceRule !== 'weekly') return 7;
+      return Math.max(current - 1, 0);
+    });
+  }
+
+  function goToNextStep() {
+    setStep(current => {
+      if (current === 7 && recurrenceRule !== 'weekly') return 9;
+      return Math.min(current + 1, steps.length - 1);
+    });
+  }
+
+  function handleRecurrenceChange(value: RecurrenceRule | '') {
+    setRecurrenceRule(value);
+    if (value !== 'weekly') setRecurrenceWeekdays([]);
+  }
+
+  function toggleWeekday(day: number) {
+    setRecurrenceWeekdays(current => (
+      current.includes(day)
+        ? current.filter(item => item !== day)
+        : normalizeWeekdays([...current, day])
+    ));
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!isLastStep) {
-      if (canContinue) setStep(current => Math.min(current + 1, steps.length - 1));
+      if (canContinue) goToNextStep();
       return;
     }
 
@@ -94,6 +125,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
       goal_id: goalId || undefined,
       is_recurring: Boolean(recurrenceRule),
       recurrence_rule: recurrenceRule || undefined,
+      recurrence_weekdays: recurrenceRule === 'weekly' ? normalizeWeekdays(recurrenceWeekdays) : undefined,
     });
     onClose();
   }
@@ -190,19 +222,52 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
         )}
 
         {step === 7 && (
-          <Select value={recurrenceRule} onChange={event => setRecurrenceRule(event.target.value as RecurrenceRule | '')} disabled={createTask.isPending} autoFocus>
+          <Select value={recurrenceRule} onChange={event => handleRecurrenceChange(event.target.value as RecurrenceRule | '')} disabled={createTask.isPending} autoFocus>
             {RECURRENCE_OPTIONS.map(item => <option key={item.value || 'none'} value={item.value}>{item.label}</option>)}
           </Select>
         )}
 
         {step === 8 && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+              {WEEKDAYS.map(day => {
+                const selected = recurrenceWeekdays.includes(day.value);
+                return (
+                  <Button
+                    key={day.value}
+                    type="button"
+                    variant={selected ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-9 px-2"
+                    onClick={() => toggleWeekday(day.value)}
+                    aria-pressed={selected}
+                    disabled={createTask.isPending}
+                  >
+                    {day.short}
+                  </Button>
+                );
+              })}
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setRecurrenceWeekdays(WEEKDAYS.map(day => day.value))}
+              disabled={createTask.isPending}
+            >
+              Sunday to Saturday
+            </Button>
+          </div>
+        )}
+
+        {step === 9 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
             <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
             {notes.trim() && <p className="text-slate-500 dark:text-slate-400">{notes}</p>}
             <p className="text-xs text-slate-400">
               Priority: {priority} · Status: {STATUSES.find(item => item.value === status)?.label}
               {dueDate ? ` · Due: ${dueDate}${dueTime ? ` at ${dueTime}` : ''}` : ''}
-              {recurrenceRule ? ` · Repeats ${recurrenceRule}` : ''}
+              {recurrenceRule ? ` · Repeats ${recurrenceRule}${recurrenceRule === 'weekly' && recurrenceWeekdays.length > 0 ? ` on ${getWeekdayLabel(recurrenceWeekdays)}` : ''}` : ''}
             </p>
           </div>
         )}
@@ -214,7 +279,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
         <Button type="button" variant="ghost" onClick={onClose} disabled={createTask.isPending}>Cancel</Button>
         <div className="flex gap-2">
           {step > 0 && (
-            <Button type="button" variant="secondary" onClick={() => setStep(current => Math.max(current - 1, 0))} disabled={createTask.isPending}>
+            <Button type="button" variant="secondary" onClick={goToPreviousStep} disabled={createTask.isPending}>
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
           )}

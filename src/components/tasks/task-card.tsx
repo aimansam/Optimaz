@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Archive, Check, Trash2, Edit2, CalendarDays, RefreshCw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
+import { getWeekdayLabel } from '@/lib/recurrence';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -129,7 +130,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
 
               {/* Recurring */}
               {task.is_recurring && (
-                <span title={`Recurring ${task.recurrence_rule}`}>
+                <span title={`Recurring ${task.recurrence_rule}${task.recurrence_rule === 'weekly' && getWeekdayLabel(task.recurrence_weekdays) ? ` on ${getWeekdayLabel(task.recurrence_weekdays)}` : ''}`}>
                   <RefreshCw className="h-3 w-3 text-slate-400" />
                 </span>
               )}

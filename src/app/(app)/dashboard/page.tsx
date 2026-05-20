@@ -172,7 +172,18 @@ export default function DashboardPage() {
 						</div>
 					)}
 
-					<DashboardWidget title="Goal Focus">
+					<DashboardWidget
+						title="Goal Focus"
+						action={(
+							<Link
+								href="/goals"
+								className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+							>
+								<Target className="h-5 w-5" />
+								<span className="hidden sm:inline">Goals</span>
+							</Link>
+						)}
+					>
 						<div className="grid gap-3 sm:grid-cols-3">
 							<div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
 								<div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
@@ -201,11 +212,8 @@ export default function DashboardPage() {
 						</div>
 						{nextGoals.length > 0 && (
 							<div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-								<div className="mb-2 flex items-center justify-between gap-2">
+									<div className="mb-2 flex items-center justify-between gap-2">
 									<p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Next outcomes</p>
-									<Link href="/goals" className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-										View goals
-									</Link>
 								</div>
 								<div className="space-y-2">
 									{nextGoals.map((goal) => {

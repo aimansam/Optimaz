@@ -13,6 +13,8 @@ import type { Priority } from '@/lib/types';
 type DueFilter = 'all' | 'overdue' | 'today' | 'upcoming' | 'no_date';
 type DoneFilter = 'show' | 'hide' | 'archived';
 
+const KANBAN_FILTER_VISIBILITY_KEY = 'taskflow:kanban:filters-open';
+
 function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
 }
@@ -24,9 +26,28 @@ export default function KanbanPage() {
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(KANBAN_FILTER_VISIBILITY_KEY) === 'true';
+  });
   const showArchived = doneFilter === 'archived';
   const { data: tasks, isLoading } = useTasksByStatus(undefined, showArchived);
+
+  function toggleFilters() {
+    setShowFilters(current => {
+      const next = !current;
+      window.localStorage.setItem(KANBAN_FILTER_VISIBILITY_KEY, String(next));
+      return next;
+    });
+  }
+
+  function applyQuickView(view: 'active' | 'urgent' | 'today' | 'archived') {
+    setQuery('');
+    setProjectId('');
+    setPriority(view === 'urgent' ? 'urgent' : '');
+    setDueFilter(view === 'today' ? 'today' : 'all');
+    setDoneFilter(view === 'archived' ? 'archived' : 'hide');
+  }
 
   const filteredTasks = useMemo(() => {
     const today = getDateKey(new Date());
@@ -92,11 +113,18 @@ export default function KanbanPage() {
                 <RotateCcw className="h-3.5 w-3.5" />
                 Reset
               </Button>
-              <Button type="button" variant="secondary" size="sm" onClick={() => setShowFilters(current => !current)} aria-expanded={showFilters}>
+              <Button type="button" variant="secondary" size="sm" onClick={toggleFilters} aria-expanded={showFilters}>
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
                 {showFilters ? 'Hide filters' : 'Show filters'}
               </Button>
             </div>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3 dark:border-slate-800">
+            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('active')}>Active</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('urgent')}>Urgent</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('today')}>Due today</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('archived')}>Archived</Button>
           </div>
 
           {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">

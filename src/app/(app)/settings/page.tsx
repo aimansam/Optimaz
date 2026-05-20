@@ -22,6 +22,12 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const accountName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? 'Signed in user';
+  const avatarUrl = user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
+  const accountInitial = accountName.trim().charAt(0).toUpperCase() || 'U';
+  const accountCreatedAt = user?.created_at
+    ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(user.created_at))
+    : 'Unavailable';
 
   // Keep input in sync if user changes
   React.useEffect(() => {
@@ -38,6 +44,20 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 mb-4">
               <User className="h-5 w-5 text-slate-400" />
               <h2 className="font-semibold text-slate-900 dark:text-slate-100">Profile</h2>
+            </div>
+            <div className="mb-5 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
+              <div
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-900 bg-cover bg-center text-sm font-semibold text-white dark:bg-slate-100 dark:text-slate-900"
+                style={avatarUrl ? { backgroundImage: `url(${avatarUrl})` } : undefined}
+                aria-hidden="true"
+              >
+                {!avatarUrl && accountInitial}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{accountName}</p>
+                <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user?.email ?? 'No email available'}</p>
+                <p className="mt-1 text-xs text-slate-400">Joined {accountCreatedAt}</p>
+              </div>
             </div>
             <form
               className="space-y-3"

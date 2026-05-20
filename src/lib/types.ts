@@ -71,6 +71,16 @@ export interface PushSubscription {
   created_at: string;
 }
 
+export interface SavedView<TFilters = Record<string, unknown>> {
+  id: string;
+  user_id: string;
+  view_type: 'kanban';
+  name: string;
+  filters: TFilters;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface KanbanColumn {
   id: TaskStatus;
   label: string;

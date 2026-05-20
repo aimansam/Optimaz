@@ -93,6 +93,17 @@ create table if not exists public.feedback (
   created_at timestamptz not null default now()
 );
 
+-- Saved views table
+create table if not exists public.saved_views (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  view_type text not null check (view_type in ('kanban')),
+  name text not null check (char_length(name) between 1 and 80),
+  filters jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists tasks_goal_id_idx on public.tasks(goal_id);
 create index if not exists goals_user_id_idx on public.goals(user_id);
 create index if not exists goals_user_project_idx on public.goals(user_id, project_id);
@@ -113,6 +124,8 @@ create index if not exists analytics_events_created_at_idx on public.analytics_e
 create index if not exists feedback_user_id_idx on public.feedback(user_id);
 create index if not exists feedback_created_at_idx on public.feedback(created_at desc);
 create index if not exists feedback_category_idx on public.feedback(category);
+create index if not exists saved_views_user_type_idx on public.saved_views(user_id, view_type, updated_at desc);
+create unique index if not exists saved_views_user_type_name_idx on public.saved_views(user_id, view_type, name);
 
 -- Updated_at trigger function
 create or replace function public.handle_updated_at()
@@ -135,6 +148,10 @@ create or replace trigger goals_updated_at
   before update on public.goals
   for each row execute function public.handle_updated_at();
 
+create or replace trigger saved_views_updated_at
+  before update on public.saved_views
+  for each row execute function public.handle_updated_at();
+
 -- Row Level Security
 alter table public.goals enable row level security;
 alter table public.projects enable row level security;
@@ -143,6 +160,7 @@ alter table public.subtasks enable row level security;
 alter table public.push_subscriptions enable row level security;
 alter table public.analytics_events enable row level security;
 alter table public.feedback enable row level security;
+alter table public.saved_views enable row level security;
 
 -- Goals policies
 create policy "Users can view own goals" on public.goals
@@ -199,3 +217,13 @@ create policy "Users can insert own feedback" on public.feedback
   for insert with check (auth.uid() = user_id);
 create policy "Users can view own feedback" on public.feedback
   for select using (auth.uid() = user_id);
+
+-- Saved views policies
+create policy "Users can view own saved views" on public.saved_views
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own saved views" on public.saved_views
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own saved views" on public.saved_views
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own saved views" on public.saved_views
+  for delete using (auth.uid() = user_id);

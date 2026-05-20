@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { useGoals } from '@/hooks/use-goals';
 import { useProjects } from '@/hooks/use-projects';
+import { useDeleteSavedView, useSavedViews, useUpsertSavedView } from '@/hooks/use-saved-views';
 import { useTasksByStatus } from '@/hooks/use-tasks';
 import type { Priority } from '@/lib/types';
 
@@ -23,42 +24,26 @@ type KanbanFilterState = {
   dueFilter: DueFilter;
   doneFilter: DoneFilter;
 };
-type SavedKanbanView = KanbanFilterState & {
-  id: string;
-  name: string;
-};
+type SavedKanbanView = { id: string; name: string; filters: KanbanFilterState };
 
 const KANBAN_FILTER_VISIBILITY_KEY = 'taskflow:kanban:filters-open';
-const KANBAN_SAVED_VIEWS_KEY = 'taskflow:kanban:saved-views';
 
 function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
 }
 
-function readSavedViews() {
-  if (typeof window === 'undefined') return [];
-  try {
-    const value = window.localStorage.getItem(KANBAN_SAVED_VIEWS_KEY);
-    return value ? JSON.parse(value) as SavedKanbanView[] : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeSavedViews(views: SavedKanbanView[]) {
-  window.localStorage.setItem(KANBAN_SAVED_VIEWS_KEY, JSON.stringify(views));
-}
-
 export default function KanbanPage() {
   const { data: projects } = useProjects();
   const { data: goals } = useGoals();
+  const { data: savedViews = [] } = useSavedViews<KanbanFilterState>('kanban');
+  const upsertSavedView = useUpsertSavedView<KanbanFilterState>();
+  const deleteSavedViewMutation = useDeleteSavedView();
   const [query, setQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>('');
   const [goalId, setGoalId] = useState('');
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
-  const [savedViews, setSavedViews] = useState<SavedKanbanView[]>(readSavedViews);
   const [savedViewName, setSavedViewName] = useState('');
   const [showFilters, setShowFilters] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -89,34 +74,23 @@ export default function KanbanPage() {
   }
 
   function applySavedView(view: SavedKanbanView) {
-    setQuery(view.query);
-    setProjectFilter(view.projectFilter);
-    setGoalId(view.goalId);
-    setPriority(view.priority);
-    setDueFilter(view.dueFilter);
-    setDoneFilter(view.doneFilter);
+    setQuery(view.filters.query ?? '');
+    setProjectFilter(view.filters.projectFilter ?? '');
+    setGoalId(view.filters.goalId ?? '');
+    setPriority(view.filters.priority ?? '');
+    setDueFilter(view.filters.dueFilter ?? 'all');
+    setDoneFilter(view.filters.doneFilter ?? 'show');
   }
 
   function saveCurrentView() {
     const name = savedViewName.trim();
     if (!name) return;
-    setSavedViews(current => {
-      const next = [
-        ...current.filter(view => view.name.toLowerCase() !== name.toLowerCase()),
-        { id: String(Date.now()), name, ...getCurrentFilterState() },
-      ];
-      writeSavedViews(next);
-      return next;
-    });
+    upsertSavedView.mutate({ view_type: 'kanban', name, filters: getCurrentFilterState() });
     setSavedViewName('');
   }
 
   function deleteSavedView(id: string) {
-    setSavedViews(current => {
-      const next = current.filter(view => view.id !== id);
-      writeSavedViews(next);
-      return next;
-    });
+    deleteSavedViewMutation.mutate({ id, view_type: 'kanban' });
   }
 
   const projectOptions = useMemo(() => {
@@ -348,9 +322,9 @@ export default function KanbanPage() {
                     placeholder="Name this view"
                   />
                 </label>
-                <Button type="button" variant="secondary" onClick={saveCurrentView} disabled={!savedViewName.trim()}>
+                <Button type="button" variant="secondary" onClick={saveCurrentView} disabled={!savedViewName.trim() || upsertSavedView.isPending}>
                   <Bookmark className="h-3.5 w-3.5" />
-                  Save view
+                  {upsertSavedView.isPending ? 'Saving...' : 'Save view'}
                 </Button>
               </div>
               {savedViews.length > 0 && (
@@ -360,7 +334,7 @@ export default function KanbanPage() {
                       <button type="button" onClick={() => applySavedView(view)} className="hover:text-slate-900 dark:hover:text-white">
                         {view.name}
                       </button>
-                      <button type="button" onClick={() => deleteSavedView(view.id)} aria-label={`Delete saved view ${view.name}`} className="rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-red-500 dark:hover:bg-slate-700">
+                      <button type="button" onClick={() => deleteSavedView(view.id)} aria-label={`Delete saved view ${view.name}`} disabled={deleteSavedViewMutation.isPending} className="rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-red-500 disabled:opacity-50 dark:hover:bg-slate-700">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </span>

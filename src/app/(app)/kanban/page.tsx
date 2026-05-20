@@ -12,6 +12,8 @@ import type { Priority } from '@/lib/types';
 
 type DueFilter = 'all' | 'overdue' | 'today' | 'upcoming' | 'no_date';
 type DoneFilter = 'show' | 'hide' | 'archived';
+type ProjectFilter = '' | `project:${string}` | `group:${string}`;
+type QuickView = 'active' | 'urgent' | 'today' | 'archived';
 
 const KANBAN_FILTER_VISIBILITY_KEY = 'taskflow:kanban:filters-open';
 
@@ -22,7 +24,7 @@ function getDateKey(value: Date) {
 export default function KanbanPage() {
   const { data: projects } = useProjects();
   const [query, setQuery] = useState('');
-  const [projectId, setProjectId] = useState('');
+  const [projectFilter, setProjectFilter] = useState<ProjectFilter>('');
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
@@ -41,13 +43,53 @@ export default function KanbanPage() {
     });
   }
 
-  function applyQuickView(view: 'active' | 'urgent' | 'today' | 'archived') {
+  function applyQuickView(view: QuickView) {
     setQuery('');
-    setProjectId('');
+    setProjectFilter('');
     setPriority(view === 'urgent' ? 'urgent' : '');
     setDueFilter(view === 'today' ? 'today' : 'all');
     setDoneFilter(view === 'archived' ? 'archived' : 'hide');
   }
+
+  const projectOptions = useMemo(() => {
+    const activeProjects = (projects ?? []).filter(project => !project.archived);
+    const topLevelProjects = activeProjects.filter(project => !project.parent_project_id);
+    const subprojectsByParent = new Map<string, typeof activeProjects>();
+
+    for (const project of activeProjects) {
+      if (!project.parent_project_id) continue;
+      const current = subprojectsByParent.get(project.parent_project_id) ?? [];
+      current.push(project);
+      subprojectsByParent.set(project.parent_project_id, current);
+    }
+
+    return topLevelProjects.map(project => ({
+      project,
+      subprojects: subprojectsByParent.get(project.id) ?? [],
+    }));
+  }, [projects]);
+
+  const selectedProjectIds = useMemo(() => {
+    if (!projectFilter) return null;
+    const [mode, id] = projectFilter.split(':');
+    if (!id) return null;
+    if (mode === 'project') return new Set([id]);
+
+    const childIds = (projects ?? [])
+      .filter(project => project.parent_project_id === id && !project.archived)
+      .map(project => project.id);
+    return new Set([id, ...childIds]);
+  }, [projectFilter, projects]);
+
+  const activeQuickView = useMemo<QuickView | null>(() => {
+    if (query.trim() || projectFilter) return null;
+    if (doneFilter === 'archived' && !priority && dueFilter === 'all') return 'archived';
+    if (doneFilter !== 'hide') return null;
+    if (priority === 'urgent' && dueFilter === 'all') return 'urgent';
+    if (!priority && dueFilter === 'today') return 'today';
+    if (!priority && dueFilter === 'all') return 'active';
+    return null;
+  }, [doneFilter, dueFilter, priority, projectFilter, query]);
 
   const filteredTasks = useMemo(() => {
     const today = getDateKey(new Date());
@@ -59,7 +101,7 @@ export default function KanbanPage() {
         || task.title.toLowerCase().includes(normalizedQuery)
         || task.notes?.toLowerCase().includes(normalizedQuery)
         || task.project?.name.toLowerCase().includes(normalizedQuery);
-      const matchesProject = !projectId || task.project_id === projectId;
+      const matchesProject = !selectedProjectIds || (task.project_id !== null && selectedProjectIds.has(task.project_id));
       const matchesPriority = !priority || task.priority === priority;
       const matchesDone = (
         doneFilter === 'show' ? !task.archived_at
@@ -76,15 +118,15 @@ export default function KanbanPage() {
 
       return matchesQuery && matchesProject && matchesPriority && matchesDone && matchesDue;
     });
-  }, [doneFilter, dueFilter, priority, projectId, query, tasks]);
+  }, [doneFilter, dueFilter, priority, query, selectedProjectIds, tasks]);
 
   const trimmedQuery = query.trim();
-  const hasFilters = Boolean(trimmedQuery || projectId || priority || dueFilter !== 'all' || doneFilter !== 'show');
-  const activeFilterCount = [trimmedQuery, projectId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
+  const hasFilters = Boolean(trimmedQuery || projectFilter || priority || dueFilter !== 'all' || doneFilter !== 'show');
+  const activeFilterCount = [trimmedQuery, projectFilter, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
 
   function resetFilters() {
     setQuery('');
-    setProjectId('');
+    setProjectFilter('');
     setPriority('');
     setDueFilter('all');
     setDoneFilter('show');
@@ -121,10 +163,10 @@ export default function KanbanPage() {
           </div>
 
           <div className="mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3 dark:border-slate-800">
-            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('active')}>Active</Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('urgent')}>Urgent</Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('today')}>Due today</Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => applyQuickView('archived')}>Archived</Button>
+            <Button type="button" variant={activeQuickView === 'active' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('active')} aria-pressed={activeQuickView === 'active'}>Active</Button>
+            <Button type="button" variant={activeQuickView === 'urgent' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('urgent')} aria-pressed={activeQuickView === 'urgent'}>Urgent</Button>
+            <Button type="button" variant={activeQuickView === 'today' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('today')} aria-pressed={activeQuickView === 'today'}>Due today</Button>
+            <Button type="button" variant={activeQuickView === 'archived' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('archived')} aria-pressed={activeQuickView === 'archived'}>Archived</Button>
           </div>
 
           {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
@@ -140,10 +182,24 @@ export default function KanbanPage() {
             </label>
 
             <label>
-              <span className="sr-only">Filter by project</span>
-              <Select value={projectId} onChange={event => setProjectId(event.target.value)}>
+              <span className="sr-only">Filter by project or subproject</span>
+              <Select value={projectFilter} onChange={event => setProjectFilter(event.target.value as ProjectFilter)}>
                 <option value="">All projects</option>
-                {projects?.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}
+                {projectOptions.map(({ project, subprojects }) => (
+                  <optgroup key={project.id} label={project.name}>
+                    {subprojects.length > 0 ? (
+                      <>
+                        <option value={`group:${project.id}`}>{project.name} + subprojects</option>
+                        <option value={`project:${project.id}`}>{project.name} only</option>
+                      </>
+                    ) : (
+                      <option value={`project:${project.id}`}>{project.name}</option>
+                    )}
+                    {subprojects.map(subproject => (
+                      <option key={subproject.id} value={`project:${subproject.id}`}>Sub: {subproject.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
               </Select>
             </label>
 

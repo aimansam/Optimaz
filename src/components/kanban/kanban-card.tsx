@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
 import { SubtaskList } from '@/components/tasks/subtask-list';
-import { useRestoreTask, useUpdateTask } from '@/hooks/use-tasks';
+import { useUpdateTask } from '@/hooks/use-tasks';
 
 const PRIORITY_BORDER: Record<string, string> = {
   low: 'border-l-blue-400',
@@ -31,7 +31,6 @@ function getAdjacentStatus(status: TaskStatus, direction: -1 | 1) {
 export function KanbanCard({ task }: { task: Task }) {
   const [editOpen, setEditOpen] = useState(false);
   const updateTask = useUpdateTask();
-  const restoreTask = useRestoreTask();
   const { attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: { task },
@@ -44,7 +43,6 @@ export function KanbanCard({ task }: { task: Task }) {
 
   const priority = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.due_date, task.due_time) && task.status !== 'done';
-  const isArchived = Boolean(task.archived_at);
   const previousStatus = getAdjacentStatus(task.status, -1);
   const nextStatus = getAdjacentStatus(task.status, 1);
 
@@ -207,20 +205,6 @@ export function KanbanCard({ task }: { task: Task }) {
                 {task.status === 'done' ? <RotateCcw className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
                 {task.status === 'done' ? 'Reopen' : 'Done'}
               </Button>
-              {isArchived && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="h-7 px-2 text-[11px]"
-                  onClick={() => restoreTask.mutate(task.id)}
-                  disabled={restoreTask.isPending}
-                  aria-label={`Restore ${task.title}`}
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  Restore
-                </Button>
-              )}
             </div>
 		  </div>
 		</div>

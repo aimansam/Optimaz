@@ -32,6 +32,12 @@ function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
 }
 
+function normalizeDoneFilter(value: string | undefined): DoneFilter {
+  if (value === 'hide' || value === 'show' || value === 'done') return value;
+  if (value === 'archived') return 'done';
+  return 'show';
+}
+
 export default function KanbanPage() {
   const { data: projects } = useProjects();
   const { data: goals } = useGoals();
@@ -43,7 +49,7 @@ export default function KanbanPage() {
   const [goalId, setGoalId] = useState('');
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
-  const [doneFilter, setDoneFilter] = useState<DoneFilter>('hide');
+  const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
   const [savedViewName, setSavedViewName] = useState('');
   const [showFilters, setShowFilters] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -78,7 +84,7 @@ export default function KanbanPage() {
     setGoalId(view.filters.goalId ?? '');
     setPriority(view.filters.priority ?? '');
     setDueFilter(view.filters.dueFilter ?? 'all');
-    setDoneFilter(view.filters.doneFilter ?? 'hide');
+    setDoneFilter(normalizeDoneFilter(view.filters.doneFilter));
   }
 
   function saveCurrentView() {
@@ -153,9 +159,9 @@ export default function KanbanPage() {
       const matchesGoal = !goalId || task.goal_id === goalId;
       const matchesPriority = !priority || task.priority === priority;
       const matchesDone = (
-        doneFilter === 'hide' ? task.status !== 'done' && !task.archived_at
-        : doneFilter === 'show' ? !task.archived_at
-        : task.status === 'done' && !task.archived_at
+        doneFilter === 'hide' ? task.status !== 'done'
+        : doneFilter === 'show' ? true
+        : task.status === 'done'
       );
       const matchesDue = (
         dueFilter === 'all'
@@ -173,12 +179,12 @@ export default function KanbanPage() {
   const taskCounts = useMemo(() => {
     const allTasks = tasks ?? [];
     return {
-      active: allTasks.filter(task => task.status !== 'done' && !task.archived_at).length,
-      completed: allTasks.filter(task => task.status === 'done' && !task.archived_at).length,
+      active: allTasks.filter(task => task.status !== 'done').length,
+      completed: allTasks.filter(task => task.status === 'done').length,
     };
   }, [tasks]);
-  const hasFilters = Boolean(trimmedQuery || projectFilter || goalId || priority || dueFilter !== 'all' || doneFilter !== 'hide');
-  const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'hide' ? doneFilter : ''].filter(Boolean).length;
+  const hasFilters = Boolean(trimmedQuery || projectFilter || goalId || priority || dueFilter !== 'all' || doneFilter !== 'show');
+  const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
 
   function resetFilters() {
     setQuery('');
@@ -186,7 +192,7 @@ export default function KanbanPage() {
     setGoalId('');
     setPriority('');
     setDueFilter('all');
-    setDoneFilter('hide');
+    setDoneFilter('show');
   }
 
   return (

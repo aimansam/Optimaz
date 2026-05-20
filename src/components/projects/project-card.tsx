@@ -28,11 +28,14 @@ type Task = {
 type ProjectCardProps = {
   project: Project;
   allTasks?: Task[];
+  rollupProjectIds?: string[];
+  linkedGoalCount?: number;
+  subprojectCount?: number;
   updateProject: { mutate: (data: { id: string; color?: string; name?: string; favorite?: boolean; archived?: boolean; tags?: string[] }) => void };
   deleteProject: { mutate: (id: string) => void };
 };
 
-const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: ProjectCardProps) => {
+const ProjectCard = ({ project, allTasks, rollupProjectIds = [], linkedGoalCount = 0, subprojectCount = 0, updateProject, deleteProject }: ProjectCardProps) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editName, setEditName] = useState(project.name);
@@ -42,7 +45,8 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
   const allTags: string[] = typeof window !== 'undefined' && (window as unknown as { __ALL_PROJECT_TAGS__?: string[] }).__ALL_PROJECT_TAGS__
     ? (window as unknown as { __ALL_PROJECT_TAGS__?: string[] }).__ALL_PROJECT_TAGS__!
     : [];
-  const projectTasks = allTasks?.filter((t) => t.project_id === project.id) || [];
+  const trackedProjectIds = new Set([project.id, ...rollupProjectIds]);
+  const projectTasks = allTasks?.filter((t) => t.project_id && trackedProjectIds.has(t.project_id)) || [];
   const completed = projectTasks.filter((t) => t.status === 'done').length;
   const overdue = projectTasks.filter((t) => t.due_date && t.status !== 'done' && new Date(t.due_date) < new Date()).length;
   const percent = projectTasks.length > 0 ? Math.round((completed / projectTasks.length) * 100) : 0;
@@ -70,6 +74,11 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
           Subproject
         </span>
       )}
+      {!project.parent_project_id && subprojectCount > 0 && (
+        <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          Includes {subprojectCount} subproject{subprojectCount === 1 ? '' : 's'}
+        </span>
+      )}
       {project.tags && project.tags.length > 0 && (
         <div className="flex gap-2 mt-2 flex-wrap">
           {project.tags.map((tag, i) => (
@@ -95,6 +104,9 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
         <span>Completed: {completed}</span>
         <span>Overdue: {overdue}</span>
       </div>
+      {linkedGoalCount > 0 && (
+        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Goals: {linkedGoalCount}</div>
+      )}
       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{percent}% complete</div>
       <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         {/* Favorite button */}

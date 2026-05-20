@@ -39,12 +39,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [addSubprojectOpen, setAddSubprojectOpen] = useState(false);
 
   const subprojects = projects?.filter((item) => item.parent_project_id === id && !item.archived) ?? [];
-  const linkedGoals = goals?.filter((goal) => goal.project_id === id) ?? [];
+  const projectFamilyIds = [id, ...subprojects.map((item) => item.id)];
+  const linkedGoals = goals?.filter((goal) => goal.project_id && projectFamilyIds.includes(goal.project_id)) ?? [];
   const canCreateSubprojects = !project?.parent_project_id;
   const parentOptions = projects?.filter((item) => !item.archived && !item.parent_project_id && item.id !== id) ?? [];
+  const rollupTasks = allTasks?.filter((task) => task.project_id && projectFamilyIds.includes(task.project_id)) ?? [];
 
-  const total = tasks?.length ?? 0;
-  const completed = tasks?.filter((task) => task.status === 'done').length ?? 0;
+  const total = rollupTasks.length;
+  const completed = rollupTasks.filter((task) => task.status === 'done').length;
   const active = total - completed;
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -166,7 +168,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <div className="mt-5 grid grid-cols-3 gap-3 text-center">
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
                 <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{total}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Total</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Total Tasks</p>
               </div>
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
                 <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{active}</p>
@@ -177,6 +179,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 <p className="text-xs text-slate-500 dark:text-slate-400">Complete</p>
               </div>
             </div>
+            {subprojects.length > 0 && (
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                Includes this project and {subprojects.length} direct subproject{subprojects.length === 1 ? '' : 's'}.
+              </p>
+            )}
             <div className="mt-4 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
               <div className="h-2 rounded-full transition-all" style={{ width: `${percent}%`, backgroundColor: project.color }} />
             </div>
@@ -205,6 +212,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     key={subproject.id}
                     project={subproject}
                     allTasks={allTasks ?? []}
+                    linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id === subproject.id).length}
                     updateProject={updateProject}
                     deleteProject={deleteProject}
                   />

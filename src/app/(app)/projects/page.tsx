@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useProjects, useDeleteProject, useUpdateProject } from '@/hooks/use-projects';
 import { useTasks } from '@/hooks/use-tasks';
+import { useGoals } from '@/hooks/use-goals';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -37,6 +38,7 @@ export default function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
   const deleteProject = useDeleteProject();
   const { data: allTasks } = useTasks();
+  const { data: goals } = useGoals();
   const updateProject = useUpdateProject();
   const [addOpen, setAddOpen] = useState(false);
   // Collect all unique tags from all projects for suggestions
@@ -53,6 +55,11 @@ export default function ProjectsPage() {
     filteredProjects = filteredProjects.filter(p => p.name.toLowerCase().includes(search.trim().toLowerCase()));
   }
   filteredProjects = [...filteredProjects].sort((a, b) => {
+    const getProjectFamilyIds = (projectId: string) => [
+      projectId,
+      ...(projects ?? []).filter((project) => project.parent_project_id === projectId && !project.archived).map((project) => project.id),
+    ];
+
     if (sortBy === 'favorite') {
       // Favorites first, then by name
       if (!!b.favorite === !!a.favorite) {
@@ -64,8 +71,10 @@ export default function ProjectsPage() {
     } else if (sortBy === 'activity') {
       return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
     } else if (sortBy === 'completion') {
-      const aTasks = allTasks?.filter((t) => t.project_id === a.id) || [];
-      const bTasks = allTasks?.filter((t) => t.project_id === b.id) || [];
+      const aProjectIds = new Set(getProjectFamilyIds(a.id));
+      const bProjectIds = new Set(getProjectFamilyIds(b.id));
+      const aTasks = allTasks?.filter((t) => t.project_id && aProjectIds.has(t.project_id)) || [];
+      const bTasks = allTasks?.filter((t) => t.project_id && bProjectIds.has(t.project_id)) || [];
       const aCompleted = aTasks.filter((t) => t.status === 'done').length;
       const bCompleted = bTasks.filter((t) => t.status === 'done').length;
       const aPercent = aTasks.length > 0 ? aCompleted / aTasks.length : 0;
@@ -181,6 +190,9 @@ export default function ProjectsPage() {
                     <MemoizedProjectCard
                       project={project}
                       allTasks={allTasks ?? []}
+                      rollupProjectIds={subprojects.map((subproject) => subproject.id)}
+                      linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id && [project.id, ...subprojects.map((subproject) => subproject.id)].includes(goal.project_id)).length}
+                      subprojectCount={subprojects.length}
                       updateProject={updateProject}
                       deleteProject={deleteProject}
                     />
@@ -194,6 +206,7 @@ export default function ProjectsPage() {
                             key={subproject.id}
                             project={subproject}
                             allTasks={allTasks ?? []}
+                            linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id === subproject.id).length}
                             updateProject={updateProject}
                             deleteProject={deleteProject}
                           />
@@ -213,6 +226,7 @@ export default function ProjectsPage() {
                       key={project.id}
                       project={project}
                       allTasks={allTasks ?? []}
+                      linkedGoalCount={(goals ?? []).filter((goal) => goal.project_id === project.id).length}
                       updateProject={updateProject}
                       deleteProject={deleteProject}
                     />

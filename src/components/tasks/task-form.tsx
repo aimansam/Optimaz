@@ -8,7 +8,7 @@ import { Select } from '@/components/ui/select';
 import { useCreateTask, useUpdateTask } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
-import { WEEKDAYS, getWeekdayLabel, normalizeWeekdays } from '@/lib/recurrence';
+import { WEEKDAYS, WEEKDAY_PRESETS, getWeekdayLabel, normalizeWeekdays } from '@/lib/recurrence';
 import type { Task, Priority, TaskStatus, RecurrenceRule } from '@/lib/types';
 import { SubtaskList } from './subtask-list2';
 
@@ -209,6 +209,19 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
             </Select>
             {recurrenceRule === 'weekly' && (
               <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {WEEKDAY_PRESETS.map(preset => (
+                    <Button
+                      key={preset.label}
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setValue('recurrence_weekdays', [...preset.days], { shouldDirty: true })}
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
                 <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
                   {WEEKDAYS.map(day => {
                     const selected = selectedWeekdays.includes(day.value);
@@ -227,14 +240,9 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
                     );
                   })}
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button type="button" variant="secondary" size="sm" onClick={() => setValue('recurrence_weekdays', WEEKDAYS.map(day => day.value), { shouldDirty: true })}>
-                    Sunday to Saturday
-                  </Button>
-                  {selectedWeekdays.length > 0 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{getWeekdayLabel(selectedWeekdays)}</span>
-                  )}
-                </div>
+                {selectedWeekdays.length > 0 && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Selected: {getWeekdayLabel(selectedWeekdays)}</p>
+                )}
               </div>
             )}
           </div>

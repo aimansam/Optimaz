@@ -10,6 +10,12 @@ export const WEEKDAYS = [
   { value: 6, short: 'Sat', label: 'Saturday' },
 ] as const;
 
+export const WEEKDAY_PRESETS = [
+  { label: 'Weekdays', days: [1, 2, 3, 4, 5] },
+  { label: 'Weekend', days: [0, 6] },
+  { label: 'Every day', days: WEEKDAYS.map(day => day.value) },
+] as const;
+
 export function normalizeWeekdays(days: number[] | null | undefined) {
   return [...new Set(days ?? [])]
     .filter(day => Number.isInteger(day) && day >= 0 && day <= 6)

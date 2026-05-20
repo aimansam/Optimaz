@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ChevronDown, Filter, RotateCcw, Search } from 'lucide-react';
+import { Bookmark, ChevronDown, Filter, RotateCcw, Search, Trash2 } from 'lucide-react';
 import { KanbanBoard } from '@/components/kanban/kanban-board';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,11 +15,38 @@ type DueFilter = 'all' | 'overdue' | 'today' | 'upcoming' | 'no_date';
 type DoneFilter = 'show' | 'hide' | 'archived';
 type ProjectFilter = '' | `project:${string}` | `group:${string}`;
 type QuickView = 'active' | 'urgent' | 'today' | 'archived';
+type KanbanFilterState = {
+  query: string;
+  projectFilter: ProjectFilter;
+  goalId: string;
+  priority: Priority | '';
+  dueFilter: DueFilter;
+  doneFilter: DoneFilter;
+};
+type SavedKanbanView = KanbanFilterState & {
+  id: string;
+  name: string;
+};
 
 const KANBAN_FILTER_VISIBILITY_KEY = 'taskflow:kanban:filters-open';
+const KANBAN_SAVED_VIEWS_KEY = 'taskflow:kanban:saved-views';
 
 function getDateKey(value: Date) {
   return value.toISOString().split('T')[0];
+}
+
+function readSavedViews() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const value = window.localStorage.getItem(KANBAN_SAVED_VIEWS_KEY);
+    return value ? JSON.parse(value) as SavedKanbanView[] : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSavedViews(views: SavedKanbanView[]) {
+  window.localStorage.setItem(KANBAN_SAVED_VIEWS_KEY, JSON.stringify(views));
 }
 
 export default function KanbanPage() {
@@ -31,6 +58,8 @@ export default function KanbanPage() {
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
+  const [savedViews, setSavedViews] = useState<SavedKanbanView[]>(readSavedViews);
+  const [savedViewName, setSavedViewName] = useState('');
   const [showFilters, setShowFilters] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(KANBAN_FILTER_VISIBILITY_KEY) === 'true';
@@ -53,6 +82,41 @@ export default function KanbanPage() {
     setPriority(view === 'urgent' ? 'urgent' : '');
     setDueFilter(view === 'today' ? 'today' : 'all');
     setDoneFilter(view === 'archived' ? 'archived' : 'hide');
+  }
+
+  function getCurrentFilterState(): KanbanFilterState {
+    return { query, projectFilter, goalId, priority, dueFilter, doneFilter };
+  }
+
+  function applySavedView(view: SavedKanbanView) {
+    setQuery(view.query);
+    setProjectFilter(view.projectFilter);
+    setGoalId(view.goalId);
+    setPriority(view.priority);
+    setDueFilter(view.dueFilter);
+    setDoneFilter(view.doneFilter);
+  }
+
+  function saveCurrentView() {
+    const name = savedViewName.trim();
+    if (!name) return;
+    setSavedViews(current => {
+      const next = [
+        ...current.filter(view => view.name.toLowerCase() !== name.toLowerCase()),
+        { id: String(Date.now()), name, ...getCurrentFilterState() },
+      ];
+      writeSavedViews(next);
+      return next;
+    });
+    setSavedViewName('');
+  }
+
+  function deleteSavedView(id: string) {
+    setSavedViews(current => {
+      const next = current.filter(view => view.id !== id);
+      writeSavedViews(next);
+      return next;
+    });
   }
 
   const projectOptions = useMemo(() => {
@@ -259,6 +323,52 @@ export default function KanbanPage() {
               </Select>
             </label>
           </div>}
+
+          {showFilters && (
+            <div className="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800">
+              <div className="grid gap-2 sm:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_auto]">
+                <label>
+                  <span className="sr-only">Saved Kanban views</span>
+                  <Select
+                    value=""
+                    onChange={event => {
+                      const view = savedViews.find(item => item.id === event.target.value);
+                      if (view) applySavedView(view);
+                    }}
+                  >
+                    <option value="">Saved views</option>
+                    {savedViews.map(view => <option key={view.id} value={view.id}>{view.name}</option>)}
+                  </Select>
+                </label>
+                <label>
+                  <span className="sr-only">Saved view name</span>
+                  <Input
+                    value={savedViewName}
+                    onChange={event => setSavedViewName(event.target.value)}
+                    placeholder="Name this view"
+                  />
+                </label>
+                <Button type="button" variant="secondary" onClick={saveCurrentView} disabled={!savedViewName.trim()}>
+                  <Bookmark className="h-3.5 w-3.5" />
+                  Save view
+                </Button>
+              </div>
+              {savedViews.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {savedViews.map(view => (
+                    <span key={view.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      <button type="button" onClick={() => applySavedView(view)} className="hover:text-slate-900 dark:hover:text-white">
+                        {view.name}
+                      </button>
+                      <button type="button" onClick={() => deleteSavedView(view.id)} aria-label={`Delete saved view ${view.name}`} className="rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-red-500 dark:hover:bg-slate-700">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {isLoading ? (

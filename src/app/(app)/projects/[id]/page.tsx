@@ -4,6 +4,7 @@ import { use, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TaskList } from '@/components/tasks/task-list';
+import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { useTasks } from '@/hooks/use-tasks';
 import { useDeleteProject, useProjects, useUpdateProject } from '@/hooks/use-projects';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
@@ -14,7 +15,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Archive, ChevronRight, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
+import { Archive, CheckCircle2, ChevronRight, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -34,6 +35,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [editTags, setEditTags] = useState('');
   const [editParentProjectId, setEditParentProjectId] = useState('');
   const [addSubprojectOpen, setAddSubprojectOpen] = useState(false);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
 
   const subprojects = projects?.filter((item) => item.parent_project_id === id && !item.archived) ?? [];
   const projectFamilyIds = [id, ...subprojects.map((item) => item.id)];
@@ -43,7 +45,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   const total = rollupTasks.length;
   const completed = rollupTasks.filter((task) => task.status === 'done').length;
-  const active = total - completed;
+  const inProgress = rollupTasks.filter((task) => task.status === 'in_progress').length;
+  const todo = rollupTasks.filter((task) => task.status === 'todo').length;
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   function openEdit() {
@@ -81,9 +84,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
       <div className="flex-1 overflow-y-auto p-6">
         {project ? (
-          <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div className="flex min-w-0 gap-4">
+          <div
+            className="mb-6 rounded-xl border p-5"
+            style={{ borderColor: project.color + '40', backgroundColor: project.color + '08' }}
+          >
+            <div className="flex flex-col gap-4 md:flex-row md:items-start">
+              <div className="flex min-w-0 flex-1 gap-4">
                 <div
                   className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                   style={{ backgroundColor: `${project.color}20` }}
@@ -114,6 +120,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   {project.description && (
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{project.description}</p>
                   )}
+                  {subprojects.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      Includes this project and {subprojects.length} direct subproject{subprojects.length === 1 ? '' : 's'}.
+                    </p>
+                  )}
                   {(project.tags?.length ?? 0) > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
                       {project.tags?.map((tag) => (
@@ -125,63 +136,64 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   )}
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 md:justify-end">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => updateProject.mutate({ id: project.id, favorite: !project.favorite })}
-                >
-                  <Star className="h-3.5 w-3.5" />
-                  {project.favorite ? 'Unfavorite' : 'Favorite'}
-                </Button>
-                <Button type="button" size="sm" variant="secondary" onClick={openEdit}>
-                  <Edit2 className="h-3.5 w-3.5" />
-                  Edit
-                </Button>
-                {canCreateSubprojects && (
-                  <Button type="button" size="sm" variant="secondary" onClick={() => setAddSubprojectOpen(true)}>
-                    <Plus className="h-3.5 w-3.5" />
-                    Add subproject
+              <div className="shrink-0 text-left md:text-right">
+                <p className="text-3xl font-bold" style={{ color: project.color }}>{percent}%</p>
+                <p className="flex items-center gap-1 text-xs text-slate-400 md:justify-end">
+                  <CheckCircle2 className="h-3 w-3" />
+                  {completed}/{total} tasks
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2 md:justify-end">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="gap-1"
+                    onClick={() => updateProject.mutate({ id: project.id, favorite: !project.favorite })}
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    {project.favorite ? 'Unfavorite' : 'Favorite'}
                   </Button>
-                )}
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => updateProject.mutate({ id: project.id, archived: !project.archived })}
-                >
-                  <Archive className="h-3.5 w-3.5" />
-                  {project.archived ? 'Unarchive' : 'Archive'}
-                </Button>
-                <Button type="button" size="sm" variant="danger" onClick={() => setDeleteOpen(true)}>
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Delete
-                </Button>
+                  <Button type="button" size="sm" variant="secondary" className="gap-1" onClick={openEdit}>
+                    <Edit2 className="h-3.5 w-3.5" />
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="gap-1"
+                    onClick={() => updateProject.mutate({ id: project.id, archived: !project.archived })}
+                  >
+                    <Archive className="h-3.5 w-3.5" />
+                    {project.archived ? 'Unarchive' : 'Archive'}
+                  </Button>
+                  <Button type="button" size="sm" variant="danger" className="gap-1" onClick={() => setDeleteOpen(true)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
-                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{total}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Total Tasks</p>
-              </div>
-              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
-                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{active}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Active</p>
-              </div>
-              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
-                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{percent}%</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Complete</p>
+            <div className="mt-4">
+              <div className="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700">
+                <div className="h-3 rounded-full transition-all duration-700" style={{ width: `${percent}%`, backgroundColor: project.color }} />
               </div>
             </div>
-            {subprojects.length > 0 && (
-              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                Includes this project and {subprojects.length} direct subproject{subprojects.length === 1 ? '' : 's'}.
-              </p>
-            )}
-            <div className="mt-4 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800">
-              <div className="h-2 rounded-full transition-all" style={{ width: `${percent}%`, backgroundColor: project.color }} />
+
+            <div className="mt-5 grid gap-3 text-center sm:grid-cols-3">
+              <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
+                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{todo}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">To Do</p>
+              </div>
+              <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
+                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{inProgress}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">In Progress</p>
+              </div>
+              <div className="rounded-lg bg-white/70 p-3 dark:bg-slate-900/60">
+                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{completed}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Done</p>
+              </div>
             </div>
           </div>
         ) : projects ? (
@@ -221,7 +233,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Project Tasks</h3>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Project Tasks</h3>
+          <Button type="button" size="sm" onClick={() => setAddTaskOpen(true)}>
+            <Plus className="h-3.5 w-3.5" />
+            Add Task
+          </Button>
+        </div>
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(3)].map((_, i) => (
@@ -233,6 +251,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             tasks={tasks ?? []}
             emptyMessage="No tasks in this project yet"
             defaultProjectId={id}
+            showAddButton={false}
           />
         )}
       </div>
@@ -280,6 +299,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </Dialog>
           <Dialog open={addSubprojectOpen} onClose={() => setAddSubprojectOpen(false)} title="Add Subproject" className="min-h-0 sm:max-w-lg">
             <ProjectQuestionFlow defaultParentProjectId={project.id} onClose={() => setAddSubprojectOpen(false)} />
+          </Dialog>
+          <Dialog open={addTaskOpen} onClose={() => setAddTaskOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
+            <TaskQuestionFlow defaultProjectId={id} onClose={() => setAddTaskOpen(false)} />
           </Dialog>
           <ConfirmationDialog
             open={deleteOpen}

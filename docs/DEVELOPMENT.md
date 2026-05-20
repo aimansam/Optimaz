@@ -59,7 +59,7 @@ Override the target with `SMOKE_BASE_URL`:
 SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke
 ```
 
-The default run verifies public behavior such as the login page, protected-route redirects, legal pages, and PWA assets. Authenticated route checks are optional. To create a local storage state, run:
+The default run verifies public behavior such as the login page, protected-route redirects, legal pages, PWA assets, and API payload validation. Authenticated route checks are optional and cover the dashboard, projects, goals, routines, calendar, kanban, settings, notifications, and feedback. To create a local storage state, run:
 
 ```bash
 npm run test:smoke:auth-state

@@ -1,6 +1,19 @@
+import { existsSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 const authState = process.env.SMOKE_AUTH_STATE;
+const hasAuthState = Boolean(authState && existsSync(authState));
+
+async function expectSignedInPage(page: Page, path: string, heading: string) {
+  await page.goto(`${path}?smoke=1`);
+
+  if (page.url().includes('/auth/login')) {
+    throw new Error('Authenticated smoke state is missing or expired. Re-run npm run test:smoke:auth-state, then retry with SMOKE_AUTH_STATE=tests/.auth/user.json.');
+  }
+
+  await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+}
 
 test.describe('public live smoke', () => {
   test('login page exposes Google sign-in only', async ({ page }) => {
@@ -64,33 +77,36 @@ test.describe('public live smoke', () => {
 });
 
 test.describe('authenticated live smoke', () => {
-  test.skip(!authState, 'Set SMOKE_AUTH_STATE=tests/.auth/user.json to run authenticated live smoke tests.');
+  test.skip(!hasAuthState, 'Set SMOKE_AUTH_STATE=tests/.auth/user.json after running npm run test:smoke:auth-state.');
   test.use({ storageState: authState });
 
   test('core app pages render for signed-in users', async ({ page }) => {
-    await page.goto('/dashboard?smoke=1');
-    await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+    await expectSignedInPage(page, '/dashboard', 'Today');
     await expect(page.getByRole('button', { name: 'Add Task' })).toBeVisible();
 
-    await page.goto('/projects?smoke=1');
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
+    await expectSignedInPage(page, '/projects', 'Projects');
     await expect(page.getByRole('button', { name: 'Add Project' })).toBeVisible();
 
-    await page.goto('/goals?smoke=1');
-    await expect(page.getByRole('heading', { name: 'Goals' })).toBeVisible();
+    await expectSignedInPage(page, '/goals', 'Goals');
     await expect(page.getByRole('button', { name: 'Add Goal' })).toBeVisible();
 
-    await page.goto('/kanban?smoke=1');
-    await expect(page.getByRole('heading', { name: 'Kanban' })).toBeVisible();
+    await expectSignedInPage(page, '/routines', 'Routines');
+    await expect(page.getByRole('button', { name: 'Add routine' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+
+    await expectSignedInPage(page, '/calendar', 'Calendar');
+    await expect(page.getByRole('button', { name: 'Month' })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', { name: 'Week' }).click();
+    await expect(page.getByRole('button', { name: 'Week' })).toHaveAttribute('aria-pressed', 'true');
+
+    await expectSignedInPage(page, '/kanban', 'Kanban');
     await expect(page.getByText('To Do')).toBeVisible();
     await expect(page.getByText('In Progress')).toBeVisible();
     await expect(page.getByText('Done')).toBeVisible();
 
-    await page.goto('/settings?smoke=1');
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
-    await expect(page.getByText('Export your data')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
+    await expectSignedInPage(page, '/settings', 'Settings');
+    await expect(page.getByRole('heading', { name: 'Account settings' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Push Notifications' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
   });
 

@@ -9,16 +9,18 @@ import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useRecurringTasks, useUpdateTask } from '@/hooks/use-tasks';
 import { getWeekdayLabel } from '@/lib/recurrence';
-import { formatDate } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import type { RecurrenceRule, Task } from '@/lib/types';
 
-type RoutineFilter = 'all' | RecurrenceRule;
+type RoutineFilter = 'all' | RecurrenceRule | 'longer' | 'ready';
 
 const ROUTINE_FILTERS: { value: RoutineFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
   { value: 'monthly', label: 'Monthly' },
+  { value: 'longer', label: 'Weekly + monthly' },
+  { value: 'ready', label: 'Ready' },
 ];
 
 const ROUTINE_GROUPS: { value: RecurrenceRule; label: string }[] = [
@@ -53,8 +55,61 @@ export default function RoutinesPage() {
   }), [routines]);
 
   const filteredRoutines = useMemo(() => (
-    filter === 'all' ? routines : routines.filter(task => task.recurrence_rule === filter)
+    filter === 'all' || filter === 'ready' ? routines
+    : filter === 'longer' ? routines.filter(task => task.recurrence_rule === 'weekly' || task.recurrence_rule === 'monthly')
+    : routines.filter(task => task.recurrence_rule === filter)
   ), [filter, routines]);
+
+  const statCards = [
+    {
+      value: 'all' as const,
+      title: 'Total routines',
+      count: stats.all,
+      description: 'Daily, weekly, and monthly',
+      icon: Repeat2,
+      className: 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70',
+      activeClassName: 'border-slate-300 bg-slate-100 dark:border-slate-700 dark:bg-slate-800',
+      countClassName: 'text-slate-900 dark:text-slate-100',
+      descriptionClassName: 'text-slate-500 dark:text-slate-400',
+      iconClassName: 'text-slate-500',
+    },
+    {
+      value: 'ready' as const,
+      title: 'Ready',
+      count: stats.active,
+      description: 'Current routine instances',
+      icon: CheckCircle2,
+      className: 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100/70 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-emerald-300 dark:hover:bg-emerald-950/40',
+      activeClassName: 'border-emerald-300 bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/50',
+      countClassName: 'text-emerald-700 dark:text-emerald-300',
+      descriptionClassName: 'text-emerald-700/80 dark:text-emerald-300/80',
+      iconClassName: '',
+    },
+    {
+      value: 'daily' as const,
+      title: 'Daily',
+      count: stats.daily,
+      description: 'Everyday habits',
+      icon: CalendarClock,
+      className: 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70',
+      activeClassName: 'border-slate-300 bg-slate-100 dark:border-slate-700 dark:bg-slate-800',
+      countClassName: 'text-slate-900 dark:text-slate-100',
+      descriptionClassName: 'text-slate-500 dark:text-slate-400',
+      iconClassName: 'text-slate-500',
+    },
+    {
+      value: 'longer' as const,
+      title: 'Weekly + monthly',
+      count: stats.weekly + stats.monthly,
+      description: 'Longer cadence work',
+      icon: CalendarClock,
+      className: 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70',
+      activeClassName: 'border-slate-300 bg-slate-100 dark:border-slate-700 dark:bg-slate-800',
+      countClassName: 'text-slate-900 dark:text-slate-100',
+      descriptionClassName: 'text-slate-500 dark:text-slate-400',
+      iconClassName: 'text-slate-500',
+    },
+  ];
 
   function pauseRoutine(task: Task) {
     updateTask.mutate({ id: task.id, is_recurring: false, recurrence_rule: null, recurrence_weekdays: null });
@@ -79,38 +134,31 @@ export default function RoutinesPage() {
           </div>
 
           <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <Repeat2 className="h-4 w-4 text-slate-500" />
-                Total routines
-              </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.all}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Daily, weekly, and monthly</p>
-            </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-4 w-4" />
-                Ready
-              </div>
-              <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.active}</p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Current routine instances</p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CalendarClock className="h-4 w-4 text-slate-500" />
-                Daily
-              </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.daily}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Everyday habits</p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CalendarClock className="h-4 w-4 text-slate-500" />
-                Weekly + monthly
-              </div>
-              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.weekly + stats.monthly}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Longer cadence work</p>
-            </div>
+            {statCards.map(card => {
+              const Icon = card.icon;
+              const isActive = filter === card.value;
+
+              return (
+                <button
+                  key={card.title}
+                  type="button"
+                  onClick={() => setFilter(card.value)}
+                  aria-pressed={isActive}
+                  className={cn(
+                    'rounded-xl border p-4 text-left shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400',
+                    card.className,
+                    isActive && card.activeClassName
+                  )}
+                >
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Icon className={cn('h-4 w-4', card.iconClassName)} />
+                    {card.title}
+                  </div>
+                  <p className={cn('mt-2 text-2xl font-bold tabular-nums', card.countClassName)}>{card.count}</p>
+                  <p className={cn('text-xs', card.descriptionClassName)}>{card.description}</p>
+                </button>
+              );
+            })}
           </div>
 
           <div className="mb-5 flex flex-wrap gap-1.5 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950">
@@ -156,7 +204,7 @@ export default function RoutinesPage() {
             />
           ) : (
             <div className="space-y-8">
-              {ROUTINE_GROUPS.filter(group => filter === 'all' || filter === group.value).map(group => {
+              {ROUTINE_GROUPS.filter(group => filter === 'all' || filter === 'ready' || filter === group.value || (filter === 'longer' && group.value !== 'daily')).map(group => {
                 const groupTasks = filteredRoutines.filter(task => task.recurrence_rule === group.value);
                 if (groupTasks.length === 0) return null;
 

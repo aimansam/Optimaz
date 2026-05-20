@@ -66,6 +66,11 @@ export default function KanbanPage() {
   }
 
   function applyQuickView(view: QuickView) {
+    if (activeQuickView === view) {
+      resetFilters();
+      return;
+    }
+
     setQuery('');
     setProjectFilter('');
     setGoalId('');

@@ -101,6 +101,18 @@ test.describe('authenticated live smoke', () => {
     await expect(page.getByText('Task alerts and recent progress')).toBeVisible();
   });
 
+  test('kanban filters expose project and quick-view controls', async ({ page }) => {
+    await page.goto('/kanban?smoke=filters');
+
+    await page.getByRole('button', { name: 'Show filters' }).click();
+    await expect(page.getByLabel('Filter by project or subproject')).toBeVisible();
+    await expect(page.getByLabel('Filter by priority')).toBeVisible();
+    await expect(page.getByLabel('Done task visibility')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Urgent' }).click();
+    await expect(page.getByRole('button', { name: 'Urgent' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('feedback dialog opens from the header', async ({ page }) => {
     await page.goto('/dashboard?smoke=feedback');
 

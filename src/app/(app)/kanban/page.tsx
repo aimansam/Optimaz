@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Archive, Bookmark, ChevronDown, Filter, RotateCcw, Search, Trash2 } from 'lucide-react';
+import { Bookmark, ChevronDown, Filter, RotateCcw, Search, Trash2 } from 'lucide-react';
 import { KanbanBoard } from '@/components/kanban/kanban-board';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,13 +9,13 @@ import { Select } from '@/components/ui/select';
 import { useGoals } from '@/hooks/use-goals';
 import { useProjects } from '@/hooks/use-projects';
 import { useDeleteSavedView, useSavedViews, useUpsertSavedView } from '@/hooks/use-saved-views';
-import { useArchiveTask, useTasksByStatus } from '@/hooks/use-tasks';
+import { useTasksByStatus } from '@/hooks/use-tasks';
 import type { Priority } from '@/lib/types';
 
 type DueFilter = 'all' | 'overdue' | 'today' | 'upcoming' | 'no_date';
-type DoneFilter = 'hide' | 'show' | 'done' | 'archived';
+type DoneFilter = 'hide' | 'show' | 'done';
 type ProjectFilter = '' | `project:${string}` | `group:${string}`;
-type QuickView = 'active' | 'urgent' | 'today' | 'completed' | 'archived';
+type QuickView = 'active' | 'urgent' | 'today' | 'completed';
 type KanbanFilterState = {
   query: string;
   projectFilter: ProjectFilter;
@@ -38,7 +38,6 @@ export default function KanbanPage() {
   const { data: savedViews = [] } = useSavedViews<KanbanFilterState>('kanban');
   const upsertSavedView = useUpsertSavedView<KanbanFilterState>();
   const deleteSavedViewMutation = useDeleteSavedView();
-  const archiveTask = useArchiveTask();
   const [query, setQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>('');
   const [goalId, setGoalId] = useState('');
@@ -66,7 +65,7 @@ export default function KanbanPage() {
     setGoalId('');
     setPriority(view === 'urgent' ? 'urgent' : '');
     setDueFilter(view === 'today' ? 'today' : 'all');
-    setDoneFilter(view === 'archived' ? 'archived' : view === 'completed' ? 'done' : 'hide');
+    setDoneFilter(view === 'completed' ? 'done' : 'hide');
   }
 
   function getCurrentFilterState(): KanbanFilterState {
@@ -125,7 +124,6 @@ export default function KanbanPage() {
 
   const activeQuickView = useMemo<QuickView | null>(() => {
     if (query.trim() || projectFilter || goalId) return null;
-    if (doneFilter === 'archived' && !priority && dueFilter === 'all') return 'archived';
     if (doneFilter === 'done' && !priority && dueFilter === 'all') return 'completed';
     if (doneFilter !== 'hide') return null;
     if (priority === 'urgent' && dueFilter === 'all') return 'urgent';
@@ -157,8 +155,7 @@ export default function KanbanPage() {
       const matchesDone = (
         doneFilter === 'hide' ? task.status !== 'done' && !task.archived_at
         : doneFilter === 'show' ? !task.archived_at
-        : doneFilter === 'done' ? task.status === 'done' && !task.archived_at
-        : Boolean(task.archived_at)
+        : task.status === 'done' && !task.archived_at
       );
       const matchesDue = (
         dueFilter === 'all'
@@ -178,13 +175,8 @@ export default function KanbanPage() {
     return {
       active: allTasks.filter(task => task.status !== 'done' && !task.archived_at).length,
       completed: allTasks.filter(task => task.status === 'done' && !task.archived_at).length,
-      archived: allTasks.filter(task => task.archived_at).length,
     };
   }, [tasks]);
-  const visibleCompletedTasks = useMemo(
-    () => filteredTasks.filter(task => task.status === 'done' && !task.archived_at),
-    [filteredTasks]
-  );
   const hasFilters = Boolean(trimmedQuery || projectFilter || goalId || priority || dueFilter !== 'all' || doneFilter !== 'hide');
   const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'hide' ? doneFilter : ''].filter(Boolean).length;
 
@@ -195,10 +187,6 @@ export default function KanbanPage() {
     setPriority('');
     setDueFilter('all');
     setDoneFilter('hide');
-  }
-
-  async function archiveVisibleCompletedTasks() {
-    await Promise.all(visibleCompletedTasks.map(task => archiveTask.mutateAsync(task.id)));
   }
 
   return (
@@ -236,13 +224,6 @@ export default function KanbanPage() {
             <Button type="button" variant={activeQuickView === 'urgent' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('urgent')} aria-pressed={activeQuickView === 'urgent'}>Urgent</Button>
             <Button type="button" variant={activeQuickView === 'today' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('today')} aria-pressed={activeQuickView === 'today'}>Due today</Button>
             <Button type="button" variant={activeQuickView === 'completed' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('completed')} aria-pressed={activeQuickView === 'completed'}>Completed <span className="tabular-nums">{taskCounts.completed}</span></Button>
-            <Button type="button" variant={activeQuickView === 'archived' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('archived')} aria-pressed={activeQuickView === 'archived'}>Archive <span className="tabular-nums">{taskCounts.archived}</span></Button>
-            {doneFilter === 'done' && visibleCompletedTasks.length > 0 && (
-              <Button type="button" variant="secondary" size="sm" onClick={archiveVisibleCompletedTasks} disabled={archiveTask.isPending}>
-                <Archive className="h-3.5 w-3.5" />
-                {archiveTask.isPending ? 'Archiving...' : `Archive ${visibleCompletedTasks.length}`}
-              </Button>
-            )}
           </div>
 
           {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
@@ -319,7 +300,6 @@ export default function KanbanPage() {
                 <option value="hide">Hide done</option>
                 <option value="show">Show done</option>
                 <option value="done">Completed only</option>
-                <option value="archived">Archived done</option>
               </Select>
             </label>
           </div>}

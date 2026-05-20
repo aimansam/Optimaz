@@ -9,6 +9,7 @@ function getPageTitle(pathname: string) {
   if (pathname === '/dashboard') return 'Today';
   if (pathname === '/goals') return 'Goals';
   if (pathname.startsWith('/goals/')) return 'Goal';
+  if (pathname === '/routines') return 'Routines';
   if (pathname === '/kanban') return 'Kanban';
   if (pathname === '/projects') return 'Projects';
   if (pathname.startsWith('/projects/')) return 'Project';

@@ -38,14 +38,14 @@ export default function SettingsPage() {
     <>
 
       <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-lg space-y-6">
-          {/* Profile */}
+        <div className="max-w-2xl space-y-6">
+          {/* Account settings */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="mb-5 flex items-center gap-2">
               <User className="h-5 w-5 text-slate-400" />
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Profile</h2>
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Account settings</h2>
             </div>
-            <div className="mb-5 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-5 dark:border-slate-800">
               <div
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-900 bg-cover bg-center text-sm font-semibold text-white dark:bg-slate-100 dark:text-slate-900"
                 style={avatarUrl ? { backgroundImage: `url(${avatarUrl})` } : undefined}
@@ -60,7 +60,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <form
-              className="space-y-3"
+              className="space-y-3 border-b border-slate-100 py-5 dark:border-slate-800"
               onSubmit={e => {
                 e.preventDefault();
                 updateUser(displayName);
@@ -83,21 +83,14 @@ export default function SettingsPage() {
                 {saveError && <span className="text-xs text-red-500">Error saving name</span>}
               </div>
             </form>
-          </section>
-
-          {/* Account */}
-          <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-            <div className="mb-4 flex items-center gap-2">
-              <User className="h-5 w-5 text-slate-400" />
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Account</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex flex-col gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/60 dark:bg-red-950/20 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+            <div className="pt-5">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Danger zone</p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-red-700 dark:text-red-300">Delete account</p>
                   <p className="text-xs text-red-500 dark:text-red-300/80">Permanently remove your account and TaskFlow data.</p>
                 </div>
-                <Button type="button" variant="danger" size="sm" onClick={() => setDeleteDialogOpen(true)}>
+                <Button type="button" variant="danger" size="sm" onClick={() => setDeleteDialogOpen(true)} className="self-start sm:self-auto">
                   <Trash2 className="h-4 w-4" />
                   Delete
                 </Button>

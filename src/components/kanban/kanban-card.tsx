@@ -2,11 +2,12 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, Edit2, GripVertical, RefreshCw, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, GripVertical, RefreshCw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { getWeekdayLabel } from '@/lib/recurrence';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TaskActions } from '@/components/tasks/task-actions';
 import type { Task, TaskStatus } from '@/lib/types';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
@@ -102,15 +103,7 @@ export function KanbanCard({ task }: { task: Task }) {
           <div className="min-w-0 flex-1 relative">
             <div className="flex items-start justify-between gap-2">
               <p className="min-w-0 truncate text-sm font-medium leading-snug text-slate-800 dark:text-slate-100">{task.title}</p>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 shrink-0 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                onClick={() => setEditOpen(true)}
-                aria-label={`Edit ${task.title}`}
-              >
-                <Edit2 className="h-3.5 w-3.5" />
-              </Button>
+              <TaskActions task={task} showComplete={false} showDelete={false} onEdit={() => setEditOpen(true)} className="shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100" />
             </div>
             {task.notes && (
               <p className="mt-0.5 text-xs text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</p>
@@ -193,18 +186,7 @@ export function KanbanCard({ task }: { task: Task }) {
                   <ArrowRight className="h-3 w-3" />
                 </Button>
               )}
-              <Button
-                type="button"
-                variant={task.status === 'done' ? 'ghost' : 'secondary'}
-                size="sm"
-                className="h-7 px-2 text-[11px]"
-                onClick={() => updateStatus(task.status === 'done' ? 'todo' : 'done')}
-                disabled={updateTask.isPending}
-                aria-label={task.status === 'done' ? `Reopen ${task.title}` : `Mark ${task.title} done`}
-              >
-                {task.status === 'done' ? <RotateCcw className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
-                {task.status === 'done' ? 'Reopen' : 'Done'}
-              </Button>
+              <TaskActions task={task} showLabels buttonClassName="h-7 px-2 text-[11px]" onEdit={() => setEditOpen(true)} />
             </div>
 		  </div>
 		</div>

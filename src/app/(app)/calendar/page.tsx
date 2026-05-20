@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock, Edit2, Plus } from 'lucide-react';
+import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { TaskForm } from '@/components/tasks/task-form';
+import { TaskActions } from '@/components/tasks/task-actions';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
-import { useTasksByStatus, useUpdateTask } from '@/hooks/use-tasks';
+import { useTasksByStatus } from '@/hooks/use-tasks';
 import { cn, formatDate, isOverdue, PRIORITY_CONFIG } from '@/lib/utils';
 import type { Task } from '@/lib/types';
 
@@ -49,9 +49,7 @@ export default function CalendarPage() {
   const [monthDate, setMonthDate] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [addOpen, setAddOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const { data: tasks = [], isLoading, error } = useTasksByStatus(undefined, true);
-  const updateTask = useUpdateTask();
 
   const monthDays = useMemo(() => getMonthDays(monthDate), [monthDate]);
   const datedTasks = useMemo(() => tasks.filter(task => task.due_date), [tasks]);
@@ -92,10 +90,6 @@ export default function CalendarPage() {
     const today = new Date();
     setMonthDate(new Date(today.getFullYear(), today.getMonth(), 1));
     setSelectedDate(getDateKey(today));
-  }
-
-  function toggleTaskDone(task: Task) {
-    updateTask.mutate({ id: task.id, status: task.status === 'done' ? 'todo' : 'done' });
   }
 
   return (
@@ -250,18 +244,6 @@ export default function CalendarPage() {
                       return (
                         <div key={task.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
                           <div className="flex items-start gap-2">
-                            <button
-                              type="button"
-                              onClick={() => toggleTaskDone(task)}
-                              className={cn(
-                                'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-                                task.status === 'done' ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
-                              )}
-                              aria-label={task.status === 'done' ? `Reopen ${task.title}` : `Complete ${task.title}`}
-                              disabled={updateTask.isPending}
-                            >
-                              {task.status === 'done' && <CheckCircle2 className="h-3 w-3" />}
-                            </button>
                             <div className="min-w-0 flex-1">
                               <p className={cn('truncate text-sm font-medium text-slate-900 dark:text-slate-100', task.status === 'done' && 'text-slate-400 line-through dark:text-slate-500')}>
                                 {task.title}
@@ -273,9 +255,7 @@ export default function CalendarPage() {
                               </div>
                               {task.project && <p className="mt-1 truncate text-xs text-slate-400">{task.project.name}</p>}
                             </div>
-                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingTask(task)} aria-label={`Edit ${task.title}`}>
-                              <Edit2 className="h-3.5 w-3.5" />
-                            </Button>
+                            <TaskActions task={task} buttonClassName="h-7 w-7 rounded-lg" />
                           </div>
                         </div>
                       );
@@ -290,9 +270,6 @@ export default function CalendarPage() {
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
         <TaskQuestionFlow defaultDueDate={selectedDate} onClose={() => setAddOpen(false)} />
-      </Dialog>
-      <Dialog open={Boolean(editingTask)} onClose={() => setEditingTask(null)} title="Edit Task" className="min-h-0 sm:max-w-lg">
-        {editingTask && <TaskForm task={editingTask} onClose={() => setEditingTask(null)} />}
       </Dialog>
     </>
   );

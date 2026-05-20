@@ -4,12 +4,13 @@
 
 "use client";
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useState, useSyncExternalStore } from 'react';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 
 
 
-import { Plus, BarChart3 } from 'lucide-react';
+import { AlertTriangle, BarChart3, Plus, Target } from 'lucide-react';
 import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
 import { TaskList } from '@/components/tasks/task-list';
@@ -75,6 +76,22 @@ export default function DashboardPage() {
 	const weekday = currentDate?.toLocaleDateString('en-US', { weekday: 'long' }) ?? 'Today';
 	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
+	const todayKey = currentDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0];
+	const activeGoals = (goals ?? []).filter((goal) => {
+		const total = goal.tasks?.length ?? 0;
+		const completed = goal.tasks?.filter((task) => task.status === 'done').length ?? 0;
+		return total === 0 || completed < total;
+	});
+	const atRiskGoals = activeGoals.filter((goal) => goal.due_date !== null && goal.due_date < todayKey);
+	const urgentGoalTasks = (allTasks ?? []).filter((task) => task.goal_id && task.priority === 'urgent' && task.status !== 'done');
+	const nextGoals = [...activeGoals]
+		.sort((a, b) => {
+			if (!a.due_date && !b.due_date) return a.title.localeCompare(b.title);
+			if (!a.due_date) return 1;
+			if (!b.due_date) return -1;
+			return a.due_date.localeCompare(b.due_date);
+		})
+		.slice(0, 3);
 	const showOnboarding = Boolean(
 		user
 		&& !user.user_metadata?.onboarding_completed
@@ -154,6 +171,62 @@ export default function DashboardPage() {
 							<TaskFilterBar onFilter={handleFilter} />
 						</div>
 					)}
+
+					<DashboardWidget title="Goal Focus">
+						<div className="grid gap-3 sm:grid-cols-3">
+							<div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+								<div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+									<Target className="h-4 w-4 text-slate-500" />
+									Active goals
+								</div>
+								<p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
+								<p className="text-xs text-slate-500 dark:text-slate-400">Outcomes still in motion</p>
+							</div>
+							<div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/20">
+								<div className="flex items-center gap-2 text-sm font-semibold text-red-700 dark:text-red-300">
+									<AlertTriangle className="h-4 w-4" />
+									At risk
+								</div>
+								<p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-300">{atRiskGoals.length}</p>
+								<p className="text-xs text-red-600/80 dark:text-red-300/80">Active goals past target date</p>
+							</div>
+							<div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+								<div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
+									<AlertTriangle className="h-4 w-4" />
+									Urgent work
+								</div>
+								<p className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-300">{urgentGoalTasks.length}</p>
+								<p className="text-xs text-amber-700/80 dark:text-amber-300/80">Urgent tasks tied to goals</p>
+							</div>
+						</div>
+						{nextGoals.length > 0 && (
+							<div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+								<div className="mb-2 flex items-center justify-between gap-2">
+									<p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Next outcomes</p>
+									<Link href="/goals" className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
+										View goals
+									</Link>
+								</div>
+								<div className="space-y-2">
+									{nextGoals.map((goal) => {
+										const total = goal.tasks?.length ?? 0;
+										const completed = goal.tasks?.filter((task) => task.status === 'done').length ?? 0;
+										const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+										return (
+											<Link key={goal.id} href={`/goals/${goal.id}`} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/60">
+												<span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
+												<span className="min-w-0 flex-1">
+													<span className="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
+													<span className="block truncate text-xs text-slate-500 dark:text-slate-400">{goal.project ? goal.project.name : 'No project'}{goal.due_date ? ` · ${goal.due_date}` : ''}</span>
+												</span>
+												<span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400">{percent}%</span>
+											</Link>
+										);
+									})}
+								</div>
+							</div>
+						)}
+					</DashboardWidget>
 
 					{/* Upcoming deadlines section */}
 					<DashboardWidget title="Upcoming Deadlines">

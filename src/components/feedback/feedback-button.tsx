@@ -9,6 +9,10 @@ import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useSubmitFeedback, type FeedbackCategory } from '@/hooks/use-feedback';
 
+interface FeedbackButtonProps {
+  className?: string;
+}
+
 const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
   general: 'General feedback',
   bug: 'Bug report',
@@ -16,7 +20,7 @@ const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
   pricing: 'Pricing feedback',
 };
 
-export function FeedbackButton() {
+export function FeedbackButton({ className }: FeedbackButtonProps) {
   const pathname = usePathname();
   const submitFeedback = useSubmitFeedback();
   const [open, setOpen] = useState(false);
@@ -48,7 +52,7 @@ export function FeedbackButton() {
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} title="Send feedback">
+      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} title="Send feedback" className={className}>
         <MessageSquare className="h-4 w-4" />
       </Button>
 

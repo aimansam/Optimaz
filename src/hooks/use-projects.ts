@@ -25,12 +25,12 @@ export function useProjects() {
 export function useCreateProject() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { name: string; description?: string; color?: string; tags?: string[] }) => {
+    mutationFn: async (input: { name: string; description?: string; color?: string; tags?: string[]; parent_project_id?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { data, error } = await supabase
         .from('projects')
-        .insert({ ...input, user_id: user.id, tags: input.tags ?? [] })
+        .insert({ ...input, user_id: user.id, tags: input.tags ?? [], parent_project_id: input.parent_project_id || null })
         .select()
         .single();
       if (error) throw error;
@@ -38,7 +38,7 @@ export function useCreateProject() {
     },
     onSuccess: (project) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      void trackEvent('project_created', { project_id: project.id });
+      void trackEvent('project_created', { project_id: project.id, has_parent: Boolean(project.parent_project_id) });
     },
   });
 }
@@ -47,6 +47,7 @@ export function useUpdateProject() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Project> & { id: string }) => {
+      if (updates.parent_project_id === id) throw new Error('A project cannot be its own parent');
       const { data, error } = await supabase
         .from('projects')
         .update(updates)

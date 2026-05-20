@@ -5,7 +5,8 @@ import { ArrowLeft, ArrowRight, Check, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateProject } from '@/hooks/use-projects';
+import { Select } from '@/components/ui/select';
+import { useCreateProject, useProjects } from '@/hooks/use-projects';
 
 const COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#06b6d4'];
 
@@ -16,18 +17,21 @@ function parseTags(value: string) {
     .filter(Boolean);
 }
 
-export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
+export function ProjectQuestionFlow({ onClose, defaultParentProjectId = '' }: { onClose: () => void; defaultParentProjectId?: string }) {
   const createProject = useCreateProject();
+  const { data: projects } = useProjects();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(COLORS[0]);
   const [tagInput, setTagInput] = useState('');
+  const [parentProjectId, setParentProjectId] = useState(defaultParentProjectId);
 
   const tags = parseTags(tagInput);
   const steps = useMemo(() => [
     { label: 'Project', question: 'What project do you want to add?' },
     { label: 'Details', question: 'What is this project about?' },
+    { label: 'Parent', question: 'Should this belong under another project?' },
     { label: 'Color', question: 'What color should mark this project?' },
     { label: 'Tags', question: 'Any tags for this project?' },
     { label: 'Review', question: 'Ready to create this project?' },
@@ -51,6 +55,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
       description: description.trim() || undefined,
       color,
       tags,
+      parent_project_id: parentProjectId || undefined,
     });
     onClose();
   }
@@ -95,6 +100,20 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
         )}
 
         {step === 2 && (
+          <Select
+            value={parentProjectId}
+            onChange={event => setParentProjectId(event.target.value)}
+            autoFocus
+            disabled={createProject.isPending}
+          >
+            <option value="">Top-level project</option>
+            {projects?.filter(project => !project.archived && !project.parent_project_id).map(project => (
+              <option key={project.id} value={project.id}>{project.name}</option>
+            ))}
+          </Select>
+        )}
+
+        {step === 3 && (
           <div className="flex flex-wrap gap-2">
             {COLORS.map(item => (
               <button
@@ -113,7 +132,7 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <Input
             value={tagInput}
             onChange={event => setTagInput(event.target.value)}
@@ -124,13 +143,14 @@ export function ProjectQuestionFlow({ onClose }: { onClose: () => void }) {
           />
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
               <p className="font-medium text-slate-900 dark:text-slate-100">{name}</p>
             </div>
             {description.trim() && <p className="text-slate-500 dark:text-slate-400">{description}</p>}
+            {parentProjectId && <p className="text-xs text-slate-400">Parent: {projects?.find(project => project.id === parentProjectId)?.name}</p>}
             {tags.length > 0 && <p className="text-xs text-slate-400">Tags: {tags.join(', ')}</p>}
           </div>
         )}

@@ -74,6 +74,19 @@ export default function ProjectsPage() {
     }
     return 0;
   });
+  const parentProjects = search.trim()
+    ? filteredProjects
+    : filteredProjects.filter(project => !project.parent_project_id);
+  const subprojectsByParent = new Map<string, typeof filteredProjects>();
+  for (const project of filteredProjects) {
+    if (!project.parent_project_id) continue;
+    const current = subprojectsByParent.get(project.parent_project_id) ?? [];
+    current.push(project);
+    subprojectsByParent.set(project.parent_project_id, current);
+  }
+  const orphanSubprojects = search.trim()
+    ? []
+    : filteredProjects.filter(project => project.parent_project_id && !parentProjects.some(parent => parent.id === project.parent_project_id));
 
   const [showFilters, setShowFilters] = useState(false);
 
@@ -159,16 +172,54 @@ export default function ProjectsPage() {
             action={<Button onClick={() => setAddOpen(true)} size="sm"><Plus className="h-4 w-4" />Create Project</Button>}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProjects.map((project) => (
-              <MemoizedProjectCard
-                key={project.id}
-                project={project}
-                allTasks={allTasks ?? []}
-                updateProject={updateProject}
-                deleteProject={deleteProject}
-              />
-            ))}
+          <div className="space-y-5">
+            {parentProjects.map((project) => {
+              const subprojects = subprojectsByParent.get(project.id) ?? [];
+              return (
+                <section key={project.id} className="space-y-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <MemoizedProjectCard
+                      project={project}
+                      allTasks={allTasks ?? []}
+                      updateProject={updateProject}
+                      deleteProject={deleteProject}
+                    />
+                  </div>
+                  {subprojects.length > 0 && (
+                    <div className="ml-3 border-l border-slate-200 pl-3 dark:border-slate-800">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">Subprojects</p>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {subprojects.map((subproject) => (
+                          <MemoizedProjectCard
+                            key={subproject.id}
+                            project={subproject}
+                            allTasks={allTasks ?? []}
+                            updateProject={updateProject}
+                            deleteProject={deleteProject}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+            {orphanSubprojects.length > 0 && (
+              <section className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">Subprojects</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {orphanSubprojects.map((project) => (
+                    <MemoizedProjectCard
+                      key={project.id}
+                      project={project}
+                      allTasks={allTasks ?? []}
+                      updateProject={updateProject}
+                      deleteProject={deleteProject}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         )}
       </div>

@@ -17,6 +17,7 @@ export interface Goal {
 export interface Project {
   id: string;
   user_id: string;
+  parent_project_id: string | null;
   name: string;
   description: string | null;
   color: string;

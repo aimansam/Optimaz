@@ -8,6 +8,7 @@ import { Star, Edit2, Archive, Trash2 } from 'lucide-react';
 
 type Project = {
   id: string;
+  parent_project_id?: string | null;
   name: string;
   color: string;
   description?: string | null;
@@ -63,6 +64,11 @@ const ProjectCard = ({ project, allTasks, updateProject, deleteProject }: Projec
       </div>
       {project.description && (
         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{project.description}</p>
+      )}
+      {project.parent_project_id && (
+        <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          Subproject
+        </span>
       )}
       {project.tags && project.tags.length > 0 && (
         <div className="flex gap-2 mt-2 flex-wrap">

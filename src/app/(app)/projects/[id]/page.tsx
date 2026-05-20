@@ -5,17 +5,20 @@ import { useRouter } from 'next/navigation';
 import { TaskList } from '@/components/tasks/task-list';
 import { useTasks } from '@/hooks/use-tasks';
 import { useDeleteProject, useProjects, useUpdateProject } from '@/hooks/use-projects';
+import { MemoizedProjectCard } from '@/components/projects/project-card';
+import { ProjectQuestionFlow } from '@/components/projects/project-question-flow';
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Archive, Edit2, FolderOpen, Star, Trash2 } from 'lucide-react';
+import { Archive, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { data: tasks, isLoading } = useTasks(id);
+  const { data: allTasks } = useTasks();
   const { data: projects } = useProjects();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -26,6 +29,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [editDescription, setEditDescription] = useState('');
   const [editColor, setEditColor] = useState('#6366f1');
   const [editTags, setEditTags] = useState('');
+  const [addSubprojectOpen, setAddSubprojectOpen] = useState(false);
+
+  const subprojects = projects?.filter((item) => item.parent_project_id === id && !item.archived) ?? [];
 
   const total = tasks?.length ?? 0;
   const completed = tasks?.filter((task) => task.status === 'done').length ?? 0;
@@ -112,6 +118,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   <Edit2 className="h-3.5 w-3.5" />
                   Edit
                 </Button>
+                <Button type="button" size="sm" variant="secondary" onClick={() => setAddSubprojectOpen(true)}>
+                  <Plus className="h-3.5 w-3.5" />
+                  Add subproject
+                </Button>
                 <Button
                   type="button"
                   size="sm"
@@ -152,6 +162,35 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </div>
         ) : (
           <div className="mb-6 h-36 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+        )}
+
+        {project && (
+          <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Subprojects</h3>
+              <Button type="button" size="sm" variant="secondary" onClick={() => setAddSubprojectOpen(true)}>
+                <Plus className="h-3.5 w-3.5" />
+                Add subproject
+              </Button>
+            </div>
+            {subprojects.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {subprojects.map((subproject) => (
+                  <MemoizedProjectCard
+                    key={subproject.id}
+                    project={subproject}
+                    allTasks={allTasks ?? []}
+                    updateProject={updateProject}
+                    deleteProject={deleteProject}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                Break this project into smaller parts when it starts to feel broad.
+              </div>
+            )}
+          </div>
         )}
 
         <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Project Tasks</h3>
@@ -197,6 +236,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 </Button>
               </div>
             </form>
+          </Dialog>
+          <Dialog open={addSubprojectOpen} onClose={() => setAddSubprojectOpen(false)} title="Add Subproject" className="min-h-0 sm:max-w-lg">
+            <ProjectQuestionFlow defaultParentProjectId={project.id} onClose={() => setAddSubprojectOpen(false)} />
           </Dialog>
           <ConfirmationDialog
             open={deleteOpen}

@@ -20,11 +20,12 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
   const pathname = usePathname();
   const { data: projects } = useProjects();
   const activeProject = projects?.find(project => pathname === `/projects/${project.id}`);
-  const baseProjects = projects?.slice(0, activeProject && projects.indexOf(activeProject) >= 5 ? 5 : 6) ?? [];
+  const topLevelProjects = projects?.filter(project => !project.parent_project_id) ?? [];
+  const baseProjects = topLevelProjects.slice(0, activeProject && !topLevelProjects.some(project => project.id === activeProject.id) ? 5 : 6);
   const visibleProjects = activeProject && !baseProjects.some(project => project.id === activeProject.id)
     ? [...baseProjects, activeProject]
     : baseProjects;
-  const hiddenProjectCount = Math.max((projects?.length ?? 0) - visibleProjects.length, 0);
+  const hiddenProjectCount = Math.max(topLevelProjects.length - visibleProjects.filter(project => !project.parent_project_id).length, 0);
 
   return (
     <>
@@ -107,7 +108,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                     className="h-2.5 w-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: project.color }}
                   />
-                  <span className="truncate">{project.name}</span>
+                  <span className="truncate">{project.parent_project_id ? `Sub: ${project.name}` : project.name}</span>
                 </Link>
               );
             })}

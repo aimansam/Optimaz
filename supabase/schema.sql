@@ -5,6 +5,7 @@ create extension if not exists "uuid-ossp";
 create table if not exists public.projects (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid not null references auth.users(id) on delete cascade,
+  parent_project_id uuid references public.projects(id) on delete set null,
   name text not null,
   description text,
   color text not null default '#6366f1',
@@ -97,6 +98,8 @@ create index if not exists tasks_user_id_idx on public.tasks(user_id);
 create index if not exists tasks_project_id_idx on public.tasks(project_id);
 create index if not exists tasks_status_idx on public.tasks(status);
 create index if not exists tasks_due_date_idx on public.tasks(due_date);
+create index if not exists projects_parent_project_id_idx on public.projects(parent_project_id);
+create index if not exists projects_user_parent_idx on public.projects(user_id, parent_project_id, archived);
 create index if not exists tasks_active_user_status_idx on public.tasks(user_id, status, position) where archived_at is null;
 create index if not exists tasks_user_completed_at_idx on public.tasks(user_id, completed_at desc) where completed_at is not null;
 create index if not exists tasks_user_archived_at_idx on public.tasks(user_id, archived_at desc) where archived_at is not null;

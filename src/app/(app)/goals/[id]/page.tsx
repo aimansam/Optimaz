@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal, useGoal } from '@/hooks/use-goals';
 import { useGoalTasks } from '@/hooks/use-tasks';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CalendarDays, Edit2, CheckCircle2, Target, Trash2 } from 'lucide-react';
+import { CalendarDays, Edit2, CheckCircle2, FolderOpen, Target, Trash2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 
 export default function GoalDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -49,6 +50,15 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{goal.title}</h2>
                 {goal.description && (
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{goal.description}</p>
+                )}
+                {goal.project && (
+                  <Link
+                    href={`/projects/${goal.project.id}`}
+                    className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/70 px-2 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:text-white"
+                  >
+                    <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{goal.project.parent_project_id ? 'Sub: ' : ''}{goal.project.name}</span>
+                  </Link>
                 )}
                 {goal.due_date && (
                   <p className={cn('mt-1 flex items-center gap-1 text-sm', overdue ? 'text-red-500' : 'text-slate-400')}>
@@ -118,6 +128,7 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
             tasks={tasks ?? []}
             emptyMessage="No tasks linked to this goal yet. Create a task and assign it to this goal."
             defaultGoalId={id}
+            defaultProjectId={goal?.project_id ?? undefined}
           />
         )}
       </div>

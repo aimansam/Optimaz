@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { TaskList } from '@/components/tasks/task-list';
 import { useTasks } from '@/hooks/use-tasks';
 import { useDeleteProject, useProjects, useUpdateProject } from '@/hooks/use-projects';
+import { useGoals } from '@/hooks/use-goals';
+import { GoalCard } from '@/components/goals/goal-card';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
 import { ProjectQuestionFlow } from '@/components/projects/project-question-flow';
 import { Button } from '@/components/ui/button';
@@ -22,6 +24,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const { data: tasks, isLoading } = useTasks(id);
   const { data: allTasks } = useTasks();
   const { data: projects } = useProjects();
+  const { data: goals } = useGoals();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const project = projects?.find((p) => p.id === id);
@@ -36,6 +39,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [addSubprojectOpen, setAddSubprojectOpen] = useState(false);
 
   const subprojects = projects?.filter((item) => item.parent_project_id === id && !item.archived) ?? [];
+  const linkedGoals = goals?.filter((goal) => goal.project_id === id) ?? [];
   const canCreateSubprojects = !project?.parent_project_id;
   const parentOptions = projects?.filter((item) => !item.archived && !item.parent_project_id && item.id !== id) ?? [];
 
@@ -209,6 +213,28 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
                 Break this project into smaller parts when it starts to feel broad.
+              </div>
+            )}
+          </div>
+        )}
+
+        {project && (
+          <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Linked Goals</h3>
+              <Button type="button" size="sm" variant="secondary" onClick={() => router.push('/goals')}>
+                View goals
+              </Button>
+            </div>
+            {linkedGoals.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {linkedGoals.map((goal) => (
+                  <GoalCard key={goal.id} goal={goal} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                Link goals to this project to make the outcome behind the work visible.
               </div>
             )}
           </div>

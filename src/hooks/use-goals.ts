@@ -13,7 +13,7 @@ export function useGoals() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('goals')
-        .select('*, tasks(id, status)')
+        .select('*, project:projects(*), tasks(id, status)')
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data as (Goal & { tasks: { id: string; status: string }[] })[];
@@ -27,7 +27,7 @@ export function useGoal(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('goals')
-        .select('*, tasks(*, subtasks(*))')
+        .select('*, project:projects(*), tasks(*, subtasks(*))')
         .eq('id', id)
         .single();
       if (error) throw error;
@@ -39,7 +39,7 @@ export function useGoal(id: string) {
 export function useCreateGoal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { title: string; description?: string; color?: string; due_date?: string }) => {
+    mutationFn: async (input: { title: string; description?: string; color?: string; due_date?: string; project_id?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { data, error } = await supabase
@@ -52,7 +52,7 @@ export function useCreateGoal() {
     },
     onSuccess: (goal) => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
-      void trackEvent('goal_created', { goal_id: goal.id });
+      void trackEvent('goal_created', { goal_id: goal.id, has_project: Boolean(goal.project_id) });
     },
   });
 }

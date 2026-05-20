@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trash2, Target, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { FolderOpen, Trash2, Target, CalendarDays, CheckCircle2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal } from '@/hooks/use-goals';
@@ -42,6 +42,13 @@ export function GoalCard({ goal }: GoalCardProps) {
             )}
           </div>
         </div>
+
+        {goal.project && (
+          <div className="mb-3 inline-flex max-w-full items-center gap-1.5 rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{goal.project.parent_project_id ? 'Sub: ' : ''}{goal.project.name}</span>
+          </div>
+        )}
 
         {/* Progress bar */}
         <div className="mb-3">

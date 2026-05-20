@@ -6,6 +6,7 @@ import { KanbanBoard } from '@/components/kanban/kanban-board';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { useGoals } from '@/hooks/use-goals';
 import { useProjects } from '@/hooks/use-projects';
 import { useTasksByStatus } from '@/hooks/use-tasks';
 import type { Priority } from '@/lib/types';
@@ -23,8 +24,10 @@ function getDateKey(value: Date) {
 
 export default function KanbanPage() {
   const { data: projects } = useProjects();
+  const { data: goals } = useGoals();
   const [query, setQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>('');
+  const [goalId, setGoalId] = useState('');
   const [priority, setPriority] = useState<Priority | ''>('');
   const [dueFilter, setDueFilter] = useState<DueFilter>('all');
   const [doneFilter, setDoneFilter] = useState<DoneFilter>('show');
@@ -46,6 +49,7 @@ export default function KanbanPage() {
   function applyQuickView(view: QuickView) {
     setQuery('');
     setProjectFilter('');
+    setGoalId('');
     setPriority(view === 'urgent' ? 'urgent' : '');
     setDueFilter(view === 'today' ? 'today' : 'all');
     setDoneFilter(view === 'archived' ? 'archived' : 'hide');
@@ -82,14 +86,20 @@ export default function KanbanPage() {
   }, [projectFilter, projects]);
 
   const activeQuickView = useMemo<QuickView | null>(() => {
-    if (query.trim() || projectFilter) return null;
+    if (query.trim() || projectFilter || goalId) return null;
     if (doneFilter === 'archived' && !priority && dueFilter === 'all') return 'archived';
     if (doneFilter !== 'hide') return null;
     if (priority === 'urgent' && dueFilter === 'all') return 'urgent';
     if (!priority && dueFilter === 'today') return 'today';
     if (!priority && dueFilter === 'all') return 'active';
     return null;
-  }, [doneFilter, dueFilter, priority, projectFilter, query]);
+  }, [doneFilter, dueFilter, goalId, priority, projectFilter, query]);
+
+  const activeGoals = useMemo(() => (goals ?? []).filter(goal => {
+    const total = goal.tasks?.length ?? 0;
+    const completed = goal.tasks?.filter(task => task.status === 'done').length ?? 0;
+    return total === 0 || completed < total;
+  }), [goals]);
 
   const filteredTasks = useMemo(() => {
     const today = getDateKey(new Date());
@@ -100,8 +110,10 @@ export default function KanbanPage() {
       const matchesQuery = !normalizedQuery
         || task.title.toLowerCase().includes(normalizedQuery)
         || task.notes?.toLowerCase().includes(normalizedQuery)
-        || task.project?.name.toLowerCase().includes(normalizedQuery);
+        || task.project?.name.toLowerCase().includes(normalizedQuery)
+        || task.goal?.title.toLowerCase().includes(normalizedQuery);
       const matchesProject = !selectedProjectIds || (task.project_id !== null && selectedProjectIds.has(task.project_id));
+      const matchesGoal = !goalId || task.goal_id === goalId;
       const matchesPriority = !priority || task.priority === priority;
       const matchesDone = (
         doneFilter === 'show' ? !task.archived_at
@@ -116,17 +128,18 @@ export default function KanbanPage() {
         || (dueFilter === 'upcoming' && dueDate !== null && dueDate > today)
       );
 
-      return matchesQuery && matchesProject && matchesPriority && matchesDone && matchesDue;
+      return matchesQuery && matchesProject && matchesGoal && matchesPriority && matchesDone && matchesDue;
     });
-  }, [doneFilter, dueFilter, priority, query, selectedProjectIds, tasks]);
+  }, [doneFilter, dueFilter, goalId, priority, query, selectedProjectIds, tasks]);
 
   const trimmedQuery = query.trim();
-  const hasFilters = Boolean(trimmedQuery || projectFilter || priority || dueFilter !== 'all' || doneFilter !== 'show');
-  const activeFilterCount = [trimmedQuery, projectFilter, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
+  const hasFilters = Boolean(trimmedQuery || projectFilter || goalId || priority || dueFilter !== 'all' || doneFilter !== 'show');
+  const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
 
   function resetFilters() {
     setQuery('');
     setProjectFilter('');
+    setGoalId('');
     setPriority('');
     setDueFilter('all');
     setDoneFilter('show');
@@ -169,7 +182,7 @@ export default function KanbanPage() {
             <Button type="button" variant={activeQuickView === 'archived' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('archived')} aria-pressed={activeQuickView === 'archived'}>Archived</Button>
           </div>
 
-          {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
+          {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
             <label className="relative block">
               <span className="sr-only">Search Kanban tasks</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -179,6 +192,18 @@ export default function KanbanPage() {
                 placeholder="Search title, notes, project"
                 className="pl-9"
               />
+            </label>
+
+            <label>
+              <span className="sr-only">Filter by goal</span>
+              <Select value={goalId} onChange={event => setGoalId(event.target.value)}>
+                <option value="">All goals</option>
+                {activeGoals.map(goal => (
+                  <option key={goal.id} value={goal.id}>
+                    {goal.project ? `${goal.project.parent_project_id ? 'Sub: ' : ''}${goal.project.name} / ${goal.title}` : goal.title}
+                  </option>
+                ))}
+              </Select>
             </label>
 
             <label>

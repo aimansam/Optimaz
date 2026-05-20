@@ -55,7 +55,7 @@ export function useTasksByStatus(limit = DEFAULT_TASK_QUERY_LIMIT, includeArchiv
     queryFn: async () => {
       const query = supabase
         .from('tasks')
-        .select('*, subtasks(*), project:projects(id,name,color)')
+        .select('*, subtasks(*), project:projects(id,name,color), goal:goals(id,title,color,project_id)')
         .order('position', { ascending: true })
         .limit(limit);
       const { data, error } = await (includeArchived ? query : applyActiveTaskFilter(query));

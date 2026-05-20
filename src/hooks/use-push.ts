@@ -100,3 +100,36 @@ export function useSendTestPushNotification() {
     },
   });
 }
+
+export function useDisablePushSubscription() {
+  return useMutation({
+    mutationFn: async () => {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        throw new Error('Push notifications not supported');
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        return { success: true };
+      }
+
+      const response = await fetch('/api/push/subscribe', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: subscription.endpoint }),
+      });
+
+      const result = await response.json().catch(() => null) as { error?: string; success?: boolean } | null;
+
+      if (!response.ok) {
+        throw new Error(result?.error ?? 'Could not disable notifications');
+      }
+
+      await subscription.unsubscribe();
+
+      return result;
+    },
+  });
+}

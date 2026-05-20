@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TaskList } from '@/components/tasks/task-list';
 import { useTasks } from '@/hooks/use-tasks';
@@ -12,7 +13,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Archive, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
+import { Archive, ChevronRight, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -23,6 +24,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const project = projects?.find((p) => p.id === id);
+  const parentProject = project?.parent_project_id ? projects?.find((item) => item.id === project.parent_project_id) : undefined;
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editName, setEditName] = useState('');
@@ -81,6 +83,17 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   <FolderOpen className="h-6 w-6" style={{ color: project.color }} />
                 </div>
                 <div className="min-w-0">
+                  {parentProject && (
+                    <nav aria-label="Project breadcrumb" className="mb-1 flex min-w-0 items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                      <Link href="/projects" className="shrink-0 hover:text-slate-700 dark:hover:text-slate-200">
+                        Projects
+                      </Link>
+                      <ChevronRight className="h-3 w-3 shrink-0" />
+                      <Link href={`/projects/${parentProject.id}`} className="truncate hover:text-slate-700 dark:hover:text-slate-200">
+                        {parentProject.name}
+                      </Link>
+                    </nav>
+                  )}
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="truncate text-xl font-bold text-slate-900 dark:text-slate-100">{project.name}</h2>
                     {project.favorite && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />}

@@ -23,6 +23,21 @@ export function usePushSubscription() {
         throw new Error('Push notifications not supported');
       }
 
+      if (!('Notification' in window)) {
+        throw new Error('Notifications not supported');
+      }
+
+      if (Notification.permission === 'denied') {
+        throw new Error('Notification permission was denied');
+      }
+
+      if (Notification.permission !== 'granted') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          throw new Error('Notification permission was not granted');
+        }
+      }
+
       const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidKey) {
         throw new Error('Push notifications are not configured');
@@ -32,7 +47,8 @@ export function usePushSubscription() {
       if (!user) throw new Error('Not authenticated');
 
       const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
+      const existingSubscription = await registration.pushManager.getSubscription();
+      const subscription = existingSubscription ?? await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
       });

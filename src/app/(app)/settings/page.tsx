@@ -6,7 +6,7 @@ import { usePushSubscription } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Bell, Palette, Trash2, User } from 'lucide-react';
+import { AlertTriangle, Bell, CheckCircle2, Palette, Trash2, User, XCircle } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
 import { useDeleteAccount } from '@/hooks/use-account-controls';
@@ -15,13 +15,15 @@ import React, { useState } from 'react';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { mutate: subscribe, isPending, isSuccess, error: pushError } = usePushSubscription();
+  const { mutate: subscribe, data: pushSubscription, isPending, isSuccess, error: pushError } = usePushSubscription();
   const { data: user } = useUser();
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
   const deleteAccount = useDeleteAccount();
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [pushStatus, setPushStatus] = useState<'checking' | 'unsupported' | 'denied' | 'available' | 'enabled'>('checking');
+  const [pushDevice, setPushDevice] = useState('This device');
   const accountName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? 'Signed in user';
   const avatarUrl = user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
   const accountInitial = accountName.trim().charAt(0).toUpperCase() || 'U';
@@ -33,6 +35,90 @@ export default function SettingsPage() {
   React.useEffect(() => {
     setDisplayName(user?.user_metadata?.full_name ?? '');
   }, [user?.user_metadata?.full_name]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    async function checkPushStatus() {
+      if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+        if (active) setPushStatus('unsupported');
+        return;
+      }
+
+      if (Notification.permission === 'denied') {
+        if (active) setPushStatus('denied');
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!active) return;
+
+        if (subscription) {
+          setPushStatus('enabled');
+          setPushDevice(new URL(subscription.endpoint).hostname);
+        } else {
+          setPushStatus('available');
+        }
+      } catch {
+        if (active) setPushStatus('available');
+      }
+    }
+
+    checkPushStatus();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (pushSubscription) {
+      setPushStatus('enabled');
+      setPushDevice(new URL(pushSubscription.endpoint).hostname);
+    }
+  }, [pushSubscription]);
+
+  const pushStatusConfig = {
+    checking: {
+      icon: Bell,
+      label: 'Checking device support',
+      description: 'TaskFlow is checking whether this browser can receive push notifications.',
+      className: 'border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-300',
+    },
+    unsupported: {
+      icon: XCircle,
+      label: 'Not supported on this browser',
+      description: 'Use a browser with service worker and push notification support to enable alerts.',
+      className: 'border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-300',
+    },
+    denied: {
+      icon: XCircle,
+      label: 'Notifications are blocked',
+      description: 'Enable notifications for this site in your browser settings, then return here.',
+      className: 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/20 dark:text-red-300',
+    },
+    available: {
+      icon: Bell,
+      label: 'Ready to enable',
+      description: 'Turn on reminders for upcoming tasks on this device.',
+      className: 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/20 dark:text-blue-300',
+    },
+    enabled: {
+      icon: CheckCircle2,
+      label: 'Enabled on this device',
+      description: `Subscribed through ${pushDevice}.`,
+      className: 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/60 dark:bg-green-950/20 dark:text-green-300',
+    },
+  }[pushStatus];
+  const PushStatusIcon = pushStatusConfig.icon;
+  const pushButtonLabel = pushStatus === 'enabled'
+    ? 'Enabled'
+    : isPending
+      ? 'Enabling...'
+      : 'Enable Notifications';
+  const pushButtonDisabled = isPending || pushStatus === 'checking' || pushStatus === 'unsupported' || pushStatus === 'denied' || pushStatus === 'enabled';
 
   return (
     <>
@@ -122,8 +208,17 @@ export default function SettingsPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               Get notified about upcoming tasks on your device (desktop and mobile).
             </p>
-            <Button onClick={() => subscribe()} disabled={isPending}>
-              {isPending ? 'Enabling...' : 'Enable Notifications'}
+            <div className={`mb-4 rounded-lg border p-3 ${pushStatusConfig.className}`}>
+              <div className="flex gap-2">
+                <PushStatusIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">{pushStatusConfig.label}</p>
+                  <p className="mt-1 text-xs opacity-80">{pushStatusConfig.description}</p>
+                </div>
+              </div>
+            </div>
+            <Button onClick={() => subscribe()} disabled={pushButtonDisabled}>
+              {pushButtonLabel}
             </Button>
             {isSuccess && (
               <p className="mt-2 text-sm text-green-600 dark:text-green-400">Notifications enabled!</p>

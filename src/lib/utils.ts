@@ -19,22 +19,38 @@ export const STATUS_CONFIG: Record<TaskStatus, { label: string; color: string }>
   done: { label: 'Done', color: 'text-green-600 dark:text-green-400' },
 };
 
-export function formatDate(dateStr: string | null): string {
+export function formatDate(dateStr: string | null, timeStr?: string | null): string {
   if (!dateStr) return '';
   const date = new Date(dateStr + 'T00:00:00');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const diff = Math.floor((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  if (diff === 0) return 'Today';
-  if (diff === 1) return 'Tomorrow';
-  if (diff === -1) return 'Yesterday';
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const dateLabel = diff === 0
+    ? 'Today'
+    : diff === 1
+      ? 'Tomorrow'
+      : diff === -1
+        ? 'Yesterday'
+        : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  return timeStr ? `${dateLabel} ${formatTime(timeStr)}` : dateLabel;
 }
 
-export function isOverdue(dateStr: string | null): boolean {
+export function formatTime(timeStr: string | null): string {
+  if (!timeStr) return '';
+  const [hours, minutes] = timeStr.slice(0, 5).split(':').map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return '';
+
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(2000, 0, 1, hours, minutes));
+}
+
+export function isOverdue(dateStr: string | null, timeStr?: string | null): boolean {
   if (!dateStr) return false;
-  const date = new Date(dateStr + 'T00:00:00');
+  const date = new Date(`${dateStr}T${timeStr?.slice(0, 5) || '00:00'}:00`);
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today;
+  if (!timeStr) today.setHours(0, 0, 0, 0);
+  return date.getTime() < today.getTime();
 }

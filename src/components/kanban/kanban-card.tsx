@@ -43,7 +43,7 @@ export function KanbanCard({ task }: { task: Task }) {
   };
 
   const priority = PRIORITY_CONFIG[task.priority];
-  const overdue = isOverdue(task.due_date) && task.status !== 'done';
+  const overdue = isOverdue(task.due_date, task.due_time) && task.status !== 'done';
   const isArchived = Boolean(task.archived_at);
   const previousStatus = getAdjacentStatus(task.status, -1);
   const nextStatus = getAdjacentStatus(task.status, 1);
@@ -133,7 +133,7 @@ export function KanbanCard({ task }: { task: Task }) {
               {task.due_date && (
                 <span className={cn('flex items-center gap-0.5 text-[10px] font-medium', overdue ? 'text-red-500' : 'text-slate-400')}>
                   <CalendarDays className="h-3 w-3" />
-                  {formatDate(task.due_date)}
+                  {formatDate(task.due_date, task.due_time)}
                 </span>
               )}
               {task.is_recurring && <RefreshCw className="h-3 w-3 text-slate-400" />}

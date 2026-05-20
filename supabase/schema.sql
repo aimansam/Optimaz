@@ -25,6 +25,8 @@ create table if not exists public.tasks (
   priority text not null default 'medium' check (priority in ('low', 'medium', 'high', 'urgent')),
   status text not null default 'todo' check (status in ('todo', 'in_progress', 'done')),
   due_date date,
+  due_time time,
+  due_timezone text,
   position integer not null default 0,
   completed_at timestamptz,
   archived_at timestamptz,

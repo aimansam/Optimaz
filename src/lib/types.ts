@@ -38,6 +38,8 @@ export interface Task {
   priority: Priority;
   status: TaskStatus;
   due_date: string | null;
+  due_time: string | null;
+  due_timezone: string | null;
   position: number;
   completed_at: string | null;
   archived_at: string | null;

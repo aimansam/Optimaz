@@ -11,6 +11,8 @@ type ReminderTask = {
   user_id: string;
   title: string;
   due_date: string;
+  due_time: string | null;
+  due_timezone: string | null;
 };
 
 type PushDeliveryError = {
@@ -71,8 +73,14 @@ function getCurrentLocalMs(timeZone: string) {
   return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
 }
 
-function getTaskLocalMs(dueDate: string, hour = DEFAULT_REMINDER_HOUR, minute = 0) {
+function getTaskLocalMs(dueDate: string, dueTime?: string | null, fallbackHour = DEFAULT_REMINDER_HOUR, fallbackMinute = 0) {
   const [year, month, day] = dueDate.split('-').map(Number);
+  const [hour, minute] = dueTime ? dueTime.split(':').map(Number) : [fallbackHour, fallbackMinute];
+
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return Date.UTC(year, month - 1, day, fallbackHour, fallbackMinute);
+  }
+
   return Date.UTC(year, month - 1, day, hour, minute);
 }
 
@@ -82,9 +90,10 @@ function normalizeLeadTime(value: unknown) {
 
 function isTaskReadyForReminder(task: ReminderTask, metadata: ReminderUserMetadata) {
   const leadTimeMinutes = normalizeLeadTime(metadata.notification_lead_time_minutes);
-  const nowLocalMs = getCurrentLocalMs('UTC');
-  const reminderLocalMs = getTaskLocalMs(task.due_date) - leadTimeMinutes * 60 * 1000;
-  const dueDayEndLocalMs = getTaskLocalMs(task.due_date, 23, 59);
+  const timeZone = task.due_timezone || 'UTC';
+  const nowLocalMs = getCurrentLocalMs(timeZone);
+  const reminderLocalMs = getTaskLocalMs(task.due_date, task.due_time) - leadTimeMinutes * 60 * 1000;
+  const dueDayEndLocalMs = getTaskLocalMs(task.due_date, null, 23, 59);
 
   return nowLocalMs >= reminderLocalMs && nowLocalMs <= dueDayEndLocalMs;
 }
@@ -144,7 +153,7 @@ export async function GET(request: Request) {
 
   const { data: tasks, error: tasksError } = await supabase
     .from('tasks')
-    .select('id, user_id, title, due_date')
+    .select('id, user_id, title, due_date, due_time, due_timezone')
     .not('due_date', 'is', null)
     .neq('status', 'done')
     .is('archived_at', null)
@@ -191,7 +200,7 @@ export async function GET(request: Request) {
     const metadata = users.get(task.user_id) ?? {};
 
     const leadTimeMinutes = normalizeLeadTime(metadata.notification_lead_time_minutes);
-    const reminderKey = `${task.due_date}:${leadTimeMinutes}`;
+    const reminderKey = `${task.due_date}:${task.due_time || '09:00'}:${task.due_timezone || 'UTC'}:${leadTimeMinutes}`;
     const { error: deliveryError } = await supabase.from('notification_deliveries').insert({
       user_id: task.user_id,
       task_id: task.id,

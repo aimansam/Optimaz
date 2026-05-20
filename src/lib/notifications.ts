@@ -6,12 +6,12 @@ export function normalizeNotificationLeadTime(value: unknown): NotificationLeadT
   return value === 0 || value === 15 || value === 60 || value === 1440 ? value : 60;
 }
 
-export function getTaskReminderDate(task: Pick<Task, "due_date">, leadTimeMinutes: NotificationLeadTimeMinutes = 60) {
+export function getTaskReminderDate(task: Pick<Task, "due_date" | "due_time">, leadTimeMinutes: NotificationLeadTimeMinutes = 60) {
   if (!task.due_date) {
     return null;
   }
 
-  const dueDate = new Date(task.due_date);
+  const dueDate = new Date(`${task.due_date}T${task.due_time?.slice(0, 5) || '09:00'}:00`);
 
   if (Number.isNaN(dueDate.getTime())) {
     return null;

@@ -48,7 +48,7 @@ function buildNotifications(tasks: Task[] = []): NotificationItem[] {
         items.push({
           id: `overdue-${task.id}`,
           title: "Overdue",
-          message: `${task.title} was due ${formatDate(task.due_date)}`,
+          message: `${task.title} was due ${formatDate(task.due_date, task.due_time)}`,
           href,
           tone: "danger",
         });

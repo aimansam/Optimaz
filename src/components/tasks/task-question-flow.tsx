@@ -41,6 +41,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const [priority, setPriority] = useState<Priority>('medium');
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
   const [dueDate, setDueDate] = useState('');
+  const [dueTime, setDueTime] = useState('');
   const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [goalId, setGoalId] = useState(defaultGoalId ?? '');
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | ''>('');
@@ -50,7 +51,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
     { label: 'Details', question: 'Anything important to remember?', optional: true },
     { label: 'Priority', question: 'How important is this task?', optional: false },
     { label: 'Status', question: 'Where should this task start?', optional: false },
-    { label: 'Date', question: 'When should this be due?', optional: true },
+    { label: 'Due', question: 'When should this be due?', optional: true },
     { label: 'Project', question: 'Which project should this belong to?', optional: true },
     { label: 'Goal', question: 'Does this support a goal?', optional: true },
     { label: 'Repeat', question: 'Should this task repeat?', optional: true },
@@ -62,7 +63,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
   const canContinue = step !== 0 || title.trim().length > 0;
   const stepHasValue = (
     step === 1 ? notes.trim().length > 0
-    : step === 4 ? dueDate.length > 0
+    : step === 4 ? dueDate.length > 0 || dueTime.length > 0
     : step === 5 ? projectId.length > 0
     : step === 6 ? goalId.length > 0
     : step === 7 ? recurrenceRule.length > 0
@@ -86,6 +87,8 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
       priority,
       status,
       due_date: dueDate || undefined,
+      due_time: dueDate && dueTime ? dueTime : undefined,
+      due_timezone: dueDate && dueTime ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined,
       project_id: projectId || undefined,
       goal_id: goalId || undefined,
       is_recurring: Boolean(recurrenceRule),
@@ -152,14 +155,23 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
         )}
 
         {step === 4 && (
-          <Input
-            type="date"
-            value={dueDate}
-            onChange={event => setDueDate(event.target.value)}
-            autoFocus
-            disabled={createTask.isPending}
-            className="bg-white dark:bg-slate-900"
-          />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Input
+              type="date"
+              value={dueDate}
+              onChange={event => setDueDate(event.target.value)}
+              autoFocus
+              disabled={createTask.isPending}
+              className="bg-white dark:bg-slate-900"
+            />
+            <Input
+              type="time"
+              value={dueTime}
+              onChange={event => setDueTime(event.target.value)}
+              disabled={createTask.isPending || !dueDate}
+              className="bg-white dark:bg-slate-900"
+            />
+          </div>
         )}
 
         {step === 5 && (
@@ -188,7 +200,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
             {notes.trim() && <p className="text-slate-500 dark:text-slate-400">{notes}</p>}
             <p className="text-xs text-slate-400">
               Priority: {priority} · Status: {STATUSES.find(item => item.value === status)?.label}
-              {dueDate ? ` · Due: ${dueDate}` : ''}
+              {dueDate ? ` · Due: ${dueDate}${dueTime ? ` at ${dueTime}` : ''}` : ''}
               {recurrenceRule ? ` · Repeats ${recurrenceRule}` : ''}
             </p>
           </div>

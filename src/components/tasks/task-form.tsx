@@ -25,6 +25,7 @@ interface FormValues {
   priority: Priority;
   status: TaskStatus;
   due_date: string;
+  due_time: string;
   project_id: string;
   goal_id: string;
   is_recurring: boolean;
@@ -46,6 +47,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       priority: task?.priority ?? 'medium',
       status: task?.status ?? defaultStatus,
       due_date: task?.due_date ?? '',
+      due_time: task?.due_time?.slice(0, 5) ?? '',
       project_id: task?.project_id ?? defaultProjectId ?? '',
       goal_id: task?.goal_id ?? defaultGoalId ?? '',
       is_recurring: task?.is_recurring ?? false,
@@ -62,6 +64,8 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       priority: values.priority,
       status: values.status,
       due_date: values.due_date || undefined,
+      due_time: values.due_date && values.due_time ? values.due_time : undefined,
+      due_timezone: values.due_date && values.due_time ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined,
       project_id: values.project_id || undefined,
       goal_id: values.goal_id || undefined,
       is_recurring: values.is_recurring,
@@ -76,6 +80,8 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
         priority: values.priority,
         status: values.status,
         due_date: values.due_date || null,
+        due_time: values.due_date && values.due_time ? values.due_time : null,
+        due_timezone: values.due_date && values.due_time ? Intl.DateTimeFormat().resolvedOptions().timeZone : null,
         project_id: values.project_id || null,
         goal_id: values.goal_id || null,
         is_recurring: values.is_recurring,
@@ -136,14 +142,19 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
           <Input type="date" {...register('due_date')} />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Project</label>
-          <Select {...register('project_id')}>
-            <option value="">No project</option>
-            {projects?.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </Select>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Due Time</label>
+          <Input type="time" {...register('due_time')} />
         </div>
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Project</label>
+        <Select {...register('project_id')}>
+          <option value="">No project</option>
+          {projects?.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </Select>
       </div>
 
       <div>

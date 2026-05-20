@@ -33,7 +33,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   const deleteTask = useDeleteTask();
 
   const priority = PRIORITY_CONFIG[task.priority];
-  const overdue = isOverdue(task.due_date) && task.status !== 'done';
+  const overdue = isOverdue(task.due_date, task.due_time) && task.status !== 'done';
   const isDone = task.status === 'done';
   const isArchived = Boolean(task.archived_at);
   const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
@@ -109,14 +109,14 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
               {task.due_date && (
                 <span className={cn('flex items-center gap-0.5 text-[10px] font-medium', overdue ? 'text-red-500' : 'text-slate-400 dark:text-slate-500')}>
                   <CalendarDays className="h-3 w-3" />
-                  {formatDate(task.due_date)}
+                  {formatDate(task.due_date, task.due_time)}
                   {/* Deadline countdown badge */}
                   <span className={cn('ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold',
                     overdue ? 'bg-red-100 text-red-600 dark:bg-red-900/40' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40')}
                   >
                     {(() => {
                       const today = new Date();
-                      const due = new Date(task.due_date);
+                      const due = new Date(`${task.due_date}T00:00:00`);
                       const diff = Math.ceil((due.setHours(0,0,0,0) - today.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
                       if (diff < 0) return 'Overdue';
                       if (diff === 0) return 'Due today';

@@ -107,6 +107,8 @@ interface CreateTaskInput {
   priority?: Priority;
   status?: TaskStatus;
   due_date?: string;
+  due_time?: string;
+  due_timezone?: string;
   project_id?: string;
   goal_id?: string;
   is_recurring?: boolean;
@@ -138,6 +140,7 @@ export function useCreateTask() {
       void trackEvent('task_created', {
         task_id: task.id,
         has_due_date: Boolean(task.due_date),
+        has_due_time: Boolean(task.due_time),
         has_project: Boolean(task.project_id),
         has_goal: Boolean(task.goal_id),
       });

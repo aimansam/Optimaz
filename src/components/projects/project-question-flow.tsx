@@ -50,14 +50,18 @@ export function ProjectQuestionFlow({ onClose, defaultParentProjectId = '' }: { 
 
     if (!name.trim()) return;
 
-    await createProject.mutateAsync({
-      name: name.trim(),
-      description: description.trim() || undefined,
-      color,
-      tags,
-      parent_project_id: parentProjectId || undefined,
-    });
-    onClose();
+    try {
+      await createProject.mutateAsync({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        color,
+        tags,
+        parent_project_id: parentProjectId || undefined,
+      });
+      onClose();
+    } catch {
+      // error is shown via toast (onError in useCreateProject) and inline below
+    }
   }
 
   return (

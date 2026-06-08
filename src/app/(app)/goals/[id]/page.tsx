@@ -16,8 +16,8 @@ import { cn, formatDate, isOverdue } from '@/lib/utils';
 export default function GoalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: goal, isLoading: goalLoading } = useGoal(id);
-  const { data: tasks, isLoading: tasksLoading } = useGoalTasks(id);
+  const { data: goal, isLoading: goalLoading, error: goalError } = useGoal(id);
+  const { data: tasks, isLoading: tasksLoading, error: tasksError } = useGoalTasks(id);
   const deleteGoal = useDeleteGoal();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -37,6 +37,11 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
       <div className="flex-1 overflow-y-auto p-6">
         {goalLoading ? (
           <div className="h-32 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse mb-6" />
+        ) : goalError ? (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            <p className="font-semibold">Failed to load goal</p>
+            <p className="mt-1 opacity-80">{goalError.message}</p>
+          </div>
         ) : goal ? (
           <div
             className="mb-6 rounded-xl border p-5"
@@ -138,6 +143,8 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
               <div key={i} className="h-16 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
+        ) : tasksError ? (
+          <p className="text-sm text-red-500">{tasksError.message}</p>
         ) : (
           <TaskList
             tasks={tasks ?? []}

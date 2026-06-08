@@ -20,9 +20,9 @@ import { Archive, CheckCircle2, ChevronRight, Edit2, FolderOpen, Plus, Star, Tra
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: tasks, isLoading } = useTasks(id);
+  const { data: tasks, isLoading, error: tasksError } = useTasks(id);
   const { data: allTasks } = useTasks();
-  const { data: projects } = useProjects();
+  const { data: projects, isLoading: projectsLoading, error: projectsError } = useProjects();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const project = projects?.find((p) => p.id === id);
@@ -83,7 +83,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     <>
 
       <div className="flex-1 overflow-y-auto p-6">
-        {project ? (
+        {projectsError ? (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            <p className="font-semibold">Failed to load project</p>
+            <p className="mt-1 opacity-80">{projectsError.message}</p>
+          </div>
+        ) : project ? (
           <div
             className="mb-6 rounded-xl border p-5"
             style={{ borderColor: project.color + '40', backgroundColor: project.color + '08' }}
@@ -196,7 +201,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </div>
           </div>
-        ) : projects ? (
+        ) : projects && !projectsLoading ? (
           <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
             Project not found.
           </div>
@@ -246,6 +251,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               <div key={i} className="h-16 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
+        ) : tasksError ? (
+          <p className="text-sm text-red-500">{tasksError.message}</p>
         ) : (
           <TaskList
             tasks={tasks ?? []}

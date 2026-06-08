@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 import { getNextRecurringDueDate } from '@/lib/recurrence';
@@ -238,6 +239,10 @@ export function useCreateTask() {
         has_project: Boolean(task.project_id),
         has_goal: Boolean(task.goal_id),
       });
+      toast.success('Task created!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to create task: ${error.message}`);
     },
   });
 }
@@ -357,6 +362,10 @@ export function useDeleteTask() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      toast.success('Task deleted');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete task: ${error.message}`);
     },
   });
 }
@@ -379,6 +388,10 @@ export function useArchiveTask() {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       void trackEvent('task_archived', { task_id: task.id });
+      toast.success('Task archived');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to archive task: ${error.message}`);
     },
   });
 }
@@ -400,6 +413,10 @@ export function useRestoreTask() {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       void trackEvent('task_restored', { task_id: task.id });
+      toast.success('Task restored');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to restore task: ${error.message}`);
     },
   });
 }

@@ -51,7 +51,7 @@ src/
 │   ├── recurrence.ts   # Recurring task date calculation
 │   ├── analytics.ts    # trackEvent() → Supabase analytics_events
 │   └── utils.ts        # cn(), formatDate(), isOverdue()
-└── proxy.ts            # Next.js middleware (auth guard + session refresh)
+└── middleware.ts       # Next.js middleware (auth guard + session refresh)
 
 supabase/
 ├── schema.sql          # Full DB schema (run this on a fresh project)
@@ -82,6 +82,12 @@ CRON_SECRET=your-random-secret-string
 
 # Admin panel — comma-separated emails that can access /admin
 TASKFLOW_ADMIN_EMAILS=you@example.com
+
+# Email notifications (optional) — used to email feedback@mavoralabs.com on new feedback
+# Get a free API key at https://resend.com (100 emails/day free)
+RESEND_API_KEY=re_your_api_key_here
+# Optional: override the from address once you've verified your domain in Resend
+# RESEND_FROM_EMAIL=noreply@yourdomain.com
 ```
 
 ### Generating VAPID keys
@@ -155,14 +161,14 @@ npm run test:smoke:headed
 
 1. Push to GitHub — Vercel auto-deploys on push to `main`
 2. Add all environment variables in **Vercel → Project → Settings → Environment Variables**
-3. The cron job (`/api/cron/task-reminders`) runs daily at 09:00 UTC via `vercel.json`
+3. The cron job (`/api/cron/task-reminders`) runs **every 4 hours** via `vercel.json` to cover all timezones
 
 ---
 
 ## Key Data Flows
 
 ### Authentication
-`src/proxy.ts` (Next.js middleware) runs on every request:
+`src/middleware.ts` (Next.js middleware) runs on every request:
 - Unauthenticated users → `/auth/login`
 - Logged-in users visiting `/auth/*` → `/dashboard`
 - Public pages (`/pricing`, `/privacy`, `/terms`) — no auth check
@@ -174,7 +180,7 @@ When a recurring task is marked **done**:
 3. All subtasks are cloned to the new task instance
 
 ### Push Reminders
-Vercel cron calls `GET /api/cron/task-reminders` daily:
+Vercel cron calls `GET /api/cron/task-reminders` every 4 hours:
 1. Fetches tasks due within ±2 days
 2. Checks each user's `notification_lead_time_minutes` preference
 3. Deduplicates via `notification_deliveries` table
@@ -206,3 +212,4 @@ Requires `SUPABASE_SERVICE_ROLE_KEY` to be set.
 | Push notifications not working | Check VAPID keys are set and `NEXT_PUBLIC_VAPID_PUBLIC_KEY` matches |
 | Admin page shows "not configured" | Add `SUPABASE_SERVICE_ROLE_KEY` to Vercel env vars |
 | Cron job returns 401 | `CRON_SECRET` env var must match the `Authorization: Bearer` header Vercel sends |
+| Feedback emails not arriving | Add `RESEND_API_KEY` to Vercel env vars; check spam folder |

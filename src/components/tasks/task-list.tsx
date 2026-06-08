@@ -1,7 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { CheckCircle2, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core';
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { CheckCircle2, GripVertical, Plus } from 'lucide-react';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -20,6 +31,54 @@ interface TaskListProps {
   showAddButton?: boolean;
 }
 
+function SortableTaskItem({
+  task,
+  selectionMode,
+  selected,
+  onToggle,
+}: {
+  task: Task;
+  selectionMode: boolean;
+  selected: boolean;
+  onToggle: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+      }}
+      className="flex items-center gap-1.5"
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="flex-shrink-0 cursor-grab touch-none rounded px-0.5 py-1 text-slate-300 hover:text-slate-400 active:cursor-grabbing dark:text-slate-700 dark:hover:text-slate-500"
+        aria-label="Drag to reorder"
+        tabIndex={-1}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      {selectionMode && (
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={onToggle}
+          aria-label={`Select ${task.title}`}
+          className="h-4 w-4 rounded border-slate-300 accent-emerald-500 dark:border-slate-700"
+        />
+      )}
+      <div className="min-w-0 flex-1">
+        <TaskCard task={task} />
+      </div>
+    </div>
+  );
+}
+
 export function TaskList({
   tasks,
   emptyMessage = 'No tasks yet',
@@ -32,31 +91,84 @@ export function TaskList({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [localTasks, setLocalTasks] = useState<Task[]>(() =>
+    [...tasks].sort((a, b) => a.position - b.position)
+  );
+
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const bulkPending = updateTask.isPending || deleteTask.isPending;
 
+  // Keep local tasks in sync with server data (but not during active drag)
+  useEffect(() => {
+    if (!activeTask) {
+      setLocalTasks([...tasks].sort((a, b) => a.position - b.position));
+    }
+  }, [tasks, activeTask]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
   function toggleSelect(id: string) {
     setSelected((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
+
   function clearSelected() {
     setSelected([]);
     setSelectionMode(false);
   }
+
   async function bulkDelete() {
     await Promise.all(selected.map((id) => deleteTask.mutateAsync(id)));
     clearSelected();
     setDeleteConfirmOpen(false);
   }
+
   async function bulkComplete() {
     await Promise.all(selected.map((id) => updateTask.mutateAsync({ id, status: 'done' })));
     clearSelected();
   }
 
+  function handleDragStart(event: DragStartEvent) {
+    const task = localTasks.find((t) => t.id === event.active.id);
+    if (task) setActiveTask(task);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveTask(null);
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localTasks.findIndex((t) => t.id === active.id);
+    const newIndex = localTasks.findIndex((t) => t.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(localTasks, oldIndex, newIndex);
+
+    // Optimistic update
+    setLocalTasks(reordered);
+
+    // Assign positions as (index + 1) * 1000 and only persist changed tasks
+    const updates = reordered
+      .map((task, index) => ({ id: task.id, position: (index + 1) * 1000 }))
+      .filter(({ id, position }) => {
+        const original = tasks.find((t) => t.id === id);
+        return original && original.position !== position;
+      });
+
+    for (const { id, position } of updates) {
+      updateTask.mutate({ id, position });
+    }
+  }
+
+  const taskIds = localTasks.map((t) => t.id);
+
   return (
     <div className="space-y-2">
-
-      {tasks.length > 0 && !selectionMode && (
+      {localTasks.length > 0 && !selectionMode && (
         <div className="flex justify-end">
           <Button size="sm" variant="ghost" onClick={() => setSelectionMode(true)}>Select tasks</Button>
         </div>
@@ -73,24 +185,31 @@ export function TaskList({
         </div>
       )}
 
-      {tasks.map((task) => (
-        <div key={task.id} className="flex items-center gap-2">
-          {selectionMode && (
-            <input
-              type="checkbox"
-              checked={selected.includes(task.id)}
-              onChange={() => toggleSelect(task.id)}
-              aria-label={`Select ${task.title}`}
-              className="h-4 w-4 rounded border-slate-300 accent-emerald-500 dark:border-slate-700"
-            />
-          )}
-          <div className="flex-1">
-            <TaskCard task={task} />
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+          <div className="space-y-2">
+            {localTasks.map((task) => (
+              <SortableTaskItem
+                key={task.id}
+                task={task}
+                selectionMode={selectionMode}
+                selected={selected.includes(task.id)}
+                onToggle={() => toggleSelect(task.id)}
+              />
+            ))}
           </div>
-        </div>
-      ))}
+        </SortableContext>
 
-      {tasks.length === 0 && (
+        <DragOverlay>
+          {activeTask && (
+            <div className="rotate-1 scale-[1.02] opacity-90 shadow-lg rounded-xl">
+              <TaskCard task={activeTask} />
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
+
+      {localTasks.length === 0 && (
         <EmptyState
           icon={<CheckCircle2 className="h-6 w-6" />}
           title={emptyMessage}
@@ -99,7 +218,7 @@ export function TaskList({
         />
       )}
 
-      {showAddButton && tasks.length > 0 && (
+      {showAddButton && localTasks.length > 0 && (
         <button
           onClick={() => setAddOpen(true)}
           className="group flex w-full items-center gap-2.5 rounded-xl border border-dashed border-slate-200 px-4 py-3 text-sm text-slate-400 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all dark:border-slate-800 dark:hover:border-slate-600 dark:hover:bg-slate-800/40 dark:hover:text-slate-300"
@@ -128,4 +247,3 @@ export function TaskList({
     </div>
   );
 }
-

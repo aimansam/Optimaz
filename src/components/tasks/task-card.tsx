@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useRef, useState } from 'react';
 import { Check, CalendarDays, RefreshCw } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { getWeekdayLabel } from '@/lib/recurrence';
@@ -21,8 +22,23 @@ const PRIORITY_LEFT_BORDER: Record<string, string> = {
 };
 
 export function TaskCard({ task, compact = false }: TaskCardProps) {
-  // ...existing code...
   const updateTask = useUpdateTask();
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editValue, setEditValue] = useState(task.title);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  // Keep editValue in sync if task.title changes externally
+  useEffect(() => {
+    if (!editingTitle) setEditValue(task.title);
+  }, [task.title, editingTitle]);
+
+  // Auto-focus and select all when entering edit mode
+  useEffect(() => {
+    if (editingTitle) {
+      titleInputRef.current?.focus();
+      titleInputRef.current?.select();
+    }
+  }, [editingTitle]);
 
   const priority = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.due_date, task.due_time) && task.status !== 'done';
@@ -34,6 +50,25 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   const toggleDone = () => {
     updateTask.mutate({ id: task.id, status: isDone ? 'todo' : 'done' });
   };
+
+  function startEditing() {
+    if (isDone) return;
+    setEditValue(task.title);
+    setEditingTitle(true);
+  }
+
+  function commitEdit() {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== task.title) {
+      updateTask.mutate({ id: task.id, title: trimmed });
+    }
+    setEditingTitle(false);
+  }
+
+  function cancelEdit() {
+    setEditValue(task.title);
+    setEditingTitle(false);
+  }
 
   return (
     <div
@@ -61,14 +96,33 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
 
           {/* Content */}
           <div className="min-w-0 flex-1">
-            <p
-              className={cn(
-                'text-sm font-medium leading-snug text-slate-800 dark:text-slate-100',
-                isDone && 'line-through text-slate-400 dark:text-slate-500'
-              )}
-            >
-              {task.title}
-            </p>
+            {editingTitle ? (
+              <input
+                ref={titleInputRef}
+                value={editValue}
+                onChange={e => setEditValue(e.target.value)}
+                onBlur={commitEdit}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
+                  if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+                }}
+                maxLength={255}
+                className="w-full bg-transparent text-sm font-medium leading-snug text-slate-800 outline-none dark:text-slate-100 border-b border-slate-300 dark:border-slate-600 focus:border-slate-500 dark:focus:border-slate-400 py-px"
+                aria-label="Edit task title"
+              />
+            ) : (
+              <p
+                onClick={!isDone ? startEditing : undefined}
+                title={!isDone ? 'Click to rename' : undefined}
+                className={cn(
+                  'text-sm font-medium leading-snug text-slate-800 dark:text-slate-100',
+                  isDone && 'line-through text-slate-400 dark:text-slate-500',
+                  !isDone && 'cursor-text'
+                )}
+              >
+                {task.title}
+              </p>
+            )}
 
             {!compact && task.notes && (
               <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-2">{task.notes}</p>

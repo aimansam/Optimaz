@@ -38,13 +38,17 @@ export function GoalQuestionFlow({ onClose }: { onClose: () => void }) {
 
     if (!title.trim()) return;
 
-    await createGoal.mutateAsync({
-      title: title.trim(),
-      description: description.trim() || undefined,
-      due_date: dueDate || undefined,
-      color,
-    });
-    onClose();
+    try {
+      await createGoal.mutateAsync({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        due_date: dueDate || undefined,
+        color,
+      });
+      onClose();
+    } catch {
+      // error is shown via toast (onError in useCreateGoal) and inline below
+    }
   }
 
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 import type { Goal } from '@/lib/types';
@@ -53,6 +54,10 @@ export function useCreateGoal() {
     onSuccess: (goal) => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       void trackEvent('goal_created', { goal_id: goal.id });
+      toast.success('Goal created!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to create goal: ${error.message}`);
     },
   });
 }

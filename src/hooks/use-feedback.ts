@@ -42,6 +42,16 @@ export function useSubmitFeedback() {
     onSuccess: (_data, variables) => {
       toast.success('Feedback sent. Thank you.');
       void trackEvent('feedback_submitted', { category: variables.category, page_path: variables.pagePath });
+      // Fire-and-forget email notification — failure is silent so it never blocks the user
+      void fetch('/api/feedback/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: variables.category,
+          message: variables.message,
+          pagePath: variables.pagePath,
+        }),
+      }).catch(() => undefined);
     },
     onError: () => {
       toast.error('Could not send feedback');

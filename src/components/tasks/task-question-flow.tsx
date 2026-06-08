@@ -86,6 +86,9 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
 
   function goToNextStep() {
     setStep(current => {
+      // "Skip" on any optional unfilled step → jump to review
+      if (currentStep.optional && !stepHasValue) return steps.length - 1;
+      // Skip the weekdays step if recurrence is not weekly
       if (current === 7 && recurrenceRule !== 'weekly') return 9;
       return Math.min(current + 1, steps.length - 1);
     });

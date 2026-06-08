@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { TaskActions } from './task-actions';
 import { useUpdateTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
-import { SubtaskList } from './subtask-list2';
+import { SubtaskList } from './subtask-list';
 
 interface TaskCardProps {
   task: Task;

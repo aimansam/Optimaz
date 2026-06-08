@@ -10,7 +10,7 @@ import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
 import { WEEKDAYS, WEEKDAY_PRESETS, getWeekdayLabel, normalizeWeekdays } from '@/lib/recurrence';
 import type { Task, Priority, TaskStatus, RecurrenceRule } from '@/lib/types';
-import { SubtaskList } from './subtask-list2';
+import { SubtaskList } from './subtask-list';
 
 interface TaskFormProps {
   defaultStatus?: TaskStatus;

@@ -7,9 +7,26 @@ import ProvidersClient from './providers-client';
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
 export const metadata: Metadata = {
-  title: 'TaskFlow',
-  description: 'Your personal productivity task manager',
+  title: { default: 'TaskFlow', template: '%s · TaskFlow' },
+  description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
   manifest: '/manifest.json',
+  metadataBase: new URL('https://taskflow.vercel.app'),
+  openGraph: {
+    type: 'website',
+    siteName: 'TaskFlow',
+    title: 'TaskFlow — Personal Productivity Workspace',
+    description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'TaskFlow',
+    description: 'Plan tasks, projects, and goals in one quiet workspace.',
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

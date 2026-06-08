@@ -1,12 +1,9 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
 
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 dark:bg-slate-950">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg dark:bg-white">
-        <Zap className="h-7 w-7 text-white dark:text-slate-900" fill="currentColor" />
-      </div>
+      <img src="/icon-192x192.png" alt="Optimaz" className="h-14 w-14 rounded-2xl shadow-lg" />
       <h1 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
         Page not found
       </h1>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, LayoutDashboard, Kanban, FolderOpen, Repeat2, Settings, Target, Zap } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, Kanban, FolderOpen, Repeat2, Settings, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProjects } from '@/hooks/use-projects';
 
@@ -49,9 +49,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-4 md:px-5 md:py-5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-900 shadow-sm shadow-black/20 dark:bg-white">
-            <Zap className="h-4 w-4 text-white dark:text-slate-900" fill="currentColor" />
-          </div>
+          <img src="/icon-192x192.png" alt="Optimaz" className="h-8 w-8 shrink-0 rounded-xl shadow-sm shadow-black/20" />
           <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">Optimaz</span>
         </div>
 

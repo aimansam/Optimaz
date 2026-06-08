@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Menu } from 'lucide-react';
 import { NotificationBell } from '@/components/ui/notification-bell';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
+import { GlobalSearch } from './global-search';
 
 const supabase = createClient();
 
@@ -38,6 +39,7 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
       </div>
       <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
         {actions}
+        <GlobalSearch />
         <FeedbackButton className="hidden min-[390px]:inline-flex" />
         <NotificationBell />
         <ThemeToggle />

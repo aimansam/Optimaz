@@ -10,7 +10,7 @@ import { useGoals } from '@/hooks/use-goals';
 import { Plus, Target } from 'lucide-react';
 
 export default function GoalsPage() {
-  const { data: goals, isLoading } = useGoals();
+  const { data: goals, isLoading, error } = useGoals();
   const [addOpen, setAddOpen] = useState(false);
 
   const active = goals?.filter((g) => {
@@ -34,7 +34,12 @@ export default function GoalsPage() {
             Add Goal
           </Button>
         </div>
-        {isLoading ? (
+        {error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            <p className="font-semibold">Failed to load goals</p>
+            <p className="mt-1 opacity-80">{error.message}</p>
+          </div>
+        ) : isLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-44 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />

@@ -77,6 +77,10 @@ export function useUpdateGoal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      toast.success('Goal updated');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to update goal: ${error.message}`);
     },
   });
 }
@@ -91,6 +95,10 @@ export function useDeleteGoal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Goal deleted');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete goal: ${error.message}`);
     },
   });
 }

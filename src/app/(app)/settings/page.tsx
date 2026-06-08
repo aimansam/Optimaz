@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { AlertTriangle, Bell, BellOff, CheckCircle2, Palette, Send, Trash2, User, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, CheckCircle2, Download, Palette, Send, Trash2, User, XCircle } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
-import { useDeleteAccount } from '@/hooks/use-account-controls';
+import { useDeleteAccount, useExportAccount } from '@/hooks/use-account-controls';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
@@ -23,6 +23,7 @@ export default function SettingsPage() {
   const { mutate: updateUser, isPending: isSaving, isSuccess: saveSuccess, isError: saveError } = useUpdateUser();
   const notificationPrefsUpdate = useUpdateUser();
   const deleteAccount = useDeleteAccount();
+  const exportAccount = useExportAccount();
   const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name ?? '');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -178,6 +179,28 @@ export default function SettingsPage() {
                 {saveError && <span className="text-xs text-red-500">Error saving name</span>}
               </div>
             </form>
+            <div className="border-b border-slate-100 py-5 dark:border-slate-800">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Export your data</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Download all your goals, projects, tasks, and subtasks as a JSON file.</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => exportAccount.mutate()}
+                  disabled={exportAccount.isPending}
+                  className="self-start sm:self-auto"
+                >
+                  <Download className="h-4 w-4" />
+                  {exportAccount.isPending ? 'Exporting...' : 'Export data'}
+                </Button>
+              </div>
+              {exportAccount.isError && (
+                <p className="mt-2 text-xs text-red-500">{exportAccount.error.message}</p>
+              )}
+            </div>
             <div className="pt-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Danger zone</p>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

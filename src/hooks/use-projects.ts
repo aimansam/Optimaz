@@ -39,6 +39,10 @@ export function useCreateProject() {
     onSuccess: (project) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       void trackEvent('project_created', { project_id: project.id, has_parent: Boolean(project.parent_project_id) });
+      toast.success('Project created!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to create project: ${error.message}`);
     },
   });
 }
@@ -100,6 +104,10 @@ export function useDeleteProject() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Project deleted');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete project: ${error.message}`);
     },
   });
 }

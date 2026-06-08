@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle2, Sparkles, Zap } from 'lucide-react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
 import { PricingWaitlistForm } from '@/components/pricing/pricing-waitlist-form';
 
 const signals = [
@@ -13,10 +13,8 @@ export default function PricingPage() {
     <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 dark:bg-[#0a0a0f] dark:text-slate-100 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <nav className="mb-8 flex items-center justify-between gap-4 text-sm">
-          <Link href="/auth/login" className="flex items-center gap-2 font-semibold text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-950">
-              <Zap className="h-4 w-4" fill="currentColor" />
-            </span>
+          <Link href="/" className="flex items-center gap-2 font-semibold text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
+            <img src="/icon-192x192.png" alt="Optimaz" className="h-8 w-8 rounded-lg" />
             Optimaz
           </Link>
           <div className="flex items-center gap-4">

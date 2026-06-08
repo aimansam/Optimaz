@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: 'Optimaz', template: '%s · Optimaz' },
   description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
   manifest: '/manifest.json',
-  metadataBase: new URL('https://taskflow.vercel.app'),
+  metadataBase: new URL('https://optimaz.mavoralabs.com'),
   openGraph: {
     type: 'website',
     siteName: 'Optimaz',

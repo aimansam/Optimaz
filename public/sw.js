@@ -19,9 +19,9 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('push', (event) => {
   const payload = event.data?.json() ?? {};
-  const title = payload.title || 'TaskFlow';
+  const title = payload.title || 'Optimaz';
   const options = {
-    body: payload.body || 'You have a new TaskFlow notification.',
+    body: payload.body || 'You have a new Optimaz notification.',
     icon: '/icon-192x192.png',
     badge: '/icon-192x192.png',
     data: {

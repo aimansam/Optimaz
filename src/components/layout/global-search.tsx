@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { FolderOpen, Search, Target, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -103,7 +104,7 @@ export function GlobalSearch() {
   }, [debouncedQuery]);
 
   function navigate(result: SearchResult) {
-    if (result.type === 'task') router.push(`/kanban`);
+    if (result.type === 'task') router.push(`/dashboard`);
     else if (result.type === 'project') router.push(`/projects/${result.id}`);
     else if (result.type === 'goal') router.push(`/goals/${result.id}`);
     setOpen(false);
@@ -137,8 +138,8 @@ export function GlobalSearch() {
         <kbd className="hidden rounded border border-slate-200 bg-slate-100 px-1 text-[10px] font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-800 sm:inline">⌘K</kbd>
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4" onClick={() => setOpen(false)}>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[12vh] px-4" onClick={() => setOpen(false)}>
           <div className="pointer-events-none fixed inset-0 bg-black/40 backdrop-blur-sm" />
           <div
             className="relative z-10 w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
@@ -249,7 +250,7 @@ export function GlobalSearch() {
             )}
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   );
 }

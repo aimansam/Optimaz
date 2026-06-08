@@ -52,7 +52,7 @@ export async function POST(request: Request) {
   }
 
   const categoryLabel = CATEGORY_LABELS[category] ?? category;
-  const subject = `[TaskFlow Beta] ${categoryLabel}`;
+  const subject = `[Optimaz Beta] ${categoryLabel}`;
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
       <h2 style="margin:0 0 16px;font-size:18px;color:#0f172a">New feedback submitted</h2>
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px">
         <p style="margin:0;font-size:14px;color:#0f172a;line-height:1.6;white-space:pre-wrap">${message.trim()}</p>
       </div>
-      <p style="margin-top:24px;font-size:12px;color:#94a3b8">Sent from TaskFlow beta feedback system</p>
+      <p style="margin-top:24px;font-size:12px;color:#94a3b8">Sent from Optimaz beta feedback system</p>
     </div>
   `;
 
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      from: `TaskFlow Beta <${fromEmail}>`,
+      from: `Optimaz Beta <${fromEmail}>`,
       to: [NOTIFY_TO],
       subject,
       html,

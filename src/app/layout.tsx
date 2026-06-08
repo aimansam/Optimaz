@@ -7,20 +7,20 @@ import ProvidersClient from './providers-client';
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
 export const metadata: Metadata = {
-  title: { default: 'TaskFlow', template: '%s · TaskFlow' },
+  title: { default: 'Optimaz', template: '%s · Optimaz' },
   description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
   manifest: '/manifest.json',
   metadataBase: new URL('https://taskflow.vercel.app'),
   openGraph: {
     type: 'website',
-    siteName: 'TaskFlow',
-    title: 'TaskFlow — Personal Productivity Workspace',
+    siteName: 'Optimaz',
+    title: 'Optimaz — Personal Productivity Workspace',
     description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary',
-    title: 'TaskFlow',
+    title: 'Optimaz',
     description: 'Plan tasks, projects, and goals in one quiet workspace.',
   },
   robots: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'TaskFlow',
+    title: 'Optimaz',
   },
 };
 
@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="TaskFlow" />
+        <meta name="apple-mobile-web-app-title" content="Optimaz" />
       </head>
       <body className="font-sans antialiased">
         <ProvidersClient>

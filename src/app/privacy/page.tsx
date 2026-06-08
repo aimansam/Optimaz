@@ -4,7 +4,7 @@ import { Shield } from 'lucide-react';
 const sections = [
   {
     title: 'Information We Use',
-    body: 'TaskFlow uses your sign-in account information, profile name, projects, goals, tasks, subtasks, notification settings, and product activity events needed to operate and improve the service.',
+    body: 'Optimaz uses your sign-in account information, profile name, projects, goals, tasks, subtasks, notification settings, and product activity events needed to operate and improve the service.',
   },
   {
     title: 'How Your Data Is Used',
@@ -12,11 +12,11 @@ const sections = [
   },
   {
     title: 'What Is Not Sold',
-    body: 'TaskFlow does not sell your personal workspace data. Your task, project, and goal content is intended to remain private to your account.',
+    body: 'Optimaz does not sell your personal workspace data. Your task, project, and goal content is intended to remain private to your account.',
   },
   {
     title: 'Third-Party Services',
-    body: 'TaskFlow relies on trusted infrastructure providers for authentication, hosting, database storage, and push notifications. Those providers process data only as needed to run the application.',
+    body: 'Optimaz relies on trusted infrastructure providers for authentication, hosting, database storage, and push notifications. Those providers process data only as needed to run the application.',
   },
   {
     title: 'Your Choices',
@@ -24,7 +24,7 @@ const sections = [
   },
   {
     title: 'Changes',
-    body: 'This policy may be updated as TaskFlow grows. Material changes should be reflected on this page before they apply to new use of the service.',
+    body: 'This policy may be updated as Optimaz grows. Material changes should be reflected on this page before they apply to new use of the service.',
   },
 ];
 
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
       <div className="mx-auto max-w-3xl">
         <nav className="mb-8 flex items-center justify-between gap-4 text-sm">
           <Link href="/auth/login" className="font-semibold text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
-            TaskFlow
+            Optimaz
           </Link>
           <Link href="/terms" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
             Terms
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Last updated May 13, 2026</p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Privacy Policy</h1>
             <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              This page explains the basic data practices for TaskFlow while the product is prepared for public beta.
+              This page explains the basic data practices for Optimaz while the product is prepared for public beta.
             </p>
           </div>
         </div>

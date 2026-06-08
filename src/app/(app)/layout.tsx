@@ -16,7 +16,7 @@ function getPageTitle(pathname: string) {
   if (pathname.startsWith('/projects/')) return 'Project';
   if (pathname === '/settings') return 'Settings';
   if (pathname === '/admin') return 'Admin';
-  return 'TaskFlow';
+  return 'Optimaz';
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

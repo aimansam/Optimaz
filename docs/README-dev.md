@@ -1,6 +1,6 @@
-# TaskFlow — Developer Guide
+# Optimaz — Developer Guide
 
-TaskFlow is a personal productivity PWA built with Next.js 16, Supabase, and Tailwind CSS v4.
+Optimaz is a personal productivity PWA built with Next.js 16, Supabase, and Tailwind CSS v4.
 
 ---
 

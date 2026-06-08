@@ -17,7 +17,7 @@ export default function PricingPage() {
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-950">
               <Zap className="h-4 w-4" fill="currentColor" />
             </span>
-            TaskFlow
+            Optimaz
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">Privacy</Link>
@@ -31,7 +31,7 @@ export default function PricingPage() {
               <Sparkles className="h-3.5 w-3.5" />
               Beta pricing research
             </div>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-slate-950 dark:text-slate-50 sm:text-4xl">TaskFlow is free during beta</h1>
+            <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-slate-950 dark:text-slate-50 sm:text-4xl">Optimaz is free during beta</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400">
               Join the pricing waitlist if you want a paid plan later and tell us which upgrade would actually matter to your workflow.
             </p>

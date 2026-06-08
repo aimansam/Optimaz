@@ -80,7 +80,7 @@ export function useSendTestPushNotification() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: 'TaskFlow test notification',
+          title: 'Optimaz test notification',
           body: 'Notifications are working on this device.',
           url: '/settings',
         }),

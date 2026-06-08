@@ -3,8 +3,8 @@ import { FileText } from 'lucide-react';
 
 const sections = [
   {
-    title: 'Use of TaskFlow',
-    body: 'TaskFlow is provided to help you organize personal tasks, projects, goals, reminders, and related productivity workflows. You are responsible for the information you add to your workspace.',
+    title: 'Use of Optimaz',
+    body: 'Optimaz is provided to help you organize personal tasks, projects, goals, reminders, and related productivity workflows. You are responsible for the information you add to your workspace.',
   },
   {
     title: 'Account Access',
@@ -12,19 +12,19 @@ const sections = [
   },
   {
     title: 'Acceptable Use',
-    body: 'Do not misuse TaskFlow, interfere with the service, attempt unauthorized access, or use the app to store or distribute harmful, illegal, or abusive content.',
+    body: 'Do not misuse Optimaz, interfere with the service, attempt unauthorized access, or use the app to store or distribute harmful, illegal, or abusive content.',
   },
   {
     title: 'Beta Service',
-    body: 'TaskFlow may change as new beta features are tested. Some functionality may be adjusted, limited, or removed while the product is improved.',
+    body: 'Optimaz may change as new beta features are tested. Some functionality may be adjusted, limited, or removed while the product is improved.',
   },
   {
     title: 'Availability',
-    body: 'TaskFlow is offered as-is during beta. Reasonable care is taken to keep it running, but uninterrupted availability is not guaranteed.',
+    body: 'Optimaz is offered as-is during beta. Reasonable care is taken to keep it running, but uninterrupted availability is not guaranteed.',
   },
   {
     title: 'Updates to These Terms',
-    body: 'These terms may be updated as TaskFlow develops. Continued use after updates means you accept the latest version posted here.',
+    body: 'These terms may be updated as Optimaz develops. Continued use after updates means you accept the latest version posted here.',
   },
 ];
 
@@ -34,7 +34,7 @@ export default function TermsPage() {
       <div className="mx-auto max-w-3xl">
         <nav className="mb-8 flex items-center justify-between gap-4 text-sm">
           <Link href="/auth/login" className="font-semibold text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
-            TaskFlow
+            Optimaz
           </Link>
           <Link href="/privacy" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
             Privacy
@@ -49,7 +49,7 @@ export default function TermsPage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Last updated May 13, 2026</p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Terms of Service</h1>
             <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              These terms set basic expectations for using TaskFlow during public beta preparation.
+              These terms set basic expectations for using Optimaz during public beta preparation.
             </p>
           </div>
         </div>

@@ -29,7 +29,7 @@ export default function LoginPage() {
               <Zap className="h-7 w-7 text-slate-900" fill="currentColor" />
             </div>
             <div className="text-center">
-              <h1 className="text-2xl font-bold tracking-tight text-white">TaskFlow</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-white">Optimaz</h1>
               <p className="mt-1 text-sm text-slate-400">Plan tasks, projects, and goals in one quiet workspace</p>
             </div>
           </div>

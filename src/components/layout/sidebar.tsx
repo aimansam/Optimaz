@@ -52,7 +52,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-900 shadow-sm shadow-black/20 dark:bg-white">
             <Zap className="h-4 w-4 text-white dark:text-slate-900" fill="currentColor" />
           </div>
-          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">TaskFlow</span>
+          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">Optimaz</span>
         </div>
 
         {/* Nav */}

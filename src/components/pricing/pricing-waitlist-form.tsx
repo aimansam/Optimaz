@@ -63,7 +63,7 @@ export function PricingWaitlistForm() {
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="pricing-intent">
-          What would make TaskFlow worth paying for?
+          What would make Optimaz worth paying for?
         </label>
         <Textarea
           id="pricing-intent"

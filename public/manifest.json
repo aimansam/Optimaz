@@ -1,7 +1,7 @@
 {
-  "name": "TaskFlow",
-  "short_name": "TaskFlow",
-  "description": "Your personal productivity task manager",
+  "name": "Optimaz",
+  "short_name": "Optimaz",
+  "description": "Plan tasks, projects, and goals in one quiet workspace.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

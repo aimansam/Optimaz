@@ -94,7 +94,7 @@ export default function SettingsPage() {
     checking: {
       icon: Bell,
       label: 'Checking device support',
-      description: 'TaskFlow is checking whether this browser can receive push notifications.',
+      description: 'Optimaz is checking whether this browser can receive push notifications.',
       className: 'border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-300',
     },
     unsupported: {
@@ -206,7 +206,7 @@ export default function SettingsPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-red-700 dark:text-red-300">Delete account</p>
-                  <p className="text-xs text-red-500 dark:text-red-300/80">Permanently remove your account and TaskFlow data.</p>
+                  <p className="text-xs text-red-500 dark:text-red-300/80">Permanently remove your account and Optimaz data.</p>
                 </div>
                 <Button type="button" variant="danger" size="sm" onClick={() => setDeleteDialogOpen(true)} className="self-start sm:self-auto">
                   <Trash2 className="h-4 w-4" />
@@ -350,9 +350,9 @@ export default function SettingsPage() {
 
           {/* About */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">About TaskFlow</h2>
+            <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">About Optimaz</h2>
             <p className="text-sm text-slate-400">
-              TaskFlow helps you organize projects, goals, tasks, deadlines, and daily progress in one focused workspace.
+              Optimaz helps you organize projects, goals, tasks, deadlines, and daily progress in one focused workspace.
               Install it on your phone or desktop for quick access whenever you plan your day.
             </p>
             <div className="mt-3 flex gap-3 text-sm">
@@ -384,7 +384,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium text-red-700 dark:text-red-300">This cannot be undone.</p>
                 <p className="mt-1 text-xs text-red-600 dark:text-red-300/80">
-                  TaskFlow will permanently remove your account and all workspace data.
+                  Optimaz will permanently remove your account and all workspace data.
                 </p>
               </div>
             </div>

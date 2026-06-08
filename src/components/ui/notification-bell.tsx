@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import { AlertTriangle, Bell, CalendarClock, CheckCircle2 } from "lucide-react";
 import { useNotificationTasks } from "@/hooks/use-tasks";
 import { cn, formatDate } from "@/lib/utils";
@@ -106,12 +106,25 @@ const TONE_ICONS = {
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { data: tasks, isLoading } = useNotificationTasks();
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    function handleOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [open]);
   const notifications = useMemo(() => buildNotifications(tasks), [tasks]);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="relative inline-block">
+    <div ref={containerRef} className="relative inline-block">
       <button
         className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
         onClick={() => setOpen(o => !o)}

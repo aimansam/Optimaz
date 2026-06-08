@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Use placeholder values for build — real keys only needed at runtime
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: placeholder-vapid-key
+          VAPID_PRIVATE_KEY: placeholder-vapid-private
+          VAPID_EMAIL: mailto:ci@example.com
+          RESEND_API_KEY: placeholder-resend-key
+          RESEND_FROM_EMAIL: noreply@example.com

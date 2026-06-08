@@ -38,17 +38,17 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
         className={cn(
-          'relative flex w-full flex-col rounded-t-2xl border border-slate-200/80 bg-white shadow-2xl shadow-black/20 dark:border-slate-700/60 dark:bg-slate-900 dark:shadow-black/60',
-          'max-h-[92dvh] sm:max-h-[95vh] sm:max-w-3xl sm:rounded-2xl',
+          'relative flex w-full flex-col rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-black/20 dark:border-slate-700/60 dark:bg-slate-900 dark:shadow-black/60',
+          'max-h-[90dvh] sm:max-w-3xl',
           className
         )}
       >
-        {/* Sticky header — never scrolls off screen */}
+        {/* Header — always visible at top */}
         <div className="flex shrink-0 items-center justify-between rounded-t-2xl border-b border-slate-100 bg-slate-50/80 px-4 py-3 dark:border-slate-800 dark:bg-slate-800/40 sm:px-6 sm:py-4">
           <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 rounded-lg">

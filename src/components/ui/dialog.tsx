@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
@@ -34,8 +35,9 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   }, [open]);
 
   if (!open) return null;
+  if (typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <div
       ref={overlayRef}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
@@ -61,6 +63,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

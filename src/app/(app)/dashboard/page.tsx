@@ -17,7 +17,7 @@ import { TaskList } from '@/components/tasks/task-list';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Dialog } from '@/components/ui/dialog';
 import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
-import { TaskFilterBar } from '@/components/tasks/task-filter-bar';
+import { TaskFilterBar, DEFAULT_TASK_FILTERS, type TaskFilters } from '@/components/tasks/task-filter-bar';
 import { OnboardingPanel } from '@/components/onboarding/onboarding-panel';
 
 import { useTodayTasks, useOverdueTasks, useTasks } from '@/hooks/use-tasks';
@@ -25,7 +25,7 @@ import { useProjects } from '@/hooks/use-projects';
 import { useGoals } from '@/hooks/use-goals';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
-import type { TaskStatus } from '@/lib/types';
+import { isOverdue } from '@/lib/utils';
 
 let hydratedDate: Date | null = null;
 
@@ -61,8 +61,7 @@ export default function DashboardPage() {
 	const { data: user } = useUser();
 	const updateOnboarding = useUpdateUser();
 	const [addOpen, setAddOpen] = useState(false);
-	const [filterQuery, setFilterQuery] = useState("");
-	const [filterStatus, setFilterStatus] = useState<TaskStatus | "">("");
+	const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
 	const [showGoalFocus, setShowGoalFocus] = useState(false);
 	const [showAnalytics, setShowAnalytics] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
@@ -99,16 +98,22 @@ export default function DashboardPage() {
 		&& !isOnboardingSnoozed(user.user_metadata?.onboarding_deferred_until, currentTime)
 	);
 
-	function handleFilter(query: string, status: string) {
-		setFilterQuery(query);
-		setFilterStatus(status as TaskStatus | "");
-	}
-
 	function filterTasks(tasks: import('@/lib/types').Task[] = []) {
-		return tasks.filter(t =>
-			(!filterQuery || t.title.toLowerCase().includes(filterQuery.toLowerCase())) &&
-			(!filterStatus || t.status === filterStatus)
-		);
+		const todayStr = new Date().toISOString().split('T')[0];
+		const weekEnd = new Date();
+		weekEnd.setDate(weekEnd.getDate() + 7);
+		const weekEndStr = weekEnd.toISOString().split('T')[0];
+		return tasks.filter(t => {
+			if (filters.query && !t.title.toLowerCase().includes(filters.query.toLowerCase())) return false;
+			if (filters.status && t.status !== filters.status) return false;
+			if (filters.priority && t.priority !== filters.priority) return false;
+			if (filters.projectId && t.project_id !== filters.projectId) return false;
+			if (filters.dueFilter === 'today' && t.due_date !== todayStr) return false;
+			if (filters.dueFilter === 'this_week' && t.due_date && t.due_date > weekEndStr) return false;
+			if (filters.dueFilter === 'overdue' && !isOverdue(t.due_date, t.due_time)) return false;
+			if (filters.dueFilter === 'no_date' && t.due_date) return false;
+			return true;
+		});
 	}
 
 	function dismissOnboarding() {
@@ -178,7 +183,7 @@ export default function DashboardPage() {
 					{showAnalytics && (
 						<div className="mb-5">
 							<DashboardAnalytics />
-							<TaskFilterBar onFilter={handleFilter} />
+							<TaskFilterBar filters={filters} onChange={setFilters} />
 						</div>
 					)}
 
@@ -237,12 +242,7 @@ export default function DashboardPage() {
 
 					{/* Upcoming deadlines section */}
 					<DashboardWidget title="Upcoming Deadlines">
-						<UpcomingTasks
-							days={7}
-							filterQuery={filterQuery}
-							filterStatus={filterStatus}
-							showHeading={false}
-						/>
+						<UpcomingTasks days={7} filters={filters} showHeading={false} />
 					</DashboardWidget>
 
 					{/* Overdue section */}

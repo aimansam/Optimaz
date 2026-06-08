@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
 import {
   CheckCircle2,
   FolderOpen,
@@ -48,7 +47,6 @@ const FEATURES = [
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) redirect('/dashboard');
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
@@ -66,19 +64,31 @@ export default async function LandingPage() {
             >
               Pricing
             </Link>
-            <Link
-              href="/auth/login"
-              className="text-sm text-slate-400 transition-colors hover:text-white"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/auth/login"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-all hover:bg-slate-100"
-            >
-              Get started
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-all hover:bg-slate-100"
+              >
+                Go to app
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-all hover:bg-slate-100"
+                >
+                  Get started
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>

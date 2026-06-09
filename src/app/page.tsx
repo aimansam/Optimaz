@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import {
   CheckCircle2,
   FolderOpen,
@@ -47,6 +48,7 @@ const FEATURES = [
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect('/dashboard');
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">

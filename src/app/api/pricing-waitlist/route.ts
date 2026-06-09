@@ -68,8 +68,11 @@ export async function POST(request: NextRequest) {
   // Send email notification
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
-    const notifyTo = process.env.FEEDBACK_NOTIFY_EMAIL ?? 'hello@mavoralabs.com';
-    const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'noreply@mavoralabs.com';
+    // Strip any accidental quotes/whitespace from env vars
+    const rawNotify = process.env.FEEDBACK_NOTIFY_EMAIL ?? '';
+    const notifyTo = rawNotify.trim().replace(/^["']|["']$/g, '') || 'hello@mavoralabs.com';
+    const rawFrom = process.env.RESEND_FROM_EMAIL ?? '';
+    const fromEmail = rawFrom.trim().replace(/^["']|["']$/g, '') || 'noreply@mavoralabs.com';
     const intent = normalizeIntent(payload.intent);
     try {
       const emailRes = await fetch('https://api.resend.com/emails', {

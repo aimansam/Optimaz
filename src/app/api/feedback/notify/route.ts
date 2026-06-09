@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 
-const NOTIFY_TO = process.env.FEEDBACK_NOTIFY_EMAIL ?? 'feedback@mavoralabs.com';
+const NOTIFY_TO_DEFAULT = 'hello@mavoralabs.com';
 const CATEGORY_LABELS: Record<string, string> = {
   general: 'General feedback',
   bug: 'Bug report',
@@ -37,8 +37,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ skipped: true });
   }
 
-  // If no verified domain configured, fall back to Resend's built-in test domain
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
+  // Strip accidental quotes/whitespace from env vars
+  const rawFrom = process.env.RESEND_FROM_EMAIL ?? '';
+  const fromEmail = rawFrom.trim().replace(/^["']|["']$/g, '') || 'noreply@mavoralabs.com';
+  const rawNotify = process.env.FEEDBACK_NOTIFY_EMAIL ?? '';
+  const notifyToEnv = rawNotify.trim().replace(/^["']|["']$/g, '') || NOTIFY_TO_DEFAULT;
   const fromField = `Optimaz Feedback <${fromEmail}>`;
 
   let body: { category?: string; message?: string; pagePath?: string };
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       from: fromField,
-      to: [NOTIFY_TO],
+      to: [notifyToEnv],
       subject,
       html,
     }),

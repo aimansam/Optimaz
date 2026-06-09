@@ -37,11 +37,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ skipped: true });
   }
 
-  // Strip accidental quotes/whitespace from env vars
-  const rawFrom = process.env.RESEND_FROM_EMAIL ?? '';
-  const fromEmail = rawFrom.trim().replace(/^["']|["']$/g, '') || 'noreply@mavoralabs.com';
-  const rawNotify = process.env.FEEDBACK_NOTIFY_EMAIL ?? '';
-  const notifyToEnv = rawNotify.trim().replace(/^["']|["']$/g, '') || NOTIFY_TO_DEFAULT;
+  // Validate env var emails — fall back to defaults if value is invalid
+  const sanitize = (v: string | undefined) => (v ?? '').trim().replace(/^["']|["']$/g, '');
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const rawFrom = sanitize(process.env.RESEND_FROM_EMAIL);
+  const fromEmail = emailRe.test(rawFrom) ? rawFrom : 'noreply@mavoralabs.com';
+  const rawNotify = sanitize(process.env.FEEDBACK_NOTIFY_EMAIL);
+  const notifyToEnv = emailRe.test(rawNotify) ? rawNotify : NOTIFY_TO_DEFAULT;
   const fromField = `Optimaz Feedback <${fromEmail}>`;
 
   let body: { category?: string; message?: string; pagePath?: string };

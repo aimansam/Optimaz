@@ -1,10 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Check, CalendarDays, RefreshCw } from 'lucide-react';
+import { Check, CalendarDays, RefreshCw, Expand } from 'lucide-react';
 import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { getWeekdayLabel } from '@/lib/recurrence';
 import { Badge } from '@/components/ui/badge';
 import { TaskActions } from './task-actions';
+import { Dialog } from '@/components/ui/dialog';
+import { TaskForm } from './task-form';
 import { useUpdateTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
 import { SubtaskList } from './subtask-list';
@@ -25,6 +27,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   const updateTask = useUpdateTask();
   const [editingTitle, setEditingTitle] = useState(false);
   const [editValue, setEditValue] = useState(task.title);
+  const [detailOpen, setDetailOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Keep editValue in sync if task.title changes externally
@@ -197,7 +200,18 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           </div>
 
           {/* Actions */}
-          <TaskActions task={task} className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" />
+          <div className="flex shrink-0 items-center gap-0.5">
+            <button
+              type="button"
+              onClick={() => setDetailOpen(true)}
+              title="View full details"
+              aria-label="View task details"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+            >
+              <Expand className="h-3.5 w-3.5" />
+            </button>
+            <TaskActions task={task} onEdit={() => setDetailOpen(true)} className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" />
+          </div>
         </div>
 
         {/* Subtasks: always visible if present */}
@@ -207,6 +221,10 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           </div>
         )}
     </div>
+
+    <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title="Task Details" className="min-h-0 sm:max-w-lg">
+      <TaskForm task={task} onClose={() => setDetailOpen(false)} />
+    </Dialog>
   );
 }
 

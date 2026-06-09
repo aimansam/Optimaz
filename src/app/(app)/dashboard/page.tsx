@@ -11,7 +11,7 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 
 
 import { AlertTriangle, BarChart3, Plus, Target } from 'lucide-react';
-import { DashboardAnalytics } from '@/components/dashboard/dashboard-analytics';
+import { DashboardAnalytics, DashboardStatsStrip } from '@/components/dashboard/dashboard-analytics';
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
 import { TaskList } from '@/components/tasks/task-list';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
@@ -167,6 +167,9 @@ export default function DashboardPage() {
 							</button>
 						</div>
 					</div>
+
+					{/* Always-visible stats strip */}
+					<DashboardStatsStrip />
 
 					{showOnboarding && (
 						<OnboardingPanel

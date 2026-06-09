@@ -183,12 +183,16 @@ export default function DashboardPage() {
 						/>
 					)}
 
-					{showAnalytics && (
-						<div className="mb-5">
-							<DashboardAnalytics />
-							<TaskFilterBar filters={filters} onChange={setFilters} />
-						</div>
-					)}
+					{/* Always-visible bar chart */}
+				<div className="mb-5">
+					<DashboardAnalytics />
+				</div>
+
+				{showAnalytics && (
+					<div className="mb-5">
+						<TaskFilterBar filters={filters} onChange={setFilters} />
+					</div>
+				)}
 
 					{showGoalFocus && <DashboardWidget title="Goal Focus">
 						<div className="grid gap-3 sm:grid-cols-3">

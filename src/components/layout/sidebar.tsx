@@ -50,7 +50,10 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-4 md:px-5 md:py-5">
           <img src="/icon-192x192.png" alt="Optimaz" className="h-8 w-8 shrink-0 rounded-xl shadow-sm shadow-black/20" />
-          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">Optimaz</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">Optimaz</span>
+            <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400">Beta</span>
+          </div>
         </div>
 
         {/* Nav */}

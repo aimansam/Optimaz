@@ -40,7 +40,7 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
       <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
         {actions}
         <GlobalSearch />
-        <FeedbackButton className="hidden min-[390px]:inline-flex" />
+        <FeedbackButton />
         <NotificationBell />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign out">

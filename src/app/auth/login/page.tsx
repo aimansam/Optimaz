@@ -25,11 +25,13 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {/* Logo */}
           <div className="mb-8 flex flex-col items-center gap-4">
-            <img src="/icon-192x192.png" alt="Optimaz" className="h-14 w-14 rounded-2xl shadow-lg shadow-black/40" />
-            <div className="text-center">
-              <h1 className="text-2xl font-bold tracking-tight text-white">Optimaz</h1>
-              <p className="mt-1 text-sm text-slate-400">Plan tasks, projects, and goals in one quiet workspace</p>
-            </div>
+            <Link href="/" className="flex flex-col items-center gap-4 group">
+              <img src="/icon-192x192.png" alt="Optimaz" className="h-14 w-14 rounded-2xl shadow-lg shadow-black/40 transition-opacity group-hover:opacity-80" />
+              <div className="text-center">
+                <h1 className="text-2xl font-bold tracking-tight text-white group-hover:opacity-80 transition-opacity">Optimaz</h1>
+              </div>
+            </Link>
+            <p className="text-sm text-slate-400">Plan tasks, projects, and goals in one quiet workspace</p>
           </div>
 
           <div className="mb-5 grid grid-cols-3 gap-2 text-center text-[11px] text-slate-400">

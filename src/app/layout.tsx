@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: 'Optimaz', template: '%s · Optimaz' },
   description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
   manifest: '/manifest.json',
-  metadataBase: new URL('https://optimaz.mavoralabs.com'),
+  metadataBase: new URL('https://optimaz.app'),
   openGraph: {
     type: 'website',
     siteName: 'Optimaz',
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     description: 'Plan tasks, projects, and goals in one quiet workspace.',
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   appleWebApp: {
     capable: true,

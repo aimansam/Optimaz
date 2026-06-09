@@ -68,11 +68,12 @@ export async function POST(request: NextRequest) {
   // Send email notification
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
-    // Strip any accidental quotes/whitespace from env vars
-    const rawNotify = process.env.FEEDBACK_NOTIFY_EMAIL ?? '';
-    const notifyTo = rawNotify.trim().replace(/^["']|["']$/g, '') || 'hello@mavoralabs.com';
-    const rawFrom = process.env.RESEND_FROM_EMAIL ?? '';
-    const fromEmail = rawFrom.trim().replace(/^["']|["']$/g, '') || 'noreply@mavoralabs.com';
+    // Validate env var emails — fall back to defaults if invalid
+    const sanitize = (v: string | undefined) => (v ?? '').trim().replace(/^["']|["']$/g, '');
+    const rawNotify = sanitize(process.env.FEEDBACK_NOTIFY_EMAIL);
+    const notifyTo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawNotify) ? rawNotify : 'hello@mavoralabs.com';
+    const rawFrom = sanitize(process.env.RESEND_FROM_EMAIL);
+    const fromEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawFrom) ? rawFrom : 'noreply@mavoralabs.com';
     const intent = normalizeIntent(payload.intent);
     try {
       const emailRes = await fetch('https://api.resend.com/emails', {

@@ -134,29 +134,12 @@ export function DashboardAnalytics() {
   const { data, isLoading } = useTaskStats();
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center dark:bg-emerald-900/20 dark:border-emerald-900/40">
-          <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{isLoading ? '…' : data?.completed ?? 0}</div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/80 dark:text-emerald-400/80">Done this week</div>
-        </div>
-        <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-center dark:bg-red-900/20 dark:border-red-900/40">
-          <div className="text-xl font-bold text-red-600 dark:text-red-400">{isLoading ? '…' : data?.overdue ?? 0}</div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-red-500/80 dark:text-red-400/80">Overdue</div>
-        </div>
-        <div className="rounded-xl bg-amber-50 border border-amber-100 p-3 text-center dark:bg-amber-900/20 dark:border-amber-900/40">
-          <div className="text-xl font-bold text-amber-600 dark:text-amber-300">{isLoading ? '…' : data?.upcoming ?? 0}</div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-500/80 dark:text-amber-400/80">Upcoming</div>
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-        {isLoading ? (
-          <div className="h-28 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
-        ) : (
-          <BarChart data={data?.chartData ?? []} />
-        )}
-      </div>
+    <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+      {isLoading ? (
+        <div className="h-28 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+      ) : (
+        <BarChart data={data?.chartData ?? []} />
+      )}
     </div>
   );
 }

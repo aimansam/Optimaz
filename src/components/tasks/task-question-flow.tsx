@@ -290,7 +290,7 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
       <div className="flex items-center justify-between gap-2">
         <Button type="button" variant="ghost" onClick={onClose} disabled={createTask.isPending}>Cancel</Button>
         <div className="flex items-center gap-3">
-          {currentStep.optional && !stepHasValue && !isLastStep && (
+          {step > 0 && !isLastStep && (
             <button
               type="button"
               onClick={skipAll}

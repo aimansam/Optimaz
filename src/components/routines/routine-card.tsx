@@ -17,6 +17,36 @@ interface RoutineCardProps {
   pausePending?: boolean;
 }
 
+function getStreak(history: Task[], recurrenceRule: string | null): number {
+  if (history.length === 0) return 0;
+  const completions = history
+    .filter(t => t.completed_at)
+    .map(t => new Date(t.completed_at as string))
+    .sort((a, b) => b.getTime() - a.getTime());
+  if (completions.length === 0) return 0;
+  let streak = 1;
+  for (let i = 0; i < completions.length - 1; i++) {
+    const curr = completions[i];
+    const prev = completions[i + 1];
+    if (recurrenceRule === 'daily') {
+      const c = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate());
+      const p = new Date(prev.getFullYear(), prev.getMonth(), prev.getDate());
+      const diff = Math.round((c.getTime() - p.getTime()) / 86400000);
+      if (diff === 1) streak++;
+      else break;
+    } else if (recurrenceRule === 'weekly') {
+      const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+      if (diffDays >= 5 && diffDays <= 9) streak++;
+      else break;
+    } else if (recurrenceRule === 'monthly') {
+      const monthDiff = (curr.getFullYear() - prev.getFullYear()) * 12 + (curr.getMonth() - prev.getMonth());
+      if (monthDiff === 1) streak++;
+      else break;
+    } else break;
+  }
+  return streak;
+}
+
 function getCadenceLabel(task: Task) {
   if (task.recurrence_rule !== 'weekly') return task.recurrence_rule;
   const weekdays = getWeekdayLabel(task.recurrence_weekdays);
@@ -44,6 +74,7 @@ export function RoutineCard({ task, history = [], onPause, pausePending = false 
   const hasChecklist = totalSubtasks > 0;
   const lastCompleted = history[0];
   const recentHistory = history.slice(0, 8);
+  const streak = getStreak(history, task.recurrence_rule);
 
   return (
     <>
@@ -53,7 +84,14 @@ export function RoutineCard({ task, history = [], onPause, pausePending = false 
             <Repeat2 className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{task.title}</p>
+            <div className="flex items-center gap-2">
+              <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{task.title}</p>
+              {streak >= 2 && (
+                <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                  🔥 {streak}
+                </span>
+              )}
+            </div>
             {task.notes && <p className="mt-0.5 line-clamp-2 text-xs text-slate-400">{task.notes}</p>}
           </div>
         </div>

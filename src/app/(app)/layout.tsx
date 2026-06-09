@@ -25,9 +25,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const title = getPageTitle(pathname);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-      <main className="flex-1 flex min-w-0 flex-col">
+      <main className="flex-1 flex min-w-0 flex-col overflow-y-auto">
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
         {children}
       </main>

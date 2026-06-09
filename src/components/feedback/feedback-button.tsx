@@ -52,9 +52,15 @@ export function FeedbackButton({ className }: FeedbackButtonProps) {
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} title="Send feedback" className={className}>
-        <MessageSquare className="h-4 w-4" />
-      </Button>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        title="Send feedback"
+        className={`inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-indigo-400 active:scale-95 ${className ?? ''}`}
+      >
+        <MessageSquare className="h-3.5 w-3.5" />
+        Feedback
+      </button>
 
       <Dialog open={open} onClose={closeDialog} title="Send feedback" className="min-h-0 sm:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">

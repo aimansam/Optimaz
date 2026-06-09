@@ -75,8 +75,6 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
     : step === 8 ? recurrenceWeekdays.length > 0
     : true
   );
-  const nextLabel = currentStep.optional && !stepHasValue ? 'Skip' : 'Next';
-
   function goToPreviousStep() {
     setStep(current => {
       if (current === 9 && recurrenceRule !== 'weekly') return 7;
@@ -86,12 +84,14 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
 
   function goToNextStep() {
     setStep(current => {
-      // "Skip" on any optional unfilled step → jump to review
-      if (currentStep.optional && !stepHasValue) return steps.length - 1;
       // Skip the weekdays step if recurrence is not weekly
       if (current === 7 && recurrenceRule !== 'weekly') return 9;
       return Math.min(current + 1, steps.length - 1);
     });
+  }
+
+  function skipAll() {
+    setStep(steps.length - 1);
   }
 
   function handleRecurrenceChange(value: RecurrenceRule | '') {
@@ -289,16 +289,28 @@ export function TaskQuestionFlow({ defaultStatus = 'todo', defaultProjectId, def
 
       <div className="flex items-center justify-between gap-2">
         <Button type="button" variant="ghost" onClick={onClose} disabled={createTask.isPending}>Cancel</Button>
-        <div className="flex gap-2">
-          {step > 0 && (
-            <Button type="button" variant="secondary" onClick={goToPreviousStep} disabled={createTask.isPending}>
-              <ArrowLeft className="h-4 w-4" /> Back
-            </Button>
+        <div className="flex items-center gap-3">
+          {step > 0 && !isLastStep && (
+            <button
+              type="button"
+              onClick={skipAll}
+              disabled={createTask.isPending}
+              className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline underline-offset-2 transition-colors"
+            >
+              Skip all
+            </button>
           )}
-          <Button type="submit" disabled={!canContinue || createTask.isPending}>
-            {isLastStep ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-            {isLastStep ? (createTask.isPending ? 'Creating...' : 'Create task') : nextLabel}
-          </Button>
+          <div className="flex gap-2">
+            {step > 0 && (
+              <Button type="button" variant="secondary" onClick={goToPreviousStep} disabled={createTask.isPending}>
+                <ArrowLeft className="h-4 w-4" /> Back
+              </Button>
+            )}
+            <Button type="submit" disabled={!canContinue || createTask.isPending}>
+              {isLastStep ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+              {isLastStep ? (createTask.isPending ? 'Creating...' : 'Create task') : 'Next'}
+            </Button>
+          </div>
         </div>
       </div>
     </form>

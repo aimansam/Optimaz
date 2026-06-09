@@ -65,13 +65,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Could not join waitlist' }, { status: 500 });
   }
 
-  // Fire-and-forget email notification
+  // Send email notification (awaited to ensure it runs before serverless container freezes)
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     const notifyTo = process.env.FEEDBACK_NOTIFY_EMAIL ?? 'hello@mavoralabs.com';
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'noreply@mavoralabs.com';
     const intent = normalizeIntent(payload.intent);
-    void fetch('https://api.resend.com/emails', {
+    await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({

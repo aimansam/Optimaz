@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 
-const NOTIFY_TO = 'feedback@mavoralabs.com';
+const NOTIFY_TO = process.env.FEEDBACK_NOTIFY_EMAIL ?? 'feedback@mavoralabs.com';
 const CATEGORY_LABELS: Record<string, string> = {
   general: 'General feedback',
   bug: 'Bug report',
@@ -37,7 +37,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ skipped: true });
   }
 
+  // If no verified domain configured, fall back to Resend's built-in test domain
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
+  const fromField = `Optimaz Feedback <${fromEmail}>`;
 
   let body: { category?: string; message?: string; pagePath?: string };
   try {
@@ -84,7 +86,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      from: `Optimaz Beta <${fromEmail}>`,
+      from: fromField,
       to: [NOTIFY_TO],
       subject,
       html,

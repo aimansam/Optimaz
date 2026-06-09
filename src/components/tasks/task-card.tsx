@@ -74,6 +74,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   }
 
   return (
+    <>
     <div
       className={cn(
         'group relative rounded-xl border-l-[3px] bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-150 hover:shadow-md dark:bg-slate-900 dark:ring-slate-800',
@@ -225,6 +226,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
     <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title="Task Details" className="min-h-0 sm:max-w-lg">
       <TaskForm task={task} onClose={() => setDetailOpen(false)} />
     </Dialog>
+    </>
   );
 }
 

@@ -42,7 +42,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
 
       <aside
         className={cn(
-          'fixed z-40 top-0 left-0 h-full w-64 max-w-[calc(100vw-1rem)] flex-col border-r border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-950 transition-transform duration-300 md:static md:flex md:w-60 md:max-w-none',
+          'fixed z-40 top-0 left-0 h-full w-64 max-w-[calc(100vw-1rem)] flex flex-col border-r border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-950 transition-transform duration-300 md:static md:flex md:w-60 md:max-w-none',
           open ? 'translate-x-0' : '-translate-x-full',
           'md:translate-x-0'
         )}
@@ -126,6 +126,18 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
           </div>
         )}
         </nav>
+
+        {/* Sidebar footer */}
+        <div className="shrink-0 border-t border-slate-200/80 px-4 py-3 dark:border-slate-800/80">
+          <p className="text-[10px] text-slate-400 dark:text-slate-600">
+            © {new Date().getFullYear()} Optimaz
+          </p>
+          <div className="mt-0.5 flex items-center gap-2">
+            <a href="/privacy" className="text-[10px] text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400">Privacy</a>
+            <span className="text-[10px] text-slate-300 dark:text-slate-700">·</span>
+            <a href="/terms" className="text-[10px] text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400">Terms</a>
+          </div>
+        </div>
       </aside>
     </>
   );

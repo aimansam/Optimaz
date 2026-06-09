@@ -179,6 +179,54 @@ Now that `optimaz.app` has been purchased, here are the steps to go live on it:
 
 ---
 
+## 🎫 Beta Access System
+
+All users who sign up during the beta period automatically receive full Pro access via the `beta_access` database table.
+
+### How It Works
+
+| Period | `pro_expires_at` | Access |
+|---|---|---|
+| Beta (now) | `NULL` | ✅ Full Pro — no expiry |
+| v1.0 launch day | Set to `NOW() + 1 month` | ✅ 1 month free Pro |
+| After 1 month post-launch | Expired date | ❌ Free tier — subscribe to continue |
+
+### Files
+- **Migration**: `supabase/migrations/20260610000000_add_beta_access.sql`
+- **Hook**: `src/hooks/use-beta-access.ts` — `useBetaAccess()` and `useHasBetaPro()`
+
+### On v1.0 Launch Day — run this SQL in Supabase:
+```sql
+-- Give all existing beta users exactly 1 month of free Pro
+UPDATE beta_access
+SET pro_expires_at = now() + INTERVAL '1 month'
+WHERE pro_expires_at IS NULL;
+
+-- Stop granting beta access to new signups (drop the trigger)
+DROP TRIGGER IF EXISTS on_auth_user_created_beta_access ON auth.users;
+```
+
+### Feature gate check when Stripe is added (v1.0):
+```ts
+import { useHasBetaPro } from '@/hooks/use-beta-access'
+
+const hasBetaPro = useHasBetaPro()
+const hasPro = hasBetaPro || stripeSubscriptionActive
+```
+
+### After beta fully ends (clean up):
+1. Remove `useHasBetaPro()` checks from all components
+2. Run in Supabase SQL editor:
+   ```sql
+   DROP TRIGGER IF EXISTS on_auth_user_created_beta_access ON auth.users;
+   DROP FUNCTION IF EXISTS public.grant_beta_access_on_signup();
+   DROP TABLE IF EXISTS public.beta_access;
+   ```
+3. Delete `src/hooks/use-beta-access.ts`
+4. Delete `supabase/migrations/20260610000000_add_beta_access.sql`
+
+---
+
 ## 💰 Monetization Roadmap (Post-Launch)
 
 Per `docs/subscription-plan.md`:

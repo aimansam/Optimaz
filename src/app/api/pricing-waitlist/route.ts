@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
     const rawFrom = process.env.RESEND_FROM_EMAIL ?? '';
     const fromEmail = rawFrom.trim().replace(/^["']|["']$/g, '') || 'noreply@mavoralabs.com';
     const intent = normalizeIntent(payload.intent);
+    console.log('[pricing-waitlist] notifyTo repr:', JSON.stringify(notifyTo), 'len:', notifyTo.length, 'codes:', [...notifyTo].slice(0,5).map(c => c.charCodeAt(0)));
     try {
       const emailRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',

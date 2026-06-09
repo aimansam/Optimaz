@@ -129,9 +129,16 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
 
         {/* Sidebar footer */}
         <div className="shrink-0 border-t border-slate-200/80 px-4 py-3 dark:border-slate-800/80">
-          <p className="text-[10px] text-slate-400 dark:text-slate-600">
-            © {new Date().getFullYear()} Optimaz
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] text-slate-400 dark:text-slate-600">
+              © {new Date().getFullYear()} Optimaz
+            </p>
+            {process.env.NEXT_PUBLIC_APP_VERSION && (
+              <span className="text-[10px] text-slate-300 dark:text-slate-700">
+                v{process.env.NEXT_PUBLIC_APP_VERSION}
+              </span>
+            )}
+          </div>
           <div className="mt-0.5 flex items-center gap-2">
             <a href="/privacy" className="text-[10px] text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400">Privacy</a>
             <span className="text-[10px] text-slate-300 dark:text-slate-700">·</span>

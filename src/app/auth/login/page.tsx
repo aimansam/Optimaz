@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { CheckCircle2, FolderOpen, Target } from 'lucide-react';
+import { CheckCircle2, FolderOpen, Target, ArrowLeft } from 'lucide-react';
 
 const supabase = createClient();
 
@@ -21,6 +21,15 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a0a0f] p-4">
       <div className="relative w-full max-w-sm">
+        {/* Back button */}
+        <Link
+          href="/"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-slate-200"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Link>
+
         {/* Card */}
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {/* Logo */}

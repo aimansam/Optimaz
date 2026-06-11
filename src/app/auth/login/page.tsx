@@ -3,19 +3,47 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { CheckCircle2, FolderOpen, Target, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, FolderOpen, Target, ArrowLeft, Mail } from 'lucide-react';
 
 const supabase = createClient();
 
-export default function LoginPage() {
-  const [loading, setLoading] = useState<'google' | null>(null);
+type OAuthProvider = 'google' | 'github';
+type LoadingState = OAuthProvider | 'magic_link' | null;
 
-  const signIn = async (provider: 'google') => {
+export default function LoginPage() {
+  const [loading, setLoading] = useState<LoadingState>(null);
+  const [accepted, setAccepted] = useState(false);
+  const [email, setEmail] = useState('');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [magicLinkError, setMagicLinkError] = useState('');
+
+  const signInWithOAuth = async (provider: OAuthProvider) => {
+    if (!accepted) return;
     setLoading(provider);
     await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: `${location.origin}/auth/callback` },
     });
+  };
+
+  const signInWithMagicLink = async () => {
+    if (!accepted) return;
+    if (!email.trim()) {
+      setMagicLinkError('Please enter your email address.');
+      return;
+    }
+    setMagicLinkError('');
+    setLoading('magic_link');
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { emailRedirectTo: `${location.origin}/auth/callback` },
+    });
+    setLoading(null);
+    if (error) {
+      setMagicLinkError(error.message);
+    } else {
+      setMagicLinkSent(true);
+    }
   };
 
   return (
@@ -56,14 +84,45 @@ export default function LoginPage() {
             ))}
           </div>
 
+          {/* Terms & Privacy acceptance */}
+          <label className="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-white/20 hover:bg-white/[0.06]">
+            <div className="relative mt-0.5 shrink-0">
+              <input
+                type="checkbox"
+                checked={accepted}
+                onChange={(e) => setAccepted(e.target.checked)}
+                className="peer sr-only"
+              />
+              <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${accepted ? 'border-indigo-500 bg-indigo-500' : 'border-white/30 bg-white/5'}`}>
+                {accepted && (
+                  <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+            </div>
+            <span className="text-xs leading-relaxed text-slate-400">
+              I agree to the{' '}
+              <Link href="/terms" onClick={(e) => e.stopPropagation()} className="text-slate-200 underline underline-offset-2 hover:text-white">
+                Terms of Service
+              </Link>
+              {' '}and{' '}
+              <Link href="/privacy" onClick={(e) => e.stopPropagation()} className="text-slate-200 underline underline-offset-2 hover:text-white">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
+
           <div className="space-y-3">
+            {/* Google */}
             <button
-              onClick={() => signIn('google')}
-              disabled={!!loading}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:opacity-50"
+              onClick={() => signInWithOAuth('google')}
+              disabled={!!loading || !accepted}
+              title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loading === 'google' ? (
-                <span className="text-slate-400">Connecting...</span>
+                <span className="text-slate-400">Connecting…</span>
               ) : (
                 <>
                   <svg className="h-4.5 w-4.5 shrink-0" viewBox="0 0 24 24">
@@ -76,15 +135,83 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            {/* GitHub */}
+            <button
+              onClick={() => signInWithOAuth('github')}
+              disabled={!!loading || !accepted}
+              title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {loading === 'github' ? (
+                <span className="text-slate-400">Connecting…</span>
+              ) : (
+                <>
+                  <svg className="h-4.5 w-4.5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                  </svg>
+                  Continue with GitHub
+                </>
+              )}
+            </button>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-xs text-slate-500">or</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+
+            {/* Magic Link */}
+            {magicLinkSent ? (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-center">
+                <Mail className="mx-auto mb-2 h-5 w-5 text-emerald-400" />
+                <p className="text-sm font-medium text-emerald-300">Check your inbox!</p>
+                <p className="mt-1 text-xs text-slate-400">We sent a sign-in link to <span className="text-slate-200">{email}</span></p>
+                <button
+                  onClick={() => { setMagicLinkSent(false); setEmail(''); }}
+                  className="mt-3 text-xs text-slate-400 underline underline-offset-2 hover:text-slate-200"
+                >
+                  Use a different email
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setMagicLinkError(''); }}
+                    onKeyDown={(e) => e.key === 'Enter' && signInWithMagicLink()}
+                    placeholder="your@email.com"
+                    disabled={!!loading || !accepted}
+                    className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+                  />
+                  <button
+                    onClick={signInWithMagicLink}
+                    disabled={!!loading || !accepted || !email.trim()}
+                    title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+                    className="flex shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {loading === 'magic_link' ? (
+                      <span className="text-slate-400 text-xs">Sending…</span>
+                    ) : (
+                      <>
+                        <Mail className="h-4 w-4 shrink-0" />
+                        <span>Send link</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {magicLinkError && (
+                  <p className="text-xs text-red-400">{magicLinkError}</p>
+                )}
+                <p className="text-[11px] text-slate-500 text-center">Passwordless — we&apos;ll email you a one-click sign-in link</p>
+              </div>
+            )}
           </div>
 
-          <p className="mt-6 text-center text-xs text-slate-500">
-            By signing in, you agree to the{' '}
-            <Link href="/terms" className="text-slate-300 hover:text-white">terms</Link>
-            {' '}and acknowledge the{' '}
-            <Link href="/privacy" className="text-slate-300 hover:text-white">privacy policy</Link>.
-          </p>
-          <p className="mt-3 text-center text-xs text-slate-500">
+          <p className="mt-4 text-center text-xs text-slate-500">
             Curious about paid features?{' '}
             <Link href="/pricing" className="text-slate-300 hover:text-white">Join the pricing waitlist</Link>.
           </p>
@@ -93,4 +220,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

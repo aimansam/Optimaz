@@ -6,7 +6,8 @@
 import https from 'https';
 import fs from 'fs';
 
-const TOKEN = 'sbp_e9324a69fde7de9535c9e79e202217471409128b';
+const TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+if (!TOKEN) { console.error('❌ Missing SUPABASE_ACCESS_TOKEN env var. Add it to .env.local or export it before running.'); process.exit(1); }
 const REF = 'ielsqkzxdqnhdeqmblra'; // Production (Singapore)
 
 function runSQL(sql) {

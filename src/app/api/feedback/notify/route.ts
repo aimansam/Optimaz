@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 
-const NOTIFY_TO_DEFAULT = 'hello@mavoralabs.com';
+const NOTIFY_TO_DEFAULT = 'hello@optimaz.app';
 const CATEGORY_LABELS: Record<string, string> = {
   general: 'General feedback',
   bug: 'Bug report',
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const sanitize = (v: string | undefined) => (v ?? '').trim().replace(/^["']|["']$/g, '');
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const rawFrom = sanitize(process.env.RESEND_FROM_EMAIL);
-  const fromEmail = emailRe.test(rawFrom) ? rawFrom : 'noreply@mavoralabs.com';
+  const fromEmail = emailRe.test(rawFrom) ? rawFrom : 'noreply@optimaz.app';
   const rawNotify = sanitize(process.env.FEEDBACK_NOTIFY_EMAIL);
   const notifyToEnv = emailRe.test(rawNotify) ? rawNotify : NOTIFY_TO_DEFAULT;
   const fromField = `Optimaz Feedback <${fromEmail}>`;

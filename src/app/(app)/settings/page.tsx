@@ -7,12 +7,194 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { AlertTriangle, Bell, BellOff, CheckCircle2, Download, Palette, Send, Trash2, User, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, CheckCircle2, Download, Palette, Send, ShieldCheck, Trash2, User, XCircle } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
 import { useDeleteAccount, useExportAccount } from '@/hooks/use-account-controls';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+
+const supabase = createClient();
+
+type MfaFactor = { id: string; friendly_name?: string };
+type MfaStatus = 'loading' | 'disabled' | 'enrolling' | 'enabled';
+
+function MfaSection() {
+  const [mfaStatus, setMfaStatus] = useState<MfaStatus>('loading');
+  const [enrolledFactor, setEnrolledFactor] = useState<MfaFactor | null>(null);
+  const [enrollData, setEnrollData] = useState<{ factorId: string; qrCode: string; secret: string } | null>(null);
+  const [verifyCode, setVerifyCode] = useState('');
+  const [challengeId, setChallengeId] = useState<string | null>(null);
+  const [mfaError, setMfaError] = useState('');
+  const [mfaLoading, setMfaLoading] = useState(false);
+  const [mfaSuccess, setMfaSuccess] = useState('');
+
+  React.useEffect(() => {
+    loadFactors();
+  }, []);
+
+  async function loadFactors() {
+    setMfaStatus('loading');
+    const { data } = await supabase.auth.mfa.listFactors();
+    const verified = data?.totp?.find((f) => f.status === 'verified');
+    if (verified) {
+      setEnrolledFactor(verified);
+      setMfaStatus('enabled');
+    } else {
+      setMfaStatus('disabled');
+    }
+  }
+
+  async function startEnroll() {
+    setMfaError('');
+    setMfaLoading(true);
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Authenticator App' });
+    setMfaLoading(false);
+    if (error || !data) { setMfaError(error?.message ?? 'Failed to start enrollment'); return; }
+    setEnrollData({ factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret });
+    // Create a challenge immediately so it's ready for verify
+    const { data: c, error: ce } = await supabase.auth.mfa.challenge({ factorId: data.id });
+    if (ce || !c) { setMfaError(ce?.message ?? 'Failed to create challenge'); return; }
+    setChallengeId(c.id);
+    setMfaStatus('enrolling');
+  }
+
+  async function verifyEnroll() {
+    if (!enrollData || !challengeId) return;
+    if (verifyCode.length !== 6) { setMfaError('Enter the 6-digit code from your app.'); return; }
+    setMfaError('');
+    setMfaLoading(true);
+    const { error } = await supabase.auth.mfa.verify({ factorId: enrollData.factorId, challengeId, code: verifyCode });
+    setMfaLoading(false);
+    if (error) { setMfaError(error.message); setVerifyCode(''); return; }
+    setMfaSuccess('Two-factor authentication enabled!');
+    setEnrollData(null);
+    setVerifyCode('');
+    setChallengeId(null);
+    await loadFactors();
+    setTimeout(() => setMfaSuccess(''), 3000);
+  }
+
+  async function cancelEnroll() {
+    if (enrollData) {
+      await supabase.auth.mfa.unenroll({ factorId: enrollData.factorId });
+    }
+    setEnrollData(null);
+    setVerifyCode('');
+    setChallengeId(null);
+    setMfaError('');
+    setMfaStatus('disabled');
+  }
+
+  async function disableMfa() {
+    if (!enrolledFactor) return;
+    setMfaError('');
+    setMfaLoading(true);
+    const { error } = await supabase.auth.mfa.unenroll({ factorId: enrolledFactor.id });
+    setMfaLoading(false);
+    if (error) { setMfaError(error.message); return; }
+    setEnrolledFactor(null);
+    setMfaStatus('disabled');
+    setMfaSuccess('Two-factor authentication disabled.');
+    setTimeout(() => setMfaSuccess(''), 3000);
+  }
+
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+      <div className="mb-4 flex items-center gap-2">
+        <ShieldCheck className="h-5 w-5 text-slate-400" />
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Two-factor authentication</h2>
+        {mfaStatus === 'enabled' && (
+          <span className="ml-auto rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/40 dark:text-green-300">
+            Enabled
+          </span>
+        )}
+      </div>
+      <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+        Add an extra layer of security. After signing in you&apos;ll be asked for a code from your authenticator app.
+      </p>
+
+      {mfaStatus === 'loading' && (
+        <p className="text-sm text-slate-400">Loading…</p>
+      )}
+
+      {mfaStatus === 'disabled' && (
+        <Button type="button" variant="secondary" onClick={startEnroll} disabled={mfaLoading}>
+          {mfaLoading ? 'Setting up…' : 'Set up 2FA'}
+        </Button>
+      )}
+
+      {mfaStatus === 'enrolling' && enrollData && (
+        <div className="space-y-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+              1. Scan this QR code with your authenticator app
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={enrollData.qrCode} alt="MFA QR Code" className="mx-auto h-40 w-40 rounded-lg bg-white p-2" />
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                Can&apos;t scan? Enter setup key manually
+              </summary>
+              <p className="mt-2 break-all rounded-lg border border-slate-200 bg-white p-2 font-mono text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                {enrollData.secret}
+              </p>
+            </details>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              2. Enter the 6-digit code to confirm
+            </label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                value={verifyCode}
+                onChange={(e) => { setVerifyCode(e.target.value.replace(/\D/g, '')); setMfaError(''); }}
+                onKeyDown={(e) => e.key === 'Enter' && verifyEnroll()}
+                placeholder="000000"
+                disabled={mfaLoading}
+                className="w-36 text-center font-mono tracking-widest"
+              />
+              <Button type="button" onClick={verifyEnroll} disabled={mfaLoading || verifyCode.length !== 6}>
+                {mfaLoading ? 'Verifying…' : 'Verify & Enable'}
+              </Button>
+              <Button type="button" variant="ghost" onClick={cancelEnroll} disabled={mfaLoading}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mfaStatus === 'enabled' && (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Your account is protected by an authenticator app.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={disableMfa}
+            disabled={mfaLoading}
+            className="self-start sm:self-auto"
+          >
+            {mfaLoading ? 'Removing…' : 'Remove 2FA'}
+          </Button>
+        </div>
+      )}
+
+      {mfaError && <p className="mt-2 text-xs text-red-500">{mfaError}</p>}
+      {mfaSuccess && <p className="mt-2 text-xs text-green-600 dark:text-green-400">{mfaSuccess}</p>}
+    </section>
+  );
+}
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -215,6 +397,9 @@ export default function SettingsPage() {
               </div>
             </div>
           </section>
+
+          {/* Two-factor authentication */}
+          <MfaSection />
 
           {/* Appearance */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

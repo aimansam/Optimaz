@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
+import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
 type PushDeliveryError = {
@@ -11,13 +12,27 @@ function isExpiredPushSubscription(reason: unknown) {
   return statusCode === 404 || statusCode === 410;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Rate limit: 30 pushes per user per 10 minutes
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: `push-send:${user.id}`,
+    maxRequests: 30,
+    windowMs: 10 * 60 * 1000,
+  });
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    );
+  }
+
 
   const vapidEmail = process.env.VAPID_EMAIL;
   const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;

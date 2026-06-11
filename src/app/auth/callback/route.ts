@@ -9,6 +9,11 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Check if user has MFA enrolled and needs to complete a second factor challenge
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === 'aal2' && aal.nextLevel !== aal.currentLevel) {
+        return NextResponse.redirect(`${origin}/auth/mfa`);
+      }
       return NextResponse.redirect(`${origin}/dashboard`);
     }
   }

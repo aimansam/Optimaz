@@ -33,11 +33,11 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
 VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-TASKFLOW_ADMIN_EMAILS=you@example.com,teammate@example.com
+OPTIMAZ_ADMIN_EMAILS=you@example.com,teammate@example.com
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is required for account deletion. Keep it server-only in Vercel and never expose it with a `NEXT_PUBLIC_` prefix.
-`TASKFLOW_ADMIN_EMAILS` controls access to `/admin` for operational feedback, error, and usage insights.
+`OPTIMAZ_ADMIN_EMAILS` controls access to `/admin` for operational feedback, error, and usage insights.
 
 ## Database Migrations
 

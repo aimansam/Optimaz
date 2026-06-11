@@ -81,7 +81,7 @@ VAPID_EMAIL=mailto:you@example.com
 CRON_SECRET=your-random-secret-string
 
 # Admin panel — comma-separated emails that can access /admin
-TASKFLOW_ADMIN_EMAILS=you@example.com
+OPTIMAZ_ADMIN_EMAILS=you@example.com
 
 # Email notifications (optional) — used to email feedback@mavoralabs.com on new feedback
 # Get a free API key at https://resend.com (100 emails/day free)
@@ -193,7 +193,7 @@ Vercel cron calls `GET /api/cron/task-reminders` every 4 hours:
 
 ## Admin Page
 
-Available at `/admin` — only accessible to emails listed in `TASKFLOW_ADMIN_EMAILS`.
+Available at `/admin` — only accessible to emails listed in `OPTIMAZ_ADMIN_EMAILS`.
 
 Shows:
 - Usage counts (tasks, projects, goals, feedback, errors)

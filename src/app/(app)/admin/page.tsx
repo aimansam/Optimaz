@@ -43,12 +43,19 @@ type WaitlistRow = {
   created_at: string;
 };
 
+type BetaUserRow = {
+  id: string;
+  email: string | undefined;
+  created_at: string;
+  last_sign_in_at: string | undefined;
+};
+
 type QueryResultWithError = {
   error: { message: string } | null;
 };
 
 function getAdminEmails() {
-  return (process.env.TASKFLOW_ADMIN_EMAILS ?? '')
+  return (process.env.OPTIMAZ_ADMIN_EMAILS ?? '')
     .split(',')
     .map(email => email.trim().toLowerCase())
     .filter(Boolean);
@@ -113,6 +120,21 @@ export default async function AdminPage() {
   }
 
   const { since24Hours, since7Days } = getMonitoringWindows();
+
+  // Fetch signed-up users via auth admin API (separate from DB queries)
+  const usersResult = await admin.auth.admin.listUsers({ page: 1, perPage: 50 });
+  const allUsersPage = usersResult.data?.users ?? [];
+  const totalUsers = usersResult.data?.total ?? allUsersPage.length;
+  const newUsers7d = allUsersPage.filter(u => u.created_at && u.created_at >= since7Days).length;
+  const recentUsers: BetaUserRow[] = [...allUsersPage]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 20)
+    .map(u => ({
+      id: u.id,
+      email: u.email,
+      created_at: u.created_at,
+      last_sign_in_at: u.last_sign_in_at ?? undefined,
+    }));
 
   const [
     feedbackResult,
@@ -211,6 +233,47 @@ export default async function AdminPage() {
               <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{value}</p>
             </div>
           ))}
+        </section>
+
+        <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Beta Users</h3>
+            <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">{totalUsers} total</Badge>
+          </div>
+          <div className="mb-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-3 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300 opacity-80">Total signed up</p>
+              <p className="mt-2 text-2xl font-semibold text-indigo-900 dark:text-indigo-100">{totalUsers}</p>
+            </div>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300 opacity-80">New this week</p>
+              <p className="mt-2 text-2xl font-semibold text-emerald-900 dark:text-emerald-100">{newUsers7d}</p>
+            </div>
+          </div>
+          {recentUsers.length > 0 ? (
+            <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Email</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Joined</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Last seen</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {recentUsers.map(u => (
+                    <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                      <td className="max-w-[220px] truncate px-3 py-2 text-slate-700 dark:text-slate-300">{u.email ?? '(no email)'}</td>
+                      <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">{formatDate(u.created_at)}</td>
+                      <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">{u.last_sign_in_at ? formatDate(u.last_sign_in_at) : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-400">No users have signed up yet.</p>
+          )}
         </section>
 
         <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

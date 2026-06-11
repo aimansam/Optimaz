@@ -12,7 +12,7 @@ const sections = [
   },
   {
     title: '3. Your Account',
-    body: 'You must sign in using an approved authentication provider (currently Google) to access your private workspace. You are responsible for keeping your sign-in credentials secure. You are responsible for all activity that occurs under your account. Notify us immediately at hello@mavoralabs.com if you suspect unauthorised access.',
+    body: 'You must sign in using an approved authentication provider (currently Google) to access your private workspace. You are responsible for keeping your sign-in credentials secure. You are responsible for all activity that occurs under your account. Notify us immediately at hello@optimaz.app if you suspect unauthorised access.',
   },
   {
     title: '4. Use of Optimaz',
@@ -56,7 +56,7 @@ const sections = [
   },
   {
     title: '14. Contact',
-    body: 'For questions about these Terms of Service, contact us at: hello@mavoralabs.com',
+    body: 'For questions about these Terms of Service, contact us at: hello@optimaz.app',
   },
 ];
 

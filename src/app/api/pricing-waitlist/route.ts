@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
     // Validate env var emails — fall back to defaults if invalid
     const sanitize = (v: string | undefined) => (v ?? '').trim().replace(/^["']|["']$/g, '');
     const rawNotify = sanitize(process.env.FEEDBACK_NOTIFY_EMAIL);
-    const notifyTo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawNotify) ? rawNotify : 'hello@mavoralabs.com';
+    const notifyTo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawNotify) ? rawNotify : 'hello@optimaz.app';
     const rawFrom = sanitize(process.env.RESEND_FROM_EMAIL);
-    const fromEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawFrom) ? rawFrom : 'noreply@mavoralabs.com';
+    const fromEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawFrom) ? rawFrom : 'noreply@optimaz.app';
     const intent = normalizeIntent(payload.intent);
     try {
       const emailRes = await fetch('https://api.resend.com/emails', {

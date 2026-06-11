@@ -4,7 +4,7 @@ import { Shield } from 'lucide-react';
 const sections = [
   {
     title: '1. Who We Are',
-    body: 'Optimaz is a personal productivity application operated by Mavoralabs, based in Malaysia. For data-related queries, contact us at hello@mavoralabs.com.',
+    body: 'Optimaz is a personal productivity application operated by Mavoralabs, based in Malaysia. For data-related queries, contact us at hello@optimaz.app.',
   },
   {
     title: '2. Data We Collect',
@@ -32,7 +32,7 @@ const sections = [
   },
   {
     title: '8. Your Rights',
-    body: 'Under Malaysia PDPA 2010 and where applicable GDPR, you have the right to: (a) Access — request a copy of your personal data (use the Export Data option in Settings); (b) Correction — update inaccurate data directly in the app or by contacting us; (c) Erasure — delete your account and data at any time from Settings > Delete Account; (d) Portability — export your data in machine-readable format from Settings; (e) Withdraw consent — stop using the service and delete your account; (f) Lodge a complaint — with the Department of Personal Data Protection Malaysia or your local data protection authority. To exercise any right, email hello@mavoralabs.com.',
+    body: 'Under Malaysia PDPA 2010 and where applicable GDPR, you have the right to: (a) Access — request a copy of your personal data (use the Export Data option in Settings); (b) Correction — update inaccurate data directly in the app or by contacting us; (c) Erasure — delete your account and data at any time from Settings > Delete Account; (d) Portability — export your data in machine-readable format from Settings; (e) Withdraw consent — stop using the service and delete your account; (f) Lodge a complaint — with the Department of Personal Data Protection Malaysia or your local data protection authority. To exercise any right, email hello@optimaz.app.',
   },
   {
     title: '9. Data Security',
@@ -48,7 +48,7 @@ const sections = [
   },
   {
     title: '12. Contact',
-    body: 'For any privacy questions, data access or deletion requests, or to exercise your rights under PDPA or GDPR, contact us at: hello@mavoralabs.com',
+    body: 'For any privacy questions, data access or deletion requests, or to exercise your rights under PDPA or GDPR, contact us at: hello@optimaz.app',
   },
 ];
 

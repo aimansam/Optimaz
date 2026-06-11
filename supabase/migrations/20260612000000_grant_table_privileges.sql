@@ -9,8 +9,12 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 
--- anon role: read-only (public pages like pricing waitlist INSERT is handled by RLS)
+-- anon role: read-only by default
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+
+-- anon-specific INSERT overrides (public pages that don't require auth)
+GRANT INSERT ON public.pricing_waitlist TO anon;  -- /pricing waitlist signup form
+GRANT INSERT ON public.app_errors TO anon;        -- error monitoring on unauthenticated pages
 
 -- Ensure future tables also get these privileges automatically
 ALTER DEFAULT PRIVILEGES IN SCHEMA public

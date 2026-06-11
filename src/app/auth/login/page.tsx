@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, CheckCircle2, FolderOpen, Mail, ShieldCheck, Target } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, FolderOpen, Lock, Mail, ShieldCheck, Target } from 'lucide-react';
 
 const supabase = createClient();
 
@@ -13,13 +13,18 @@ const supabase = createClient();
 const OTP_EXPIRY_SECONDS = 120;
 
 type OAuthProvider = 'google' | 'github';
-type LoadingState = OAuthProvider | 'send_otp' | 'verify_otp' | null;
+type LoadingState = OAuthProvider | 'send_otp' | 'verify_otp' | 'password_signin' | 'password_signup' | 'reset_password' | null;
 type EmailStep = 'input' | 'verify';
+type AuthTab = 'code' | 'password';
+type PasswordMode = 'signin' | 'signup' | 'forgot';
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<LoadingState>(null);
   const [accepted, setAccepted] = useState(false);
+
+  // Tab: "code" = email OTP, "password" = email + password
+  const [authTab, setAuthTab] = useState<AuthTab>('password');
 
   // OAuth
   const signInWithOAuth = async (provider: OAuthProvider) => {
@@ -31,7 +36,7 @@ export default function LoginPage() {
     });
   };
 
-  // Email OTP state
+  // ── Email OTP state ──────────────────────────────────────────────
   const [email, setEmail] = useState('');
   const [emailStep, setEmailStep] = useState<EmailStep>('input');
   const [otpCode, setOtpCode] = useState('');
@@ -62,7 +67,6 @@ export default function LoginPage() {
     if (!accepted || !email.trim()) { setError('Please enter your email address.'); return; }
     setError('');
     setLoading('send_otp');
-    // No emailRedirectTo — instructs Supabase to send a 6-digit OTP code, not a magic link URL
     const { error: sendError } = await supabase.auth.signInWithOtp({ email: email.trim() });
     setLoading(null);
     if (sendError) { setError(sendError.message); return; }
@@ -87,18 +91,74 @@ export default function LoginPage() {
     router.replace('/dashboard');
   };
 
-  const resendOTP = () => {
-    setOtpCode('');
-    setError('');
-    sendOTP();
+  const resendOTP = () => { setOtpCode(''); setError(''); sendOTP(); };
+  const resetEmail = () => {
+    setEmailStep('input'); setOtpCode(''); setError(''); setCountdown(0);
+    if (countdownRef.current) clearInterval(countdownRef.current);
   };
 
-  const resetEmail = () => {
-    setEmailStep('input');
-    setOtpCode('');
-    setError('');
-    setCountdown(0);
-    if (countdownRef.current) clearInterval(countdownRef.current);
+  // ── Password auth state ──────────────────────────────────────────
+  const [pwEmail, setPwEmail] = useState('');
+  const [pwPassword, setPwPassword] = useState('');
+  const [pwConfirm, setPwConfirm] = useState('');
+  const [pwMode, setPwMode] = useState<PasswordMode>('signin');
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const switchPwMode = (mode: PasswordMode) => {
+    setPwMode(mode); setPwError(''); setPwSuccess('');
+    setPwPassword(''); setPwConfirm('');
+  };
+
+  const signInWithPassword = async () => {
+    if (!accepted) return;
+    if (!pwEmail.trim() || !pwPassword) { setPwError('Please enter your email and password.'); return; }
+    setPwError(''); setPwSuccess('');
+    setLoading('password_signin');
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: pwEmail.trim(),
+      password: pwPassword,
+    });
+    setLoading(null);
+    if (signInError) { setPwError(signInError.message); return; }
+    // Check MFA level — if enrolled, redirect to MFA challenge
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.nextLevel === 'aal2' && aal.nextLevel !== aal.currentLevel) {
+      router.replace('/auth/mfa');
+    } else {
+      router.replace('/dashboard');
+    }
+  };
+
+  const signUpWithPassword = async () => {
+    if (!accepted) return;
+    if (!pwEmail.trim() || !pwPassword) { setPwError('Please fill in all fields.'); return; }
+    if (pwPassword !== pwConfirm) { setPwError('Passwords do not match.'); return; }
+    if (pwPassword.length < 8) { setPwError('Password must be at least 8 characters.'); return; }
+    setPwError(''); setPwSuccess('');
+    setLoading('password_signup');
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: pwEmail.trim(),
+      password: pwPassword,
+    });
+    setLoading(null);
+    if (signUpError) { setPwError(signUpError.message); return; }
+    setPwSuccess('Account created! Check your email to confirm your address before signing in.');
+    setPwPassword(''); setPwConfirm('');
+  };
+
+  const sendPasswordReset = async () => {
+    if (!pwEmail.trim()) { setPwError('Please enter your email address.'); return; }
+    setPwError(''); setPwSuccess('');
+    setLoading('reset_password');
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(pwEmail.trim(), {
+      redirectTo: `${location.origin}/auth/callback?type=recovery`,
+    });
+    setLoading(null);
+    if (resetError) { setPwError(resetError.message); return; }
+    setPwSuccess('Password reset email sent! Check your inbox and follow the link to set a new password.');
   };
 
   return (
@@ -116,7 +176,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl">
 
-          {emailStep === 'verify' ? (
+          {emailStep === 'verify' && authTab === 'code' ? (
             /* ── Step 2: OTP verify ── */
             <>
               <div className="mb-6 flex flex-col items-center gap-3 text-center">
@@ -312,41 +372,236 @@ export default function LoginPage() {
                   <div className="h-px flex-1 bg-white/10" />
                 </div>
 
-                {/* Email OTP */}
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                      onKeyDown={(e) => e.key === 'Enter' && sendOTP()}
-                      placeholder="your@email.com"
-                      disabled={!!loading || !accepted}
-                      className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
-                    />
-                    <button
-                      onClick={sendOTP}
-                      disabled={!!loading || !accepted || !email.trim()}
-                      title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
-                      className="flex shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {loading === 'send_otp' ? (
-                        <span className="text-slate-400 text-xs">Sending…</span>
-                      ) : (
-                        <>
-                          <Mail className="h-4 w-4 shrink-0" />
-                          <span>Send code</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  {error && (
-                    <p className="text-xs text-red-400">{error}</p>
-                  )}
-                  <p className="text-[11px] text-slate-500 text-center">
-                    Passwordless — we&apos;ll email you a 6-digit code (valid 2 min)
-                  </p>
+                {/* Auth tab switcher */}
+                <div className="flex rounded-xl border border-white/10 bg-white/[0.03] p-1 gap-1">
+                  <button
+                    onClick={() => { setAuthTab('password'); setError(''); setPwError(''); setPwSuccess(''); }}
+                    className={`flex-1 rounded-lg py-2 text-xs font-medium transition-all ${authTab === 'password' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                  >
+                    <Lock className="inline-block h-3 w-3 mr-1.5 -mt-0.5" />
+                    Password
+                  </button>
+                  <button
+                    onClick={() => { setAuthTab('code'); setError(''); setPwError(''); setPwSuccess(''); }}
+                    className={`flex-1 rounded-lg py-2 text-xs font-medium transition-all ${authTab === 'code' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                  >
+                    <Mail className="inline-block h-3 w-3 mr-1.5 -mt-0.5" />
+                    Email code
+                  </button>
                 </div>
+
+                {/* ── Password auth panel ── */}
+                {authTab === 'password' && (
+                  <div className="space-y-3">
+                    {/* Sign in / Sign up / Forgot toggle */}
+                    {pwMode !== 'forgot' && (
+                      <div className="flex rounded-lg border border-white/10 bg-white/[0.03] p-0.5 gap-0.5">
+                        <button
+                          onClick={() => switchPwMode('signin')}
+                          className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${pwMode === 'signin' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                          Sign in
+                        </button>
+                        <button
+                          onClick={() => switchPwMode('signup')}
+                          className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${pwMode === 'signup' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                          Create account
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Email field */}
+                    <div>
+                      <label htmlFor="pw-email" className="mb-1.5 block text-xs font-medium text-slate-400">
+                        Email
+                      </label>
+                      <input
+                        id="pw-email"
+                        type="email"
+                        value={pwEmail}
+                        onChange={(e) => { setPwEmail(e.target.value); setPwError(''); }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (pwMode === 'signin') signInWithPassword();
+                            else if (pwMode === 'signup') signUpWithPassword();
+                            else sendPasswordReset();
+                          }
+                        }}
+                        placeholder="your@email.com"
+                        disabled={!!loading || !accepted}
+                        autoComplete="email"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+                      />
+                    </div>
+
+                    {/* Password field (not shown in forgot mode) */}
+                    {pwMode !== 'forgot' && (
+                      <div>
+                        <label htmlFor="pw-password" className="mb-1.5 block text-xs font-medium text-slate-400">
+                          Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            id="pw-password"
+                            type={showPassword ? 'text' : 'password'}
+                            value={pwPassword}
+                            onChange={(e) => { setPwPassword(e.target.value); setPwError(''); }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                if (pwMode === 'signin') signInWithPassword();
+                                else if (pwMode === 'signup') signUpWithPassword();
+                              }
+                            }}
+                            placeholder={pwMode === 'signup' ? 'Min. 8 characters' : '••••••••'}
+                            disabled={!!loading || !accepted}
+                            autoComplete={pwMode === 'signin' ? 'current-password' : 'new-password'}
+                            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 pr-10 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(v => !v)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                            tabIndex={-1}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Confirm password (sign up only) */}
+                    {pwMode === 'signup' && (
+                      <div>
+                        <label htmlFor="pw-confirm" className="mb-1.5 block text-xs font-medium text-slate-400">
+                          Confirm password
+                        </label>
+                        <div className="relative">
+                          <input
+                            id="pw-confirm"
+                            type={showConfirm ? 'text' : 'password'}
+                            value={pwConfirm}
+                            onChange={(e) => { setPwConfirm(e.target.value); setPwError(''); }}
+                            onKeyDown={(e) => e.key === 'Enter' && signUpWithPassword()}
+                            placeholder="Re-enter password"
+                            disabled={!!loading || !accepted}
+                            autoComplete="new-password"
+                            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 pr-10 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirm(v => !v)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                            tabIndex={-1}
+                          >
+                            {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Error */}
+                    {pwError && (
+                      <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">{pwError}</p>
+                    )}
+
+                    {/* Success */}
+                    {pwSuccess && (
+                      <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">{pwSuccess}</p>
+                    )}
+
+                    {/* Submit button */}
+                    {pwMode === 'signin' && (
+                      <button
+                        onClick={signInWithPassword}
+                        disabled={!!loading || !accepted || !pwEmail.trim() || !pwPassword}
+                        title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {loading === 'password_signin' ? 'Signing in…' : 'Sign in'}
+                      </button>
+                    )}
+
+                    {pwMode === 'signup' && (
+                      <button
+                        onClick={signUpWithPassword}
+                        disabled={!!loading || !accepted || !pwEmail.trim() || !pwPassword || !pwConfirm}
+                        title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {loading === 'password_signup' ? 'Creating account…' : 'Create account'}
+                      </button>
+                    )}
+
+                    {pwMode === 'forgot' && (
+                      <>
+                        <button
+                          onClick={sendPasswordReset}
+                          disabled={!!loading || !pwEmail.trim()}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {loading === 'reset_password' ? 'Sending…' : 'Send reset email'}
+                        </button>
+                        <button
+                          onClick={() => switchPwMode('signin')}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-medium text-slate-400 transition-all hover:bg-white/[0.06] hover:text-slate-200"
+                        >
+                          Back to sign in
+                        </button>
+                      </>
+                    )}
+
+                    {/* Forgot password link (sign in mode only) */}
+                    {pwMode === 'signin' && (
+                      <div className="text-center">
+                        <button
+                          onClick={() => switchPwMode('forgot')}
+                          className="text-xs text-slate-500 underline underline-offset-2 hover:text-slate-300 transition-colors"
+                        >
+                          Forgot your password?
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Email OTP panel ── */}
+                {authTab === 'code' && (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                        onKeyDown={(e) => e.key === 'Enter' && sendOTP()}
+                        placeholder="your@email.com"
+                        disabled={!!loading || !accepted}
+                        className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+                      />
+                      <button
+                        onClick={sendOTP}
+                        disabled={!!loading || !accepted || !email.trim()}
+                        title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+                        className="flex shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {loading === 'send_otp' ? (
+                          <span className="text-slate-400 text-xs">Sending…</span>
+                        ) : (
+                          <>
+                            <Mail className="h-4 w-4 shrink-0" />
+                            <span>Send code</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    {error && (
+                      <p className="text-xs text-red-400">{error}</p>
+                    )}
+                    <p className="text-[11px] text-slate-500 text-center">
+                      Passwordless — we&apos;ll email you a 6-digit code (valid 2 min)
+                    </p>
+                  </div>
+                )}
               </div>
 
               <p className="mt-4 text-center text-xs text-slate-500">

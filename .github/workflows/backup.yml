@@ -1,0 +1,58 @@
+name: Daily DB Backup
+
+on:
+  # Run every day at 02:00 UTC (10:00 AM MYT)
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      note:
+        description: 'Reason for manual backup (optional)'
+        required: false
+        default: 'Manual trigger'
+
+jobs:
+  backup:
+    name: Backup Supabase (Production + Dev)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run backup script
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: node scripts/backup-db.mjs
+
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Artifact name includes date for easy browsing in GitHub UI
+          name: db-backup-${{ github.run_id }}-${{ github.run_number }}
+          path: supabase/backup/
+          # Keep backups for 90 days
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Print summary
+        if: always()
+        run: |
+          echo "### DB Backup" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d supabase/backup ]; then
+            for f in supabase/backup/*.json; do
+              size=$(du -sh "$f" | cut -f1)
+              echo "- \`$(basename $f)\` — ${size}" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "⚠️ No backup files generated" >> $GITHUB_STEP_SUMMARY
+          fi

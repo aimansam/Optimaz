@@ -124,7 +124,7 @@ export default async function AdminPage() {
   // Fetch signed-up users via auth admin API (separate from DB queries)
   const usersResult = await admin.auth.admin.listUsers({ page: 1, perPage: 50 });
   const allUsersPage = usersResult.data?.users ?? [];
-  const totalUsers = usersResult.data?.total ?? allUsersPage.length;
+  const totalUsers = (usersResult.data as { total?: number } | null)?.total ?? allUsersPage.length;
   const newUsers7d = allUsersPage.filter(u => u.created_at && u.created_at >= since7Days).length;
   const recentUsers: BetaUserRow[] = [...allUsersPage]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())

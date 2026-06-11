@@ -37,7 +37,7 @@ function MfaSection() {
   async function loadFactors() {
     setMfaStatus('loading');
     const { data } = await supabase.auth.mfa.listFactors();
-    const verified = data?.totp?.find((f) => f.status === 'verified');
+    const verified = data?.totp?.find((f: { id: string; status: string; friendly_name?: string }) => f.status === 'verified');
     if (verified) {
       setEnrolledFactor(verified);
       setMfaStatus('enabled');

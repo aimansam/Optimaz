@@ -9,8 +9,10 @@ const supabase = createClient();
 
 export default function LoginPage() {
   const [loading, setLoading] = useState<'google' | null>(null);
+  const [accepted, setAccepted] = useState(false);
 
   const signIn = async (provider: 'google') => {
+    if (!accepted) return;
     setLoading(provider);
     await supabase.auth.signInWithOAuth({
       provider,
@@ -56,11 +58,41 @@ export default function LoginPage() {
             ))}
           </div>
 
+          {/* Terms & Privacy acceptance */}
+          <label className="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-white/20 hover:bg-white/[0.06]">
+            <div className="relative mt-0.5 shrink-0">
+              <input
+                type="checkbox"
+                checked={accepted}
+                onChange={(e) => setAccepted(e.target.checked)}
+                className="peer sr-only"
+              />
+              <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${accepted ? 'border-indigo-500 bg-indigo-500' : 'border-white/30 bg-white/5'}`}>
+                {accepted && (
+                  <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+            </div>
+            <span className="text-xs leading-relaxed text-slate-400">
+              I agree to the{' '}
+              <Link href="/terms" onClick={(e) => e.stopPropagation()} className="text-slate-200 underline underline-offset-2 hover:text-white">
+                Terms of Service
+              </Link>
+              {' '}and{' '}
+              <Link href="/privacy" onClick={(e) => e.stopPropagation()} className="text-slate-200 underline underline-offset-2 hover:text-white">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
+
           <div className="space-y-3">
             <button
               onClick={() => signIn('google')}
-              disabled={!!loading}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:opacity-50"
+              disabled={!!loading || !accepted}
+              title={!accepted ? 'Please accept the Terms of Service and Privacy Policy to continue' : undefined}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/12 hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loading === 'google' ? (
                 <span className="text-slate-400">Connecting...</span>
@@ -78,13 +110,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <p className="mt-6 text-center text-xs text-slate-500">
-            By signing in, you agree to the{' '}
-            <Link href="/terms" className="text-slate-300 hover:text-white">terms</Link>
-            {' '}and acknowledge the{' '}
-            <Link href="/privacy" className="text-slate-300 hover:text-white">privacy policy</Link>.
-          </p>
-          <p className="mt-3 text-center text-xs text-slate-500">
+          <p className="mt-4 text-center text-xs text-slate-500">
             Curious about paid features?{' '}
             <Link href="/pricing" className="text-slate-300 hover:text-white">Join the pricing waitlist</Link>.
           </p>

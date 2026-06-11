@@ -72,7 +72,7 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div
-        className="flex flex-col md:flex-row md:items-start md:min-w-max gap-2 sm:gap-3 md:gap-4 pb-2 sm:pb-3 md:pb-4"
+        className="flex flex-col md:flex-row md:items-start md:min-w-max h-full gap-2 sm:gap-3 md:gap-4"
       >
         {COLUMNS.map(({ id, label }) => (
           <KanbanColumn key={id} id={id} label={label} tasks={getTasksByStatus(id)} />

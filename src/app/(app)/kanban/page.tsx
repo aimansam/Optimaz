@@ -204,8 +204,9 @@ export default function KanbanPage() {
   return (
     <>
 
-      <div className="flex-1 min-w-0 overflow-x-auto overflow-y-hidden p-2 sm:p-4 md:p-6">
-        <div className="mb-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:mb-4">
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+        <div className="shrink-0 px-2 pt-2 pb-0 sm:px-4 sm:pt-4 md:px-6 md:pt-6">
+        <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
               <Filter className="h-4 w-4 text-slate-500" />
@@ -362,16 +363,19 @@ export default function KanbanPage() {
             </div>
           )}
         </div>
+        </div>
 
-        {isLoading ? (
-          <div className="flex gap-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-64 w-72 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse shrink-0" />
-            ))}
-          </div>
-        ) : (
-          <KanbanBoard tasks={filteredTasks} />
-        )}
+        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden px-2 pb-2 pt-3 sm:px-4 sm:pb-4 sm:pt-4 md:px-6 md:pb-6">
+          {isLoading ? (
+            <div className="flex h-full gap-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-full min-h-[200px] w-72 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse shrink-0" />
+              ))}
+            </div>
+          ) : (
+            <KanbanBoard tasks={filteredTasks} />
+          )}
+        </div>
       </div>
     </>
   );

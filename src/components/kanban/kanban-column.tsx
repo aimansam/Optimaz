@@ -40,7 +40,7 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
         className={cn(
           'flex flex-col rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 transition-all duration-200',
           isOver && 'ring-2 ring-slate-400 border-transparent',
-          'w-full md:w-[320px] min-w-0 md:min-w-[320px]'
+          'w-full md:w-[320px] min-w-0 md:min-w-[320px] h-full max-h-full'
         )}
       >
         {/* Column header */}

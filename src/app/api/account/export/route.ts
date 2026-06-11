@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -11,15 +12,41 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const [goalsResult, projectsResult, tasksResult, subtasksResult, savedViewsResult] = await Promise.all([
+  // Rate limit: 10 exports per user per hour (prevents DB hammering)
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: `account-export:${user.id}`,
+    maxRequests: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many export requests' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    );
+  }
+
+  const [
+    goalsResult,
+    projectsResult,
+    tasksResult,
+    subtasksResult,
+    routinesResult,
+    savedViewsResult,
+    archiveResult,
+  ] = await Promise.all([
     supabase.from('goals').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('projects').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('tasks').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('subtasks').select('*').eq('user_id', user.id).order('created_at'),
+    supabase.from('routines').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('saved_views').select('*').eq('user_id', user.id).order('created_at'),
+    supabase.from('task_completion_archive').select('*').eq('user_id', user.id).order('completed_at'),
   ]);
 
-  const errors = [goalsResult, projectsResult, tasksResult, subtasksResult, savedViewsResult]
+  const errors = [
+    goalsResult, projectsResult, tasksResult, subtasksResult,
+    routinesResult, savedViewsResult, archiveResult,
+  ]
     .map((r) => r.error?.message)
     .filter(Boolean);
 
@@ -38,10 +65,12 @@ export async function GET() {
     projects: projectsResult.data ?? [],
     tasks: tasksResult.data ?? [],
     subtasks: subtasksResult.data ?? [],
+    routines: routinesResult.data ?? [],
     saved_views: savedViewsResult.data ?? [],
+    completed_tasks_archive: archiveResult.data ?? [],
   };
 
-  const filename = `taskflow-export-${new Date().toISOString().slice(0, 10)}.json`;
+  const filename = `optimaz-export-${new Date().toISOString().slice(0, 10)}.json`;
 
   return new NextResponse(JSON.stringify(exportData, null, 2), {
     status: 200,

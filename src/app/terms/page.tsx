@@ -1,10 +1,16 @@
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
 
-const sections = [
+type Section = {
+  title: string;
+  body: string;
+  items?: string[];
+};
+
+const sections: Section[] = [
   {
     title: '1. Acceptance of Terms',
-    body: 'By creating an account or using Optimaz, you agree to these Terms of Service. If you do not agree, do not use the service. These terms form a binding agreement between you and Mavoralabs (operator of Optimaz), a business based in Malaysia.',
+    body: 'By creating an account or using Optimaz, you agree to these Terms of Service. If you do not agree, do not use the service. These terms form a binding agreement between you and Mavora Digital (operator of Optimaz), a business based in Malaysia.',
   },
   {
     title: '2. Eligibility',
@@ -12,19 +18,26 @@ const sections = [
   },
   {
     title: '3. Your Account',
-    body: 'You must sign in using an approved authentication provider (currently Google) to access your private workspace. You are responsible for keeping your sign-in credentials secure. You are responsible for all activity that occurs under your account. Notify us immediately at hello@optimaz.app if you suspect unauthorised access.',
+    body: 'You must sign in using an approved authentication provider (currently Google) to access your private workspace. You are responsible for keeping your sign-in credentials secure and for all activity that occurs under your account. Notify us immediately at hello@optimaz.app if you suspect unauthorised access.',
   },
   {
     title: '4. Use of Optimaz',
-    body: 'Optimaz is provided to help you organise personal tasks, projects, goals, routines, and related productivity workflows. You are responsible for the content you add to your workspace. You agree not to: (a) use the service for any unlawful purpose; (b) attempt to gain unauthorised access to any part of the service; (c) interfere with or disrupt the service or its servers; (d) upload or transmit content that is harmful, abusive, or violates third-party rights; (e) use automated means to scrape or access the service.',
+    body: 'Optimaz is provided to help you organise personal tasks, projects, goals, routines, and related productivity workflows. You are responsible for the content you add to your workspace. You agree not to:',
+    items: [
+      'Use the service for any unlawful purpose',
+      'Attempt to gain unauthorised access to any part of the service',
+      'Interfere with or disrupt the service or its servers',
+      'Upload or transmit content that is harmful, abusive, or violates third-party rights',
+      'Use automated means to scrape or access the service without permission',
+    ],
   },
   {
     title: '5. Your Content',
-    body: 'You retain ownership of the content you create in Optimaz (tasks, projects, goals, notes, etc.). You grant Mavoralabs a limited licence to store and process your content solely to operate and provide the service. We do not use your workspace content for advertising or share it with third parties beyond what is required to run the service.',
+    body: 'You retain ownership of the content you create in Optimaz (tasks, projects, goals, notes, etc.). You grant Mavora Digital a limited licence to store and process your content solely to operate and provide the service. We do not use your workspace content for advertising or share it with third parties beyond what is required to run the service.',
   },
   {
     title: '6. Intellectual Property',
-    body: 'Optimaz and all associated software, design, trademarks, and branding are the property of Mavoralabs. Nothing in these terms grants you any rights to use our name, logos, or branding without explicit written permission. You may not copy, modify, distribute, or reverse-engineer any part of the Optimaz application.',
+    body: 'Optimaz and all associated software, design, trademarks, and branding are the property of Mavora Digital. Nothing in these terms grants you any rights to use our name, logos, or branding without explicit written permission. You may not copy, modify, distribute, or reverse-engineer any part of the Optimaz application.',
   },
   {
     title: '7. Beta Service',
@@ -40,11 +53,11 @@ const sections = [
   },
   {
     title: '10. Limitation of Liability',
-    body: 'To the maximum extent permitted by applicable law, Mavoralabs shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use Optimaz, including loss of data, profits, or goodwill. Our total liability for any claim arising under these terms shall not exceed the amount you paid for the service in the 12 months preceding the claim (or RM 50 if you are a free user).',
+    body: 'To the maximum extent permitted by applicable law, Mavora Digital shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use Optimaz, including loss of data, profits, or goodwill. Our total liability for any claim arising under these terms shall not exceed the amount you paid for the service in the 12 months preceding the claim (or RM 50 if you are a free user).',
   },
   {
     title: '11. Termination',
-    body: 'You may stop using Optimaz and delete your account at any time from Settings > Delete Account. We reserve the right to suspend or terminate your access if you violate these terms, with or without notice depending on the severity. Sections 5, 6, 9, 10, and 12 survive termination.',
+    body: 'You may stop using Optimaz and delete your account at any time from Settings › Delete Account. We reserve the right to suspend or terminate your access if you violate these terms, with or without notice depending on the severity. Sections 5, 6, 9, 10, and 12 survive termination.',
   },
   {
     title: '12. Governing Law and Dispute Resolution',
@@ -79,10 +92,11 @@ export default function TermsPage() {
             <FileText className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Last updated June 9, 2026</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Last updated June 2026</p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Terms of Service</h1>
             <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              These Terms of Service govern your use of Optimaz, operated by Mavoralabs (Malaysia). By using Optimaz, you agree to these terms.
+              These Terms of Service govern your use of Optimaz, operated by Mavora Digital (Malaysia). By using Optimaz,
+              you agree to these terms.
             </p>
           </div>
         </div>
@@ -92,9 +106,23 @@ export default function TermsPage() {
             <section key={section.title} className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
               <h2 className="text-base font-semibold text-slate-950 dark:text-slate-50">{section.title}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{section.body}</p>
+              {section.items && (
+                <ul className="mt-2 space-y-1.5 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  {section.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           ))}
         </div>
+
+        <p className="mt-8 text-center text-xs text-slate-400">
+          © {new Date().getFullYear()} Mavora Digital. All rights reserved.
+        </p>
       </div>
     </main>
   );

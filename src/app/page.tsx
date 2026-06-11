@@ -177,16 +177,21 @@ export default async function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/5">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-xs text-slate-500 sm:flex-row sm:px-6">
-          <div className="flex items-center gap-2">
-            <img src="/icon-192x192.png" alt="Optimaz" className="h-5 w-5 rounded-md" />
-            <span className="font-medium text-slate-400">Optimaz</span>
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <div className="flex flex-col items-center justify-between gap-4 text-xs text-slate-500 sm:flex-row">
+            <div className="flex items-center gap-2">
+              <img src="/icon-192x192.png" alt="Optimaz" className="h-5 w-5 rounded-md" />
+              <span className="font-medium text-slate-400">Optimaz</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link href="/pricing" className="transition-colors hover:text-slate-300">Pricing</Link>
+              <Link href="/privacy" className="transition-colors hover:text-slate-300">Privacy</Link>
+              <Link href="/terms" className="transition-colors hover:text-slate-300">Terms</Link>
+            </div>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/pricing" className="transition-colors hover:text-slate-300">Pricing</Link>
-            <Link href="/privacy" className="transition-colors hover:text-slate-300">Privacy</Link>
-            <Link href="/terms" className="transition-colors hover:text-slate-300">Terms</Link>
-          </div>
+          <p className="mt-4 text-center text-xs text-slate-600 sm:text-right">
+            © {new Date().getFullYear()} Mavora Digital. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

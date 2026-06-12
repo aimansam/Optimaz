@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { useTheme } from 'next-themes';
 import { useDisablePushSubscription, usePushSubscription, useSendTestPushNotification } from '@/hooks/use-push';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { AlertTriangle, Bell, BellOff, CheckCircle2, Download, Palette, Send, ShieldCheck, Trash2, User, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Check, CheckCircle2, Download, Palette, Send, ShieldCheck, Trash2, User, XCircle } from 'lucide-react';
+import { THEMES } from '@/components/providers/theme-provider';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
 import { useDeleteAccount, useExportAccount } from '@/hooks/use-account-controls';
@@ -192,6 +193,115 @@ function MfaSection() {
 
       {mfaError && <p className="mt-2 text-xs text-red-500">{mfaError}</p>}
       {mfaSuccess && <p className="mt-2 text-xs text-green-600 dark:text-green-400">{mfaSuccess}</p>}
+    </section>
+  );
+}
+
+function AppearanceSection() {
+  const { theme, setTheme } = useTheme();
+  const lightThemes = THEMES.filter(t => !t.dark);
+  const darkThemes = THEMES.filter(t => t.dark);
+
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+      <div className="flex items-center gap-2 mb-5">
+        <Palette className="h-5 w-5 text-slate-400" />
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Appearance</h2>
+      </div>
+
+      {/* Light themes */}
+      <div className="mb-5">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">Light themes</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {lightThemes.map(t => {
+            const active = theme === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id)}
+                className="group relative flex flex-col items-center gap-2 rounded-xl border-2 p-3 text-left transition-all hover:shadow-md focus:outline-none"
+                style={active ? {
+                  borderColor: t.accent,
+                  background: t.bg,
+                } : {
+                  borderColor: 'var(--card-border)',
+                  background: t.bg,
+                }}
+              >
+                {/* Preview swatch */}
+                <div
+                  className="h-10 w-full rounded-lg border"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.bg} 60%, ${t.accent} 100%)`,
+                    borderColor: t.accent + '40',
+                  }}
+                />
+                <div className="flex w-full items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-800">{t.label}</p>
+                    <p className="text-[10px] text-slate-400">{t.description}</p>
+                  </div>
+                  {active && (
+                    <span
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                      style={{ background: t.accent }}
+                    >
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Dark themes */}
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">Dark themes</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {darkThemes.map(t => {
+            const active = theme === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id)}
+                className="group relative flex flex-col items-center gap-2 rounded-xl border-2 p-3 text-left transition-all hover:shadow-md focus:outline-none"
+                style={active ? {
+                  borderColor: t.accent,
+                  background: '#1e293b',
+                } : {
+                  borderColor: '#334155',
+                  background: t.bg,
+                }}
+              >
+                {/* Preview swatch */}
+                <div
+                  className="h-10 w-full rounded-lg border"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.bg} 60%, ${t.accent} 100%)`,
+                    borderColor: t.accent + '40',
+                  }}
+                />
+                <div className="flex w-full items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-200">{t.label}</p>
+                    <p className="text-[10px] text-slate-500">{t.description}</p>
+                  </div>
+                  {active && (
+                    <span
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                      style={{ background: t.accent }}
+                    >
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }
@@ -402,19 +512,7 @@ export default function SettingsPage() {
           <MfaSection />
 
           {/* Appearance */}
-          <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-            <div className="flex items-center gap-2 mb-4">
-              <Palette className="h-5 w-5 text-slate-400" />
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Appearance</h2>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Theme</p>
-                <p className="text-xs text-slate-400">Light, dark, or follow system</p>
-              </div>
-              <ThemeToggle />
-            </div>
-          </section>
+          <AppearanceSection />
 
           {/* Notifications */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

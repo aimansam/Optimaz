@@ -42,17 +42,29 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
 
       <aside
         className={cn(
-          'fixed z-40 top-0 left-0 h-full w-64 max-w-[calc(100vw-1rem)] flex flex-col border-r border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-950 transition-transform duration-300 md:static md:flex md:w-60 md:max-w-none',
+          'fixed z-40 top-0 left-0 h-full w-64 max-w-[calc(100vw-1rem)] flex flex-col transition-transform duration-300 md:static md:flex md:w-60 md:max-w-none',
           open ? 'translate-x-0' : '-translate-x-full',
           'md:translate-x-0'
         )}
+        style={{
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--sidebar-border)',
+        }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-4 md:px-5 md:py-5">
           <img src="/icon-192x192.png" alt="Optimaz" className="h-8 w-8 shrink-0 rounded-xl shadow-sm shadow-black/20" />
           <div className="flex items-center gap-1.5">
-            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">Optimaz</span>
-            <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400">Beta</span>
+            <span className="text-base font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>Optimaz</span>
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
+              style={{
+                background: 'rgb(var(--accent) / 0.15)',
+                color: 'rgb(var(--accent))',
+              }}
+            >
+              Beta
+            </span>
           </div>
         </div>
 
@@ -66,19 +78,38 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                 href={href}
                 className={cn(
                   'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3 md:py-2.5',
-                  active
-                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200'
                 )}
+                style={active ? {
+                  background: 'var(--muted-bg)',
+                  color: 'var(--foreground)',
+                } : {
+                  color: 'var(--muted-fg)',
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    (e.currentTarget as HTMLAnchorElement).style.background = '';
+                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted-fg)';
+                  }
+                }}
                 onClick={() => setOpen(false)}
               >
                 <span
                   className={cn(
                     'flex h-6 w-6 items-center justify-center rounded-lg transition-all md:h-7 md:w-7',
-                    active
-                      ? 'bg-slate-900 text-white shadow-sm shadow-black/20 dark:bg-white dark:text-slate-900'
-                      : 'text-slate-400 dark:text-slate-500'
                   )}
+                  style={active ? {
+                    background: 'rgb(var(--accent))',
+                    color: '#ffffff',
+                    boxShadow: '0 1px 3px rgb(var(--accent) / 0.4)',
+                  } : {
+                    color: 'var(--muted-fg)',
+                  }}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
@@ -90,7 +121,10 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         {/* Projects */}
         {projects && projects.length > 0 && (
           <div className="pt-5">
-            <p className="mb-1 px-2.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600 md:px-3">
+            <p
+              className="mb-1 px-2.5 text-[10px] font-semibold uppercase tracking-widest md:px-3"
+              style={{ color: 'var(--muted-fg)' }}
+            >
               Projects
             </p>
             {visibleProjects.map((project) => {
@@ -101,10 +135,25 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                   href={`/projects/${project.id}`}
                   className={cn(
                     'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3',
-                    active
-                      ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-                      : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200'
                   )}
+                  style={active ? {
+                    background: 'var(--muted-bg)',
+                    color: 'var(--foreground)',
+                  } : {
+                    color: 'var(--muted-fg)',
+                  }}
+                  onMouseEnter={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                      (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLAnchorElement).style.background = '';
+                      (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted-fg)';
+                    }
+                  }}
                   onClick={() => setOpen(false)}
                 >
                   <span
@@ -117,7 +166,16 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
             })}
             <Link
               href="/projects"
-              className="mt-1 flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800/70 dark:hover:text-slate-200 md:rounded-xl md:px-3"
+              className="mt-1 flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors md:rounded-xl md:px-3"
+              style={{ color: 'var(--muted-fg)' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLAnchorElement).style.background = '';
+                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted-fg)';
+              }}
               onClick={() => setOpen(false)}
             >
               <span>View all projects</span>
@@ -128,25 +186,27 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         </nav>
 
         {/* Sidebar footer */}
-        <div className="shrink-0 border-t border-slate-200/80 px-4 py-3 dark:border-slate-800/80">
+        <div
+          className="shrink-0 px-4 py-3"
+          style={{ borderTop: '1px solid var(--sidebar-border)' }}
+        >
           <div className="flex items-center justify-between">
-            <p className="text-[10px] text-slate-400 dark:text-slate-600">
+            <p className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>
               © {new Date().getFullYear()} Mavora Digital
             </p>
             {process.env.NEXT_PUBLIC_APP_VERSION && (
-              <span className="text-[10px] text-slate-300 dark:text-slate-700">
+              <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.5 }}>
                 v{process.env.NEXT_PUBLIC_APP_VERSION}
               </span>
             )}
           </div>
           <div className="mt-0.5 flex items-center gap-2">
-            <a href="/privacy" className="text-[10px] text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400">Privacy</a>
-            <span className="text-[10px] text-slate-300 dark:text-slate-700">·</span>
-            <a href="/terms" className="text-[10px] text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400">Terms</a>
+            <a href="/privacy" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)' }}>Privacy</a>
+            <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.4 }}>·</span>
+            <a href="/terms" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)' }}>Terms</a>
           </div>
         </div>
       </aside>
     </>
   );
 }
-

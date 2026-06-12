@@ -26,16 +26,27 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-slate-200/80 bg-white/80 px-3 backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-950/80 sm:px-6">
+    <header
+      className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-2 px-3 backdrop-blur-sm sm:px-6"
+      style={{
+        background: 'var(--card-bg, var(--background))',
+        borderBottom: '2px solid rgb(var(--accent) / 0.6)',
+      }}
+    >
       <div className="flex min-w-0 items-center gap-2">
         <button
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm md:hidden dark:border-slate-700 dark:bg-slate-900"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border shadow-sm md:hidden"
+          style={{
+            borderColor: 'var(--card-border)',
+            background: 'var(--card-bg)',
+            color: 'var(--foreground)',
+          }}
           onClick={onMenuClick}
           aria-label="Open navigation menu"
         >
-          <Menu className="h-5 w-5 text-slate-900 dark:text-white" />
+          <Menu className="h-5 w-5" />
         </button>
-        <h1 className="truncate text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+        <h1 className="truncate text-base font-semibold" style={{ color: 'var(--foreground)' }}>{title}</h1>
       </div>
       <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
         {actions}
@@ -50,4 +61,3 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
     </header>
   );
 }
-

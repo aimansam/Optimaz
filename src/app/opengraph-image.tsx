@@ -48,20 +48,14 @@ export default function OGImage() {
 
         {/* Logo + name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 32,
-            }}
-          >
-            ✦
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://optimaz.app/icon-192x192.png"
+            width={64}
+            height={64}
+            style={{ borderRadius: 16 }}
+            alt="Optimaz"
+          />
           <span style={{ fontSize: 40, fontWeight: 700, color: '#ffffff', letterSpacing: '-1px' }}>
             Optimaz
           </span>

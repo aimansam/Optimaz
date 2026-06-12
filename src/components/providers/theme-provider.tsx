@@ -20,6 +20,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       attribute="class"
       defaultTheme="cloud"
       themes={THEMES.map(t => t.id)}
+      enableSystem={false}
       disableTransitionOnChange={false}
     >
       {children}

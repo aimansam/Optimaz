@@ -8,9 +8,8 @@ import { ArrowLeft, Mail, ShieldCheck } from 'lucide-react';
 
 const supabase = createClient();
 
-// OTP expires in 60 seconds — match in Supabase Dashboard:
-// Authentication → Configuration → OTP Expiry → set to 60
-const OTP_EXPIRY_SECONDS = 60;
+// OTP expires in 10 minutes (600 seconds) — matches server OTP_TTL_MINUTES
+const OTP_EXPIRY_SECONDS = 600;
 
 type OAuthProvider = 'google' | 'github';
 type LoadingState = OAuthProvider | 'send_otp' | 'verify_otp' | null;
@@ -59,9 +58,17 @@ export default function LoginPage() {
     if (!email.trim()) { setError('Please enter your email address.'); return; }
     setError('');
     setLoading('send_otp');
-    const { error: sendError } = await supabase.auth.signInWithOtp({ email: email.trim() });
+
+    const res = await fetch('/api/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim() }),
+    });
+    const data = await res.json();
+
     setLoading(null);
-    if (sendError) { setError(sendError.message); return; }
+    if (!res.ok || data.error) { setError(data.error ?? 'Failed to send code. Please try again.'); return; }
+
     setStep('verify');
     setOtpCode('');
     startCountdown();
@@ -73,13 +80,35 @@ export default function LoginPage() {
     if (otpCode.length !== 6) { setError('Enter the 6-digit code from your email.'); return; }
     setError('');
     setLoading('verify_otp');
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token: otpCode,
-      type: 'email',
+
+    // Step 1: verify code server-side (creates user if needed) and get a token
+    const res = await fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), code: otpCode }),
     });
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      setLoading(null);
+      setError(data.error ?? 'Failed to verify code. Please try again.');
+      setOtpCode('');
+      return;
+    }
+
+    // Step 2: exchange the token for a Supabase session on the client
+    const { error: sessionError } = await supabase.auth.verifyOtp({
+      token_hash: data.token,
+      type: 'magiclink',
+    });
+
     setLoading(null);
-    if (verifyError) { setError(verifyError.message); setOtpCode(''); return; }
+    if (sessionError) {
+      setError(sessionError.message);
+      setOtpCode('');
+      return;
+    }
+
     router.replace('/dashboard');
   };
 
@@ -128,14 +157,14 @@ export default function LoginPage() {
                     {isExpired ? (
                       <span className="font-semibold text-red-500">Expired</span>
                     ) : (
-                      <span className={`font-semibold tabular-nums ${countdown <= 15 ? 'text-amber-600' : 'text-slate-600'}`}>
+                      <span className={`font-semibold tabular-nums ${countdown <= 60 ? 'text-amber-600' : 'text-slate-600'}`}>
                         {fmt(countdown)}
                       </span>
                     )}
                   </div>
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className={`h-1.5 rounded-full transition-all duration-1000 ${isExpired ? 'bg-red-400' : countdown <= 15 ? 'bg-amber-400' : 'bg-indigo-500'}`}
+                      className={`h-1.5 rounded-full transition-all duration-1000 ${isExpired ? 'bg-red-400' : countdown <= 60 ? 'bg-amber-400' : 'bg-indigo-500'}`}
                       style={{ width: isExpired ? '0%' : `${(countdown / OTP_EXPIRY_SECONDS) * 100}%` }}
                     />
                   </div>

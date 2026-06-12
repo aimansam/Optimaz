@@ -215,6 +215,23 @@ CREATE POLICY "Users can insert own tasks" ON public.tasks FOR INSERT WITH CHECK
 CREATE POLICY "Users can view own tasks" ON public.tasks FOR SELECT USING ((auth.uid() = user_id));
 CREATE POLICY "Users can update own tasks" ON public.tasks FOR UPDATE USING ((auth.uid() = user_id));
 
+-- Table: pending_otps
+CREATE TABLE IF NOT EXISTS public.pending_otps (
+  id         uuid        NOT NULL DEFAULT gen_random_uuid(),
+  email      text        NOT NULL,
+  code_hash  text        NOT NULL,
+  expires_at timestamptz NOT NULL DEFAULT (now() + interval '10 minutes'),
+  attempts   integer     NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS pending_otps_email_idx ON public.pending_otps (email);
+CREATE INDEX IF NOT EXISTS pending_otps_expires_idx ON public.pending_otps (expires_at);
+
+ALTER TABLE public.pending_otps ENABLE ROW LEVEL SECURITY;
+-- No user-facing RLS policies — accessed only via service-role key in server routes
+
 -- ============================================================
 -- Grants
 -- ============================================================

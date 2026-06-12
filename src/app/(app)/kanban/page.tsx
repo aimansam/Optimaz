@@ -206,7 +206,7 @@ export default function KanbanPage() {
   return (
     <>
 
-      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: 'var(--background)' }}>
         <div className="shrink-0 px-2 pt-2 pb-0 sm:px-4 sm:pt-4 md:px-6 md:pt-6">
         <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
           <div className="flex flex-wrap items-center justify-between gap-2">

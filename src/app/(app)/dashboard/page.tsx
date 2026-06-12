@@ -264,7 +264,7 @@ export default function DashboardPage() {
 				{/* ═══════════════════════════════════════════════════════
 				    MOBILE layout (< lg): single natural scroll column
 				    ═══════════════════════════════════════════════════════ */}
-				<div className="flex-1 overflow-y-auto lg:hidden">
+				<div className="flex-1 overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
 					<div className="px-4 py-4 pb-24 space-y-4 sm:px-6">
 					{/* Stats + chart */}
 					<DashboardStatsStrip compact />
@@ -302,7 +302,7 @@ export default function DashboardPage() {
 				<div className="hidden flex-1 min-h-0 lg:flex lg:flex-row lg:overflow-hidden">
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
-				<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
+				<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4" style={{ background: 'var(--background)' }}>
 					<DashboardStatsStrip compact />
 					<DashboardAnalytics />
 					{goalFocusPanel}
@@ -329,7 +329,7 @@ export default function DashboardPage() {
 								<TaskFilterBar filters={filters} onChange={setFilters} />
 							</div>
 						)}
-						<div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-24 sm:px-6">
+						<div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-24 sm:px-6" style={{ background: 'var(--background)' }}>
 							{taskFeeds}
 						</div>
 					</div>

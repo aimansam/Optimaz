@@ -133,6 +133,8 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar, #cbd5e1) var(--background, #ffffff);
 }
 
 html, body {

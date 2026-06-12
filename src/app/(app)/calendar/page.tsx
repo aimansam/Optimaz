@@ -286,7 +286,7 @@ export default function CalendarPage() {
         {/* ═══════════════════════════════════════════════════════
             MOBILE layout (< lg): single natural scroll column
             ═══════════════════════════════════════════════════════ */}
-        <div className="overflow-y-auto lg:hidden">
+		<div className="overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
           <div className="space-y-3 px-4 pb-6 sm:px-6">
 
             {error ? (
@@ -593,7 +593,7 @@ export default function CalendarPage() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1 min-h-0 overflow-y-auto p-4">
+				<div className="flex-1 min-h-0 overflow-y-auto p-4" style={{ background: 'var(--background)' }}>
                   {selectedTasks.length === 0 ? (
                     <EmptyState
                       compact

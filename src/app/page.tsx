@@ -24,8 +24,13 @@ import {
   MonitorSmartphone,
   Wind,
   ShieldCheck,
+  Lock,
+  MapPin,
+  Users,
+  Link2,
 } from 'lucide-react';
 
+// Feature cards — reordered by purchase priority (Themes last)
 const FEATURES = [
   {
     icon: ListTodo,
@@ -34,28 +39,28 @@ const FEATURES = [
     accent: 'bg-indigo-50 text-indigo-600',
   },
   {
-    icon: FolderOpen,
-    title: 'Projects',
-    desc: 'Group tasks into focused projects with support for sub-projects so your structure matches how you think.',
-    accent: 'bg-violet-50 text-violet-600',
-  },
-  {
     icon: Target,
     title: 'Goals',
     desc: 'Set long-term outcomes, track progress with linked tasks, and see your completion rate over time.',
     accent: 'bg-sky-50 text-sky-600',
   },
   {
-    icon: Kanban,
-    title: 'Kanban Board',
-    desc: 'Drag tasks across To Do → In Progress → Done. Visual workflow that stays in sync with your task list.',
-    accent: 'bg-emerald-50 text-emerald-600',
+    icon: FolderOpen,
+    title: 'Projects',
+    desc: 'Group tasks into focused projects with support for sub-projects so your structure matches how you think.',
+    accent: 'bg-violet-50 text-violet-600',
   },
   {
     icon: Repeat2,
     title: 'Routines',
     desc: 'Set up daily habits and recurring tasks that rebuild themselves automatically when completed.',
     accent: 'bg-amber-50 text-amber-600',
+  },
+  {
+    icon: Kanban,
+    title: 'Kanban Board',
+    desc: 'Drag tasks across To Do → In Progress → Done. Visual workflow that stays in sync with your task list.',
+    accent: 'bg-emerald-50 text-emerald-600',
   },
   {
     icon: CalendarDays,
@@ -145,6 +150,22 @@ const WHY_REASONS = [
   },
 ];
 
+const COMPARISON = [
+  { need: 'Task management',   other: 'Todoist / TickTick' },
+  { need: 'Goal tracking',     other: 'Separate app' },
+  { need: 'Recurring habits',  other: 'Habit tracker' },
+  { need: 'Project boards',    other: 'Trello / Asana' },
+  { need: 'Calendar view',     other: 'Calendar app' },
+  { need: 'Daily summary',     other: 'Another dashboard' },
+];
+
+const TRUST_BADGES = [
+  { icon: Lock,       label: 'HTTPS Encrypted' },
+  { icon: ShieldCheck, label: 'PDPA Compliant' },
+  { icon: MapPin,     label: 'Hosted in Singapore' },
+  { icon: Users,      label: 'Google & GitHub Auth' },
+];
+
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -155,9 +176,10 @@ export default async function LandingPage() {
 
       {/* ── Beta banner ──────────────────────────────────────── */}
       <div className="border-b border-indigo-100 bg-indigo-50 py-2.5 text-center text-xs font-medium text-indigo-700">
-        <Gift className="inline h-3.5 w-3.5 align-middle mr-1" /> <span className="font-semibold">Beta offer:</span> Sign up now and get your first month of Pro{' '}
-        <span className="font-bold text-indigo-900">completely free</span> — no credit card required.
-        <Link href="/auth/login" className="ml-2 font-semibold underline underline-offset-2 hover:text-indigo-900">
+        <Gift className="inline h-3.5 w-3.5 align-middle mr-1" />
+        <span className="font-semibold">Beta offer:</span>{' '}
+        Lock in <span className="font-bold text-indigo-900">RM15/mo forever</span> — beta pricing ends at launch.{' '}
+        <Link href="/auth/login" className="ml-1 font-semibold underline underline-offset-2 hover:text-indigo-900">
           Claim it →
         </Link>
       </div>
@@ -173,6 +195,9 @@ export default async function LandingPage() {
             <Link href="#features" className="hidden text-sm text-slate-500 transition-colors hover:text-slate-900 sm:block">
               Features
             </Link>
+            <Link href="#compare" className="hidden text-sm text-slate-500 transition-colors hover:text-slate-900 sm:block">
+              Compare
+            </Link>
             <Link href="#pricing" className="hidden text-sm text-slate-500 transition-colors hover:text-slate-900 sm:block">
               Pricing
             </Link>
@@ -183,7 +208,7 @@ export default async function LandingPage() {
               href="/auth/login"
               className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600/95 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 ring-1 ring-indigo-400/30 backdrop-blur-sm transition-all hover:bg-indigo-500"
             >
-              Get started
+              Get started free
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </nav>
@@ -191,22 +216,22 @@ export default async function LandingPage() {
       </header>
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 text-center sm:px-6 sm:pt-24">
+      <section className="mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-xs font-semibold text-indigo-700">
           <Sparkles className="h-3.5 w-3.5" />
           Now in beta — free Pro month for early users
         </div>
 
         <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-          Stop juggling apps.{' '}
+          Tasks, goals, routines, and projects —{' '}
           <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-            One workspace
+            organized in one place
           </span>{' '}
-          for tasks, goals & projects.
+          so you can focus on execution.
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-          Optimaz brings your daily to-dos, long-term goals, recurring routines, and project boards together in one calm, focused space. Less switching, more doing.
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-slate-500 sm:text-lg">
+          Built for people who want to get things done, not manage software. Trusted by students, freelancers, and founders organizing thousands of tasks during beta.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -218,14 +243,114 @@ export default async function LandingPage() {
             Start free — 1 month Pro included
           </Link>
           <Link
-            href="#pricing"
+            href="#compare"
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-600 shadow-sm transition-all hover:border-slate-300 hover:text-slate-900 sm:w-auto"
           >
-            See pricing →
+            See how it compares →
           </Link>
         </div>
 
-        <p className="mt-4 text-xs text-slate-400">No credit card needed. Beta users get Pro free for 30 days.</p>
+        <p className="mt-4 text-xs text-slate-400">No credit card needed. Beta pricing locks in at RM15/mo — rising to RM29/mo after launch.</p>
+      </section>
+
+      {/* ── Connected strip ───────────────────────────────────── */}
+      <section className="border-y border-slate-100 bg-slate-50 py-10">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Everything is connected
+          </p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center">
+            {[
+              { icon: ListTodo, label: 'Task', color: 'bg-indigo-100 text-indigo-700' },
+              { icon: FolderOpen, label: 'Project', color: 'bg-violet-100 text-violet-700' },
+              { icon: Target, label: 'Goal', color: 'bg-sky-100 text-sky-700' },
+              { icon: Repeat2, label: 'Routine', color: 'bg-amber-100 text-amber-700' },
+            ].map(({ icon: Icon, label, color }, i, arr) => (
+              <div key={label} className="flex items-center gap-3">
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-600">{label}</span>
+                </div>
+                {i < arr.length - 1 && (
+                  <Link2 className="h-4 w-4 shrink-0 text-slate-300 sm:rotate-0 rotate-90" />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Update a task — the linked project, goal, and routine stay in sync automatically.
+          </p>
+        </div>
+      </section>
+
+      {/* ── App preview mockup ────────────────────────────────── */}
+      <section className="py-16">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-[#0f0f16] shadow-2xl shadow-slate-900/20">
+            {/* Window chrome */}
+            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
+              <div className="h-3 w-3 rounded-full bg-red-500/70" />
+              <div className="h-3 w-3 rounded-full bg-amber-500/70" />
+              <div className="h-3 w-3 rounded-full bg-emerald-500/70" />
+              <span className="ml-3 text-xs font-medium text-white/30">optimaz.app/dashboard</span>
+            </div>
+            {/* Fake task list UI */}
+            <div className="flex">
+              {/* Sidebar strip */}
+              <div className="hidden w-48 border-r border-white/5 p-4 sm:block">
+                <div className="mb-4 flex items-center gap-2">
+                  <img src="/icon-192x192.png" alt="" className="h-6 w-6 rounded-lg" />
+                  <span className="text-xs font-bold text-white/80">Optimaz</span>
+                </div>
+                {['Dashboard', 'Tasks', 'Projects', 'Goals', 'Kanban', 'Calendar', 'Routines'].map((item, i) => (
+                  <div
+                    key={item}
+                    className={`mb-1 rounded-lg px-3 py-1.5 text-xs font-medium ${i === 1 ? 'bg-indigo-600/80 text-white' : 'text-white/40'}`}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+              {/* Main content */}
+              <div className="flex-1 p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-white/80">Today&apos;s Tasks</span>
+                  <span className="rounded-full bg-indigo-600/40 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-300">6 tasks</span>
+                </div>
+                {[
+                  { title: 'Finish landing page redesign', priority: 'bg-red-500', done: true, project: 'Launch' },
+                  { title: 'Review onboarding flow', priority: 'bg-amber-500', done: false, project: 'Product' },
+                  { title: 'Write weekly update email', priority: 'bg-indigo-500', done: false, project: 'Marketing' },
+                  { title: 'Sync with design team', priority: 'bg-slate-500', done: false, project: 'Team' },
+                ].map(({ title, priority, done, project }) => (
+                  <div key={title} className="mb-2 flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-2.5">
+                    <div className={`h-3 w-3 shrink-0 rounded-full border-2 ${done ? 'border-emerald-400 bg-emerald-500' : 'border-white/20'}`} />
+                    <span className={`flex-1 text-xs font-medium ${done ? 'text-white/30 line-through' : 'text-white/80'}`}>{title}</span>
+                    <div className={`h-2 w-2 shrink-0 rounded-full ${priority}`} />
+                    <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/30">{project}</span>
+                  </div>
+                ))}
+                <div className="mt-4 flex gap-3">
+                  <div className="flex-1 rounded-xl border border-white/5 bg-white/5 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Streak</p>
+                    <p className="mt-1 text-2xl font-black text-indigo-400">14 🔥</p>
+                  </div>
+                  <div className="flex-1 rounded-xl border border-white/5 bg-white/5 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Done today</p>
+                    <p className="mt-1 text-2xl font-black text-emerald-400">3/6</p>
+                  </div>
+                  <div className="flex-1 rounded-xl border border-white/5 bg-white/5 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Active goals</p>
+                    <p className="mt-1 text-2xl font-black text-sky-400">4</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="mt-3 text-center text-xs text-slate-400">Dashboard overview — tasks, streak, and active goals in one view</p>
+        </div>
       </section>
 
       {/* ── Features ─────────────────────────────────────────── */}
@@ -282,8 +407,50 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ── Comparison ───────────────────────────────────────── */}
+      <section id="compare" className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Replace 5 apps with one
+            </h2>
+            <p className="mt-3 text-slate-500">
+              Most people piece together productivity from multiple tools. Optimaz brings it all together.
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Your need</th>
+                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Separate apps</th>
+                  <th className="px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-widest text-indigo-600">Optimaz</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARISON.map(({ need, other }, i) => (
+                  <tr key={need} className={`border-b border-slate-50 ${i % 2 === 0 ? '' : 'bg-slate-50/50'}`}>
+                    <td className="px-5 py-3.5 font-medium text-slate-700">{need}</td>
+                    <td className="px-5 py-3.5 text-slate-400">{other}</td>
+                    <td className="px-5 py-3.5 text-center">
+                      <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                        <Check className="mr-1 h-3 w-3" /> Included
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-center text-xs text-slate-400">
+            One account. One interface. One monthly cost — or free forever on the Free plan.
+          </p>
+        </div>
+      </section>
+
       {/* ── How it works ─────────────────────────────────────── */}
-      <section className="bg-slate-50 py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -306,8 +473,40 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ── Push notification highlight ──────────────────────── */}
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid gap-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm sm:grid-cols-2 sm:items-center sm:p-12">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                <Bell className="h-3.5 w-3.5" />
+                Smart Reminders
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                Never miss a deadline again
+              </h2>
+              <p className="mt-3 leading-7 text-slate-500">
+                Optimaz sends push notifications to your phone before tasks are due. Set time-aware reminders, get daily digests, and stay on top of overdue items — even when the app is closed.
+              </p>
+            </div>
+            <div className="space-y-3">
+              {[
+                { icon: Clock, text: 'Task due reminders (15 min, 1 hour, same day)', color: 'text-amber-500' },
+                { icon: ClipboardList, text: 'Daily morning digest of your day ahead', color: 'text-indigo-500' },
+                { icon: AlertCircle, text: 'Overdue task alerts so nothing slips through', color: 'text-red-500' },
+              ].map(({ icon: Icon, text, color }) => (
+                <div key={text} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  <Icon className={`h-5 w-5 shrink-0 ${color}`} />
+                  {text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Pricing ──────────────────────────────────────────── */}
-      <section id="pricing" className="bg-slate-50 py-20">
+      <section id="pricing" className="py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -361,20 +560,22 @@ export default async function LandingPage() {
               <div className="mb-6 mt-2">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold uppercase tracking-widest text-indigo-600">Pro</p>
-                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-700">Most Popular</span>
+                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-700">Best Value</span>
                 </div>
                 <div className="mt-3 flex items-baseline gap-1.5">
-                  <span className="text-base font-semibold text-slate-400 line-through">RM 15</span>
-                  <span className="ml-1 text-5xl font-black text-slate-900">RM 0</span>
-                  <span className="text-slate-400">/first mo</span>
+                  <span className="text-base font-semibold text-slate-400 line-through">RM 29</span>
+                  <span className="ml-1 text-5xl font-black text-slate-900">RM 15</span>
+                  <span className="text-slate-400">/mo</span>
                 </div>
-                <p className="mt-1 text-xs font-medium text-indigo-600">then RM 15/mo — cancel any time</p>
+                <p className="mt-1 text-xs font-medium text-indigo-600">Beta pricing — lock it in before launch.{' '}
+                  <span className="font-bold text-indigo-700">Price rises to RM 29 after.</span>
+                </p>
               </div>
               <Link
                 href="/auth/login"
                 className="mb-7 block w-full rounded-xl bg-indigo-600 py-3 text-center text-sm font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:bg-indigo-500"
               >
-                Claim free month
+                Claim free month + lock beta rate
               </Link>
               <ul className="space-y-2.5">
                 {PRO_FEATURES.map((f, i) => (
@@ -388,39 +589,37 @@ export default async function LandingPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-slate-400">
-            Beta pricing is subject to change. Existing users keep their current rate.
+            Beta users who sign up now keep RM15/mo forever. After launch the Pro plan will be RM29/mo.
           </p>
         </div>
       </section>
 
-      {/* ── Push notification highlight ──────────────────────── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid gap-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm sm:grid-cols-2 sm:items-center sm:p-12">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-                <Bell className="h-3.5 w-3.5" />
-                Smart Reminders
+      {/* ── Founder Story ────────────────────────────────────── */}
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+          <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-200">
+            <img src="/icon-192x192.png" alt="Optimaz" className="h-10 w-10 rounded-xl" />
+          </div>
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+            Why we built Optimaz
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
+            We were tired of managing tasks in Todoist, goals in Notion, habits in a separate tracker, and projects in Trello — switching between four different apps just to understand our own work. Optimaz was built to bring everything into one focused workspace where a task can belong to a project, link to a goal, and reset as a routine. One place for your entire work life.
+          </p>
+          <p className="mt-3 text-sm font-semibold text-slate-900">— The Optimaz team, Mavora Digital · Malaysia</p>
+        </div>
+      </section>
+
+      {/* ── Trust badges ─────────────────────────────────────── */}
+      <section className="py-12">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {TRUST_BADGES.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-4 py-4 text-center">
+                <Icon className="h-5 w-5 text-indigo-500" />
+                <span className="text-xs font-semibold text-slate-600">{label}</span>
               </div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-                Never miss a deadline again
-              </h2>
-              <p className="mt-3 leading-7 text-slate-500">
-                Optimaz sends push notifications to your phone before tasks are due. Set time-aware reminders, get daily digests, and stay on top of overdue items — even when the app is closed.
-              </p>
-            </div>
-            <div className="space-y-3">
-              {[
-                { icon: Clock, text: 'Task due reminders (15 min, 1 hour, same day)', color: 'text-amber-500' },
-                { icon: ClipboardList, text: 'Daily morning digest of your day ahead', color: 'text-indigo-500' },
-                { icon: AlertCircle, text: 'Overdue task alerts so nothing slips through', color: 'text-red-500' },
-              ].map(({ icon: Icon, text, color }) => (
-                <div key={text} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <Icon className={`h-5 w-5 shrink-0 ${color}`} />
-                  {text}
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -430,13 +629,13 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-2xl px-4 sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white">
             <Sparkles className="h-3.5 w-3.5" />
-            Limited time beta offer
+            Beta pricing locks in today
           </div>
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            Join the beta. Get Pro free.
+            Stop managing apps. Start getting things done.
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-indigo-100">
-            Sign in with Google and unlock 30 days of Pro — Kanban, routines, reminders, all themes, and analytics. No card, no catch.
+            Join beta users who replaced 5 different tools with one focused workspace. First month free, then RM15/mo — locked in before the price rises to RM29.
           </p>
           <Link
             href="/auth/login"
@@ -461,6 +660,7 @@ export default async function LandingPage() {
             </div>
             <div className="flex items-center gap-6">
               <Link href="#features" className="transition-colors hover:text-slate-700">Features</Link>
+              <Link href="#compare" className="transition-colors hover:text-slate-700">Compare</Link>
               <Link href="#pricing" className="transition-colors hover:text-slate-700">Pricing</Link>
               <Link href="/privacy" className="transition-colors hover:text-slate-700">Privacy</Link>
               <Link href="/terms" className="transition-colors hover:text-slate-700">Terms</Link>

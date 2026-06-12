@@ -7,14 +7,14 @@ import { cn } from '@/lib/utils';
 import { useProjects } from '@/hooks/use-projects';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Today', icon: LayoutDashboard },
-  { href: '/tasks', label: 'Tasks', icon: ListTodo },
-  { href: '/calendar', label: 'Calendar', icon: CalendarDays },
-  { href: '/goals', label: 'Goals', icon: Target },
-  { href: '/routines', label: 'Routines', icon: Repeat2 },
-  { href: '/kanban', label: 'Kanban', icon: Kanban },
-  { href: '/projects', label: 'Projects', icon: FolderOpen },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/dashboard', label: 'Today', icon: LayoutDashboard, description: "View today's tasks, streak & daily stats" },
+  { href: '/tasks', label: 'Tasks', icon: ListTodo, description: 'Manage and organize all your tasks' },
+  { href: '/calendar', label: 'Calendar', icon: CalendarDays, description: 'Timeline view of all scheduled tasks' },
+  { href: '/goals', label: 'Goals', icon: Target, description: 'Track long-term goals & milestones' },
+  { href: '/routines', label: 'Routines', icon: Repeat2, description: 'Daily recurring habits & routines' },
+  { href: '/kanban', label: 'Kanban', icon: Kanban, description: 'Visual board for your task workflow' },
+  { href: '/projects', label: 'Projects', icon: FolderOpen, description: 'Organize tasks by project' },
+  { href: '/settings', label: 'Settings', icon: Settings, description: 'Preferences & account settings' },
 ];
 
 
@@ -71,51 +71,70 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
 
         {/* Nav */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4 md:px-3">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ href, label, icon: Icon, description }) => {
             const active = pathname === href;
             return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3 md:py-2.5',
-                )}
-                style={active ? {
-                  background: 'var(--muted-bg)',
-                  color: 'var(--foreground)',
-                } : {
-                  color: 'var(--muted-fg)',
-                }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
-                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = '';
-                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted-fg)';
-                  }
-                }}
-                onClick={() => setOpen(false)}
-              >
-                <span
+              <div key={href} className="group relative">
+                <Link
+                  href={href}
                   className={cn(
-                    'flex h-6 w-6 items-center justify-center rounded-lg transition-all md:h-7 md:w-7',
+                    'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3 md:py-2.5',
                   )}
                   style={active ? {
-                    background: 'rgb(var(--accent))',
-                    color: '#ffffff',
-                    boxShadow: '0 1px 3px rgb(var(--accent) / 0.4)',
+                    background: 'var(--muted-bg)',
+                    color: 'var(--foreground)',
                   } : {
                     color: 'var(--muted-fg)',
                   }}
+                  onMouseEnter={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                      (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLAnchorElement).style.background = '';
+                      (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted-fg)';
+                    }
+                  }}
+                  onClick={() => setOpen(false)}
                 >
-                  <Icon className="h-4 w-4" />
-                </span>
-                {label}
-              </Link>
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 items-center justify-center rounded-lg transition-all md:h-7 md:w-7',
+                    )}
+                    style={active ? {
+                      background: 'rgb(var(--accent))',
+                      color: '#ffffff',
+                      boxShadow: '0 1px 3px rgb(var(--accent) / 0.4)',
+                    } : {
+                      color: 'var(--muted-fg)',
+                    }}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  {label}
+                </Link>
+
+                {/* Hover tooltip */}
+                <div
+                  className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl border bg-white px-3 py-2 shadow-lg opacity-0 transition-all duration-150 group-hover:opacity-100 dark:bg-slate-900"
+                  style={{ borderColor: 'var(--card-border)' }}
+                >
+                  <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>{label}</p>
+                  <p className="mt-0.5 text-[11px] leading-snug" style={{ color: 'var(--muted-fg)' }}>{description}</p>
+                  {/* Arrow */}
+                  <div
+                    className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent"
+                    style={{ borderRightColor: 'var(--card-border)' }}
+                  />
+                  <div
+                    className="absolute right-full top-1/2 mr-px -translate-y-1/2 border-4 border-transparent"
+                    style={{ borderRightColor: 'var(--background)' }}
+                  />
+                </div>
+              </div>
             );
           })}
 

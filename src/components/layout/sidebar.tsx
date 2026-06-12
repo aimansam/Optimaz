@@ -131,7 +131,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         <div className="shrink-0 border-t border-slate-200/80 px-4 py-3 dark:border-slate-800/80">
           <div className="flex items-center justify-between">
             <p className="text-[10px] text-slate-400 dark:text-slate-600">
-              © {new Date().getFullYear()} Optimaz
+              © {new Date().getFullYear()} Mavora Digital
             </p>
             {process.env.NEXT_PUBLIC_APP_VERSION && (
               <span className="text-[10px] text-slate-300 dark:text-slate-700">

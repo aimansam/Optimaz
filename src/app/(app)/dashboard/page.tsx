@@ -56,7 +56,6 @@ export default function DashboardPage() {
 	const updateOnboarding = useUpdateUser();
 	const [addOpen, setAddOpen] = useState(false);
 	const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
-	const [showGoalFocus, setShowGoalFocus] = useState(false);
 	const [showAnalytics, setShowAnalytics] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
 	const currentTime = currentDate?.getTime() ?? 0;
@@ -143,15 +142,6 @@ export default function DashboardPage() {
 				</button>
 				<button
 					type="button"
-					aria-label={showGoalFocus ? 'Hide Goal Focus' : 'Show Goal Focus'}
-					onClick={() => setShowGoalFocus(v => !v)}
-					className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showGoalFocus ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
-				>
-					<Target className="h-4 w-4" />
-					<span className="hidden sm:inline">Goals</span>
-				</button>
-				<button
-					type="button"
 					aria-label={showAnalytics ? 'Hide Filter' : 'Show Filter'}
 					onClick={() => setShowAnalytics(v => !v)}
 					className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
@@ -163,7 +153,7 @@ export default function DashboardPage() {
 		</div>
 	);
 
-	const goalFocusPanel = showGoalFocus && (
+	const goalFocusPanel = (
 		<div className="mt-4 space-y-3">
 			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Goal Focus</p>
 			<div className="grid grid-cols-3 gap-2">

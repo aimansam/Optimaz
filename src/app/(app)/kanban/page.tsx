@@ -190,7 +190,9 @@ export default function KanbanPage() {
     };
   }, [tasks]);
   const hasFilters = Boolean(trimmedQuery || projectFilter || goalId || priority || dueFilter !== 'all' || doneFilter !== 'show');
-  const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter !== 'show' ? doneFilter : ''].filter(Boolean).length;
+  // 'hide' (hide done tasks) is treated as a normal default view state, not a user-set filter.
+  // Only count doneFilter if it's 'done' (completed-only mode).
+  const activeFilterCount = [trimmedQuery, projectFilter, goalId, priority, dueFilter !== 'all' ? dueFilter : '', doneFilter === 'done' ? doneFilter : ''].filter(Boolean).length;
 
   function resetFilters() {
     setQuery('');

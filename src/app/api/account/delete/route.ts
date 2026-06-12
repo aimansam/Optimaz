@@ -43,7 +43,6 @@ export async function DELETE(request: NextRequest) {
     admin.from('app_errors').delete().eq('user_id', user.id),
     admin.from('saved_views').delete().eq('user_id', user.id),
     admin.from('beta_access').delete().eq('user_id', user.id),
-    admin.from('task_completion_archive').delete().eq('user_id', user.id),
     // Remove waitlist entry if it was their email
     ...(user.email
       ? [admin.from('pricing_waitlist').delete().eq('email', user.email)]

@@ -123,34 +123,42 @@ export default function DashboardPage() {
 	// ── Shared sub-components rendered in both layouts ──────────
 
 	const topBar = (
-		<div className="shrink-0 flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-6">
-			<div>
-				<p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-					{weekday} &middot; {dateStr}
-				</p>
-				<h2 className="mt-0.5 text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
-					{greeting}{firstName ? `, ${firstName}` : ''}
-				</h2>
-			</div>
-			<div className="flex items-center gap-2">
-				<button
-					type="button"
-					aria-label="Add Task"
-					onClick={() => setAddOpen(true)}
-					className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-				>
-					<Plus className="h-4 w-4" />
-					<span className="hidden sm:inline">Add Task</span>
-				</button>
-				<button
-					type="button"
-					aria-label={showAnalytics ? 'Hide Filter' : 'Show Filter'}
-					onClick={() => setShowAnalytics(v => !v)}
-					className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
-				>
-					<BarChart3 className="h-4 w-4" />
-					<span className="hidden sm:inline">Filter</span>
-				</button>
+		<div className="shrink-0 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-6">
+			<div className="flex items-start justify-between gap-4">
+				{/* Left: date, greeting + streak pill, quote */}
+				<div className="min-w-0">
+					<p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
+						{weekday} &middot; {dateStr}
+					</p>
+					<div className="mt-0.5 flex flex-wrap items-center gap-2">
+						<h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
+							{greeting}{firstName ? `, ${firstName}` : ''}
+						</h2>
+						<TaskStreak tasks={allTasks ?? []} inline />
+					</div>
+					<MotivationQuote inline />
+				</div>
+				{/* Right: action buttons */}
+				<div className="flex shrink-0 items-center gap-2 pt-0.5">
+					<button
+						type="button"
+						aria-label="Add Task"
+						onClick={() => setAddOpen(true)}
+						className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+					>
+						<Plus className="h-4 w-4" />
+						<span className="hidden sm:inline">Add Task</span>
+					</button>
+					<button
+						type="button"
+						aria-label={showAnalytics ? 'Hide Filter' : 'Show Filter'}
+						onClick={() => setShowAnalytics(v => !v)}
+						className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+					>
+						<BarChart3 className="h-4 w-4" />
+						<span className="hidden sm:inline">Filter</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	);
@@ -256,12 +264,6 @@ export default function DashboardPage() {
 					<DashboardStatsStrip compact />
 					<DashboardAnalytics />
 
-					{/* Streak + quote */}
-					<div className="space-y-2">
-						<TaskStreak tasks={allTasks ?? []} />
-						<MotivationQuote />
-					</div>
-
 					{/* Goal focus — compact 3-col grid */}
 					{goalFocusPanel}
 
@@ -297,10 +299,6 @@ export default function DashboardPage() {
 					<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
 						<DashboardStatsStrip compact />
 						<DashboardAnalytics />
-						<div className="mt-4 space-y-2">
-							<TaskStreak tasks={allTasks ?? []} />
-							<MotivationQuote />
-						</div>
 						{goalFocusPanel}
 					</aside>
 

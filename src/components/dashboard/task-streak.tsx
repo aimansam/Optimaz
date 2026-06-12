@@ -6,6 +6,7 @@ import type { Task } from '@/lib/types';
 
 interface TaskStreakProps {
   tasks: Task[];
+  inline?: boolean;
 }
 
 function getDateKey(dateStr: string): string {
@@ -70,28 +71,36 @@ function getStreakLabel(streak: number): string {
   return 'Legendary streak! 🏆';
 }
 
-export function TaskStreak({ tasks }: TaskStreakProps) {
+export function TaskStreak({ tasks, inline }: TaskStreakProps) {
   const streak = useMemo(() => calculateStreak(tasks), [tasks]);
   const label = getStreakLabel(streak);
 
+  // Inline mode — compact pill for use in header bar
+  if (inline) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+        <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-slate-400'}`} />
+        {streak} {streak === 1 ? 'day' : 'days'}
+      </span>
+    );
+  }
+
   return (
     <div className="rounded-xl border border-orange-100 bg-orange-50/50 p-3 dark:border-orange-900/30 dark:bg-orange-950/20">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/30">
-            <Flame className={`h-5 w-5 ${streak > 0 ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}`} />
+      <div className="flex items-center gap-2">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/30">
+          <Flame className={`h-5 w-5 ${streak > 0 ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}`} />
+        </div>
+        <div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{streak}</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {streak === 1 ? 'day' : 'days'}
+            </span>
           </div>
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{streak}</span>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                {streak === 1 ? 'day' : 'days'}
-              </span>
-            </div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-500 dark:text-orange-400">
-              Task streak
-            </p>
-          </div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-500 dark:text-orange-400">
+            Task streak
+          </p>
         </div>
       </div>
       <p className="mt-2 text-[10px] text-slate-500 dark:text-slate-400">{label}</p>

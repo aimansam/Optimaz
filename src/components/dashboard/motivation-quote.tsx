@@ -52,12 +52,27 @@ function getDayOfYear(date: Date): number {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-export function MotivationQuote() {
+interface MotivationQuoteProps {
+  inline?: boolean;
+}
+
+export function MotivationQuote({ inline }: MotivationQuoteProps = {}) {
   const quote = useMemo(() => {
     const today = new Date();
     const index = getDayOfYear(today) % QUOTES.length;
     return QUOTES[index];
   }, []);
+
+  // Inline mode — single italic line for use in header bar
+  if (inline) {
+    return (
+      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+        <Quote className="h-3 w-3 shrink-0 text-indigo-300 dark:text-indigo-700" />
+        <span className="italic">&ldquo;{quote.text}&rdquo;</span>
+        <span className="not-italic font-medium">— {quote.author}</span>
+      </p>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-3 dark:border-indigo-900/30 dark:bg-indigo-950/20">

@@ -9,6 +9,7 @@ import { DashboardAnalytics, DashboardStatsStrip } from '@/components/dashboard/
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
 import { MotivationQuote } from '@/components/dashboard/motivation-quote';
 import { TaskStreak } from '@/components/dashboard/task-streak';
+import { DailySummary } from '@/components/dashboard/daily-summary';
 import { TaskList } from '@/components/tasks/task-list';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Dialog } from '@/components/ui/dialog';
@@ -127,9 +128,9 @@ export default function DashboardPage() {
 			<div className="flex items-start justify-between gap-4">
 				{/* Left: date, greeting + streak pill, quote */}
 				<div className="min-w-0">
-					<p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-						{weekday} &middot; {dateStr}
-					</p>
+				<p className="text-xs font-semibold uppercase tracking-widest text-slate-400 sm:text-sm">
+					{weekday} &middot; {dateStr}
+				</p>
 					<div className="mt-0.5 flex flex-wrap items-center gap-2">
 						<h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
 							{greeting}{firstName ? `, ${firstName}` : ''}
@@ -140,11 +141,13 @@ export default function DashboardPage() {
 				</div>
 				{/* Right: action buttons */}
 				<div className="flex shrink-0 items-center gap-2 pt-0.5">
+					<DailySummary tasks={allTasks ?? []} todayTasks={todayTasks ?? []} goals={goals ?? []} />
 					<button
 						type="button"
 						aria-label="Add Task"
 						onClick={() => setAddOpen(true)}
-						className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+						className="inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+						style={{ background: 'rgb(var(--accent))' }}
 					>
 						<Plus className="h-4 w-4" />
 						<span className="hidden sm:inline">Add Task</span>
@@ -168,33 +171,33 @@ export default function DashboardPage() {
 			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Goal Focus</p>
 			<div className="grid grid-cols-3 gap-2">
 				<div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-800 dark:bg-slate-900">
-					<div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
-						<Target className="h-3 w-3 text-slate-400" />
-						Active
-					</div>
-					<p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
-					<p className="text-[9px] text-slate-400">Goals in motion</p>
+				<div className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+					<Target className="h-3 w-3 text-slate-400" />
+					Active
+				</div>
+				<p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
+				<p className="text-xs text-slate-400">Goals in motion</p>
 				</div>
 				<div className="rounded-xl border border-red-200 bg-red-50 p-2.5 dark:border-red-900/50 dark:bg-red-950/20">
-					<div className="flex items-center gap-1 text-[10px] font-semibold text-red-600 dark:text-red-300">
-						<AlertTriangle className="h-3 w-3" />
-						At risk
-					</div>
-					<p className="mt-1 text-lg font-bold text-red-600 dark:text-red-300">{atRiskGoals.length}</p>
-					<p className="text-[9px] text-red-500/80 dark:text-red-300/80">Past target</p>
+				<div className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-300">
+					<AlertTriangle className="h-3 w-3" />
+					At risk
+				</div>
+				<p className="mt-1 text-lg font-bold text-red-600 dark:text-red-300">{atRiskGoals.length}</p>
+				<p className="text-xs text-red-500/80 dark:text-red-300/80">Past target</p>
 				</div>
 				<div className="rounded-xl border border-amber-200 bg-amber-50 p-2.5 dark:border-amber-900/50 dark:bg-amber-950/20">
-					<div className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-300">
-						<AlertTriangle className="h-3 w-3" />
-						Urgent
-					</div>
-					<p className="mt-1 text-lg font-bold text-amber-600 dark:text-amber-300">{urgentGoalTasks.length}</p>
-					<p className="text-[9px] text-amber-600/80 dark:text-amber-300/80">Urgent tasks</p>
+				<div className="flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+					<AlertTriangle className="h-3 w-3" />
+					Urgent
+				</div>
+				<p className="mt-1 text-lg font-bold text-amber-600 dark:text-amber-300">{urgentGoalTasks.length}</p>
+				<p className="text-xs text-amber-600/80 dark:text-amber-300/80">Urgent tasks</p>
 				</div>
 			</div>
 			{nextGoals.length > 0 && (
 				<div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-					<p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Next outcomes</p>
+					<p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">Next outcomes</p>
 					<div className="space-y-1">
 						{nextGoals.map((goal) => {
 							const total = goal.tasks?.length ?? 0;
@@ -205,9 +208,9 @@ export default function DashboardPage() {
 									<span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
 									<span className="min-w-0 flex-1">
 										<span className="block truncate text-xs font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
-										<span className="block truncate text-[10px] text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
+										<span className="block truncate text-xs text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
 									</span>
-									<span className="shrink-0 text-[10px] font-semibold text-slate-400">{percent}%</span>
+									<span className="shrink-0 text-xs font-semibold text-slate-400">{percent}%</span>
 								</Link>
 							);
 						})}
@@ -296,11 +299,14 @@ export default function DashboardPage() {
 				<div className="hidden flex-1 min-h-0 lg:flex lg:flex-row lg:overflow-hidden">
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
-					<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
-						<DashboardStatsStrip compact />
-						<DashboardAnalytics />
-						{goalFocusPanel}
-					</aside>
+				<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
+					<DashboardStatsStrip compact />
+					<DashboardAnalytics />
+					{goalFocusPanel}
+					<div className="mt-4">
+						<TaskStreak tasks={allTasks ?? []} />
+					</div>
+				</aside>
 
 					{/* Right panel — task feeds */}
 					<div className="flex-1 min-h-0 flex flex-col overflow-hidden">

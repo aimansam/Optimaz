@@ -5,7 +5,7 @@ import { cn, PRIORITY_CONFIG, formatDate, isOverdue } from '@/lib/utils';
 import { getWeekdayLabel } from '@/lib/recurrence';
 import { Badge } from '@/components/ui/badge';
 import { TaskActions } from './task-actions';
-import { Dialog } from '@/components/ui/dialog';
+import { Drawer } from '@/components/ui/drawer';
 import { TaskForm } from './task-form';
 import { useUpdateTask } from '@/hooks/use-tasks';
 import type { Task } from '@/lib/types';
@@ -223,9 +223,9 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
         )}
     </div>
 
-    <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title="Task Details" className="min-h-0 sm:max-w-lg">
+    <Drawer open={detailOpen} onClose={() => setDetailOpen(false)} title="Task Details">
       <TaskForm task={task} onClose={() => setDetailOpen(false)} />
-    </Dialog>
+    </Drawer>
     </>
   );
 }

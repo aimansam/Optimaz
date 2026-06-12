@@ -120,16 +120,16 @@ export function DashboardStatsStrip({ compact }: { compact?: boolean }) {
         <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">This week</p>
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-2.5 text-center dark:bg-emerald-900/20 dark:border-emerald-900/40">
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{isLoading ? '…' : data?.completed ?? 0}</div>
-            <div className="text-[9px] font-semibold uppercase tracking-wide text-emerald-600/80 dark:text-emerald-400/80">Done</div>
+            <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{isLoading ? '…' : data?.completed ?? 0}</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/80 dark:text-emerald-400/80">Done</div>
           </div>
           <div className="rounded-xl bg-red-50 border border-red-100 p-2.5 text-center dark:bg-red-900/20 dark:border-red-900/40">
-            <div className="text-lg font-bold text-red-600 dark:text-red-400">{isLoading ? '…' : data?.overdue ?? 0}</div>
-            <div className="text-[9px] font-semibold uppercase tracking-wide text-red-500/80 dark:text-red-400/80">Overdue</div>
+            <div className="text-xl font-bold text-red-600 dark:text-red-400">{isLoading ? '…' : data?.overdue ?? 0}</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-red-500/80 dark:text-red-400/80">Overdue</div>
           </div>
           <div className="rounded-xl bg-amber-50 border border-amber-100 p-2.5 text-center dark:bg-amber-900/20 dark:border-amber-900/40">
-            <div className="text-lg font-bold text-amber-600 dark:text-amber-300">{isLoading ? '…' : data?.upcoming ?? 0}</div>
-            <div className="text-[9px] font-semibold uppercase tracking-wide text-amber-500/80 dark:text-amber-400/80">Soon</div>
+            <div className="text-xl font-bold text-amber-600 dark:text-amber-300">{isLoading ? '…' : data?.upcoming ?? 0}</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-500/80 dark:text-amber-400/80">Soon</div>
           </div>
         </div>
       </div>

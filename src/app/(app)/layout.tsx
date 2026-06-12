@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
+import { QuickAddFAB } from '@/components/layout/quick-add-fab';
 
 function getPageTitle(pathname: string) {
   if (pathname === '/dashboard') return 'Today';
@@ -31,6 +32,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
         {children}
       </main>
+      <QuickAddFAB />
     </div>
   );
 }

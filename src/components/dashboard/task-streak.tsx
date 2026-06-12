@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Flame } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Flame, Trophy } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 interface TaskStreakProps {
@@ -10,7 +10,6 @@ interface TaskStreakProps {
 }
 
 function getDateKey(dateStr: string): string {
-  // Normalize to YYYY-MM-DD
   return new Date(dateStr).toISOString().split('T')[0];
 }
 
@@ -25,8 +24,6 @@ function getYesterdayKey(): string {
 }
 
 function calculateStreak(tasks: Task[]): number {
-  // Get unique dates on which at least one task was completed
-  // Prefer completed_at (exact completion time), fall back to updated_at
   const doneTasks = tasks.filter(t => t.status === 'done');
   const completedDates = new Set(
     doneTasks.map(t => getDateKey(t.completed_at ?? t.updated_at))
@@ -37,15 +34,12 @@ function calculateStreak(tasks: Task[]): number {
   const today = getTodayKey();
   const yesterday = getYesterdayKey();
 
-  // Streak only counts if user completed something today OR yesterday (grace period)
   const hasRecentActivity = completedDates.has(today) || completedDates.has(yesterday);
   if (!hasRecentActivity) return 0;
 
-  // Walk backwards from today counting consecutive days
   let streak = 0;
   const cursor = new Date();
 
-  // If nothing done today, start counting from yesterday
   if (!completedDates.has(today)) {
     cursor.setDate(cursor.getDate() - 1);
   }
@@ -55,25 +49,105 @@ function calculateStreak(tasks: Task[]): number {
     if (!completedDates.has(key)) break;
     streak++;
     cursor.setDate(cursor.getDate() - 1);
-    // Safety limit — max 365 days
     if (streak >= 365) break;
   }
 
   return streak;
 }
 
+const MILESTONES = [7, 14, 30, 100, 365];
+const MILESTONE_KEY = 'streak_celebrated_milestone';
+
+function getNextMilestone(streak: number) {
+  return MILESTONES.find(m => m > streak) ?? null;
+}
+
+function getPrevMilestone(streak: number) {
+  return [...MILESTONES].reverse().find(m => m <= streak) ?? null;
+}
+
+function getStreakConfig(streak: number) {
+  if (streak === 0) return {
+    gradient: 'bg-slate-50 dark:bg-slate-800/50',
+    border: 'border-slate-200 dark:border-slate-700',
+    numberColor: 'text-slate-400 dark:text-slate-500',
+    flameClass: 'text-slate-300',
+    barColor: 'bg-slate-200 dark:bg-slate-700',
+    labelColor: 'text-slate-400',
+  };
+  if (streak < 7) return {
+    gradient: 'bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-amber-950/50 dark:via-orange-950/40 dark:to-yellow-950/30',
+    border: 'border-amber-200 dark:border-amber-800/60',
+    numberColor: 'text-amber-700 dark:text-amber-300',
+    flameClass: 'text-amber-500',
+    barColor: 'bg-amber-400',
+    labelColor: 'text-amber-600 dark:text-amber-400',
+  };
+  if (streak < 30) return {
+    gradient: 'bg-gradient-to-br from-orange-50 via-red-50 to-rose-50 dark:from-orange-950/50 dark:via-red-950/40 dark:to-rose-950/30',
+    border: 'border-orange-300 dark:border-orange-800/60',
+    numberColor: 'text-orange-600 dark:text-orange-300',
+    flameClass: 'text-orange-500',
+    barColor: 'bg-orange-500',
+    labelColor: 'text-orange-600 dark:text-orange-400',
+  };
+  return {
+    gradient: 'bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 dark:from-red-950/60 dark:via-rose-950/50 dark:to-pink-950/30',
+    border: 'border-red-300 dark:border-red-800/60',
+    numberColor: 'text-red-600 dark:text-red-300',
+    flameClass: 'text-red-500',
+    barColor: 'bg-red-500',
+    labelColor: 'text-red-600 dark:text-red-400',
+  };
+}
+
 function getStreakLabel(streak: number): string {
-  if (streak === 0) return 'Start your streak today!';
+  if (streak === 0) return 'Complete a task to start your streak!';
   if (streak === 1) return 'Great start — come back tomorrow!';
   if (streak < 5) return 'Building momentum!';
-  if (streak < 10) return 'You\'re on a roll!';
-  if (streak < 30) return 'On fire! Keep going!';
-  return 'Legendary streak! 🏆';
+  if (streak < 10) return "You're on a roll!";
+  if (streak < 30) return 'On fire! Keep going! 🔥';
+  if (streak < 100) return 'Legendary consistency! 🏆';
+  return 'Hall of fame status! 👑';
+}
+
+function MilestoneBanner({ streak, onDismiss }: { streak: number; onDismiss: () => void }) {
+  const milestone = getPrevMilestone(streak);
+  if (!milestone) return null;
+
+  const messages: Record<number, string> = {
+    7: '🔥 7-day streak! You\'re on fire!',
+    14: '⚡ 2 weeks strong! Incredible!',
+    30: '🏆 30-day streak! You\'re a legend!',
+    100: '👑 100 DAYS! Absolutely elite!',
+    365: '🌟 One full year! Hall of fame!',
+  };
+
+  return (
+    <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-orange-200 dark:bg-slate-900/80 dark:ring-orange-700/50 animate-bounce">
+      <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{messages[milestone]}</span>
+      <button onClick={onDismiss} className="text-xs text-orange-400 hover:text-orange-600 dark:text-orange-500">✕</button>
+    </div>
+  );
 }
 
 export function TaskStreak({ tasks, inline }: TaskStreakProps) {
   const streak = useMemo(() => calculateStreak(tasks), [tasks]);
   const label = getStreakLabel(streak);
+  const [showMilestone, setShowMilestone] = useState(false);
+
+  // Detect uncelebrated milestones
+  useEffect(() => {
+    if (typeof window === 'undefined' || streak === 0) return;
+    const lastCelebrated = Number(localStorage.getItem(MILESTONE_KEY) ?? '0');
+    const prevMilestone = getPrevMilestone(streak);
+    if (prevMilestone && prevMilestone > lastCelebrated) {
+      setShowMilestone(true);
+      localStorage.setItem(MILESTONE_KEY, String(prevMilestone));
+      const timer = setTimeout(() => setShowMilestone(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [streak]);
 
   // Inline mode — compact pill for use in header bar
   if (inline) {
@@ -85,25 +159,74 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
     );
   }
 
+  const cfg = getStreakConfig(streak);
+  const nextMilestone = getNextMilestone(streak);
+  const prevMilestone = getPrevMilestone(streak) ?? 0;
+  const progressToNext = nextMilestone
+    ? Math.round(((streak - prevMilestone) / (nextMilestone - prevMilestone)) * 100)
+    : 100;
+
   return (
-    <div className="rounded-xl border border-orange-100 bg-orange-50/50 p-3 dark:border-orange-900/30 dark:bg-orange-950/20">
-      <div className="flex items-center gap-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/30">
-          <Flame className={`h-5 w-5 ${streak > 0 ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}`} />
-        </div>
+    <div className={`rounded-xl border p-4 ${cfg.gradient} ${cfg.border}`}>
+      {showMilestone && (
+        <MilestoneBanner streak={streak} onDismiss={() => setShowMilestone(false)} />
+      )}
+
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: number + label */}
         <div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{streak}</span>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <div className="flex items-baseline gap-1.5">
+            <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
+              {streak}
+            </span>
+            <span className={`text-sm font-bold ${cfg.labelColor}`}>
               {streak === 1 ? 'day' : 'days'}
             </span>
           </div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-500 dark:text-orange-400">
+          <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
             Task streak
           </p>
         </div>
+
+        {/* Right: flame icon */}
+        <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
+          <Flame
+            className={`h-8 w-8 ${cfg.flameClass} ${streak > 0 ? 'drop-shadow-sm' : ''}`}
+            style={streak >= 30 ? { filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' } : streak >= 7 ? { filter: 'drop-shadow(0 0 4px rgba(249,115,22,0.4))' } : undefined}
+          />
+          {streak >= 30 && (
+            <Trophy className="absolute -bottom-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-sm" />
+          )}
+        </div>
       </div>
-      <p className="mt-2 text-[10px] text-slate-500 dark:text-slate-400">{label}</p>
+
+      {/* Motivational label */}
+      <p className={`mt-2 text-xs font-medium ${cfg.labelColor}`}>{label}</p>
+
+      {/* Progress to next milestone */}
+      {nextMilestone && (
+        <div className="mt-3">
+          <div className="mb-1 flex items-center justify-between">
+            <span className={`text-[10px] font-semibold ${cfg.labelColor} opacity-80`}>
+              Next milestone: {nextMilestone} days
+            </span>
+            <span className={`text-[10px] font-bold ${cfg.labelColor}`}>
+              {nextMilestone - streak} to go
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${cfg.barColor}`}
+              style={{ width: `${Math.max(progressToNext, 4)}%` }}
+            />
+          </div>
+        </div>
+      )}
+      {!nextMilestone && streak > 0 && (
+        <p className={`mt-2 text-[10px] font-semibold ${cfg.labelColor}`}>
+          🏆 Maximum milestone reached! You're a legend.
+        </p>
+      )}
     </div>
   );
 }

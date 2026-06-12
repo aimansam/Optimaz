@@ -16,7 +16,7 @@ const sections: Section[] = [
     title: '2. Data We Collect',
     body: 'We collect the following types of information:',
     items: [
-      'Account information — your name and email address provided via Google Sign-In',
+      'Account information — your email address (and name where available) when you sign in via Google, GitHub, or email',
       'Workspace content — tasks, subtasks, projects, goals, routines, notes, due dates, and settings you create in the app',
       'Usage data — product events such as task creation and feature usage to understand how the app is used',
       'Feedback — messages, category, and page path when you submit feedback',
@@ -51,14 +51,15 @@ const sections: Section[] = [
     body: 'We share data only with trusted service providers who process it solely to run Optimaz:',
     items: [
       'Google — OAuth authentication provider',
-      'Supabase (Supabase Inc., USA) — database and authentication infrastructure',
+      'GitHub — OAuth authentication provider',
+      'Supabase (Supabase Inc.) — database and authentication infrastructure, hosted in Singapore (ap-southeast-1)',
       'Vercel (Vercel Inc., USA) — hosting and serverless functions',
       'Resend (Resend Inc., USA) — transactional email delivery',
     ],
   },
   {
     title: '6. International Data Transfers',
-    body: 'Optimaz uses cloud infrastructure based in the United States (Supabase, Vercel, Resend). By using Optimaz, you acknowledge that your personal data may be transferred to and processed in the United States. These transfers are made with appropriate safeguards in place, including contractual clauses and compliance with applicable privacy laws.',
+    body: 'Optimaz uses cloud infrastructure in Singapore (Supabase) and the United States (Vercel, Resend). By using Optimaz, you acknowledge that your personal data may be transferred to and processed in these countries. Transfers are made with appropriate safeguards in place, including contractual clauses and compliance with applicable privacy laws.',
   },
   {
     title: '7. Data Retention',

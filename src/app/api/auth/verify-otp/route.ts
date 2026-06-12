@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { sendWelcomeEmail } from '@/lib/welcome-email';
 import crypto from 'crypto';
 
 const MAX_ATTEMPTS = 5; // ban after this many wrong guesses
@@ -93,6 +94,8 @@ export async function POST(req: NextRequest) {
       }
 
       userId = newUser.user.id;
+      // Send welcome email (fire-and-forget — don't block the sign-in response)
+      sendWelcomeEmail(normalised).catch(() => {});
     }
 
     // --- Generate a magic link / session token for the user ---

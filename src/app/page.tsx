@@ -20,6 +20,10 @@ import {
   Clock,
   ClipboardList,
   AlertCircle,
+  Layers,
+  MonitorSmartphone,
+  Wind,
+  ShieldCheck,
 } from 'lucide-react';
 
 const FEATURES = [
@@ -114,6 +118,33 @@ const PRO_FEATURES = [
   'Priority support',
 ];
 
+const WHY_REASONS = [
+  {
+    icon: Layers,
+    title: 'Everything connected',
+    desc: 'Tasks link to goals, projects, and routines. No more jumping between four different apps to understand your day.',
+    accent: 'bg-indigo-50 text-indigo-600',
+  },
+  {
+    icon: MonitorSmartphone,
+    title: 'Works on every device',
+    desc: 'No app store. No download. Installs as a PWA on iPhone, Android, and desktop in under 10 seconds.',
+    accent: 'bg-violet-50 text-violet-600',
+  },
+  {
+    icon: Wind,
+    title: 'Quiet by design',
+    desc: 'No social feeds, no algorithm, no noise. A focused workspace built for deep work and calm thinking.',
+    accent: 'bg-sky-50 text-sky-600',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Your data, your rules',
+    desc: 'Export everything at any time. Delete your account with one click. PDPA compliant. Hosted in Singapore.',
+    accent: 'bg-emerald-50 text-emerald-600',
+  },
+];
+
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -150,7 +181,7 @@ export default async function LandingPage() {
             </Link>
             <Link
               href="/auth/login"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600/95 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 ring-1 ring-indigo-400/30 backdrop-blur-sm transition-all hover:bg-indigo-500"
             >
               Get started
               <ArrowRight className="h-3.5 w-3.5" />
@@ -181,7 +212,7 @@ export default async function LandingPage() {
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/auth/login"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:bg-indigo-500 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600/95 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-indigo-500/30 ring-1 ring-indigo-400/30 backdrop-blur-sm transition-all hover:bg-indigo-500 sm:w-auto"
           >
             <Zap className="h-4 w-4" />
             Start free — 1 month Pro included
@@ -224,8 +255,35 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── How it works ─────────────────────────────────────── */}
+      {/* ── Why Optimaz ──────────────────────────────────────── */}
       <section className="py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Why Optimaz?
+            </h2>
+            <p className="mt-3 text-slate-500">Four reasons people make it their default workspace.</p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {WHY_REASONS.map(({ icon: Icon, title, desc, accent }) => (
+              <div
+                key={title}
+                className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-slate-300"
+              >
+                <div className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl ${accent}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mb-2 text-sm font-semibold text-slate-900">{title}</h3>
+                <p className="text-xs leading-5 text-slate-500">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ─────────────────────────────────────── */}
+      <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -382,7 +440,7 @@ export default async function LandingPage() {
           </p>
           <Link
             href="/auth/login"
-            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold text-indigo-700 shadow-lg shadow-indigo-900/25 transition-all hover:bg-indigo-50"
+            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white/15 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-900/30 ring-1 ring-white/30 backdrop-blur-md transition-all hover:bg-white/25"
           >
             <Zap className="h-4 w-4" />
             Start free — claim your Pro month

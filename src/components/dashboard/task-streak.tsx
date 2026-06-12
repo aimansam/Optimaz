@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Flame, Trophy } from 'lucide-react';
+import { Flame, Trophy, Zap, Crown, Star, X } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 interface TaskStreakProps {
@@ -106,27 +106,36 @@ function getStreakLabel(streak: number): string {
   if (streak === 1) return 'Great start — come back tomorrow!';
   if (streak < 5) return 'Building momentum!';
   if (streak < 10) return "You're on a roll!";
-  if (streak < 30) return 'On fire! Keep going! 🔥';
-  if (streak < 100) return 'Legendary consistency! 🏆';
-  return 'Hall of fame status! 👑';
+  if (streak < 30) return 'On fire! Keep going!';
+  if (streak < 100) return 'Legendary consistency!';
+  return 'Hall of fame status!';
 }
 
 function MilestoneBanner({ streak, onDismiss }: { streak: number; onDismiss: () => void }) {
   const milestone = getPrevMilestone(streak);
   if (!milestone) return null;
 
-  const messages: Record<number, string> = {
-    7: '🔥 7-day streak! You\'re on fire!',
-    14: '⚡ 2 weeks strong! Incredible!',
-    30: '🏆 30-day streak! You\'re a legend!',
-    100: '👑 100 DAYS! Absolutely elite!',
-    365: '🌟 One full year! Hall of fame!',
+  const messages: Record<number, { icon: React.ElementType; text: string }> = {
+    7: { icon: Flame, text: "7-day streak! You're on fire!" },
+    14: { icon: Zap, text: '2 weeks strong! Incredible!' },
+    30: { icon: Trophy, text: "30-day streak! You're a legend!" },
+    100: { icon: Crown, text: '100 DAYS! Absolutely elite!' },
+    365: { icon: Star, text: 'One full year! Hall of fame!' },
   };
+
+  const msg = messages[milestone];
+  if (!msg) return null;
+  const MilestoneIcon = msg.icon;
 
   return (
     <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-orange-200 dark:bg-slate-900/80 dark:ring-orange-700/50 animate-bounce">
-      <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{messages[milestone]}</span>
-      <button onClick={onDismiss} className="text-xs text-orange-400 hover:text-orange-600 dark:text-orange-500">✕</button>
+      <span className="flex items-center gap-1.5 text-sm font-bold text-orange-700 dark:text-orange-300">
+        <MilestoneIcon className="h-4 w-4 shrink-0" />
+        {msg.text}
+      </span>
+      <button onClick={onDismiss} className="flex items-center justify-center text-orange-400 hover:text-orange-600 dark:text-orange-500">
+        <X className="h-3 w-3" />
+      </button>
     </div>
   );
 }
@@ -242,8 +251,9 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
                 </div>
               )}
               {!nextMilestone && streak > 0 && (
-                <p className={`mt-2 text-[10px] font-semibold ${cfg.labelColor}`}>
-                  🏆 Maximum milestone reached! You&apos;re a legend.
+                <p className={`mt-2 flex items-center gap-1 text-[10px] font-semibold ${cfg.labelColor}`}>
+                  <Trophy className="h-3 w-3 shrink-0" />
+                  Maximum milestone reached! You&apos;re a legend.
                 </p>
               )}
             </div>
@@ -311,8 +321,9 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
         </div>
       )}
       {!nextMilestone && streak > 0 && (
-        <p className={`mt-2 text-[10px] font-semibold ${cfg.labelColor}`}>
-          🏆 Maximum milestone reached! You&apos;re a legend.
+        <p className={`mt-2 flex items-center gap-1 text-[10px] font-semibold ${cfg.labelColor}`}>
+          <Trophy className="h-3 w-3 shrink-0" />
+          Maximum milestone reached! You&apos;re a legend.
         </p>
       )}
     </div>

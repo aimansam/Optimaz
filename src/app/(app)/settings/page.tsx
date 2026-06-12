@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { AlertTriangle, Bell, BellOff, Check, CheckCircle2, Download, Palette, Send, ShieldCheck, Trash2, User, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Check, CheckCircle2, CreditCard, Download, ExternalLink, Gift, Palette, Send, ShieldCheck, Sparkles, Trash2, User, XCircle, Zap } from 'lucide-react';
 import { THEMES } from '@/components/providers/theme-provider';
 import { useUser } from '@/hooks/use-user';
 import { useUpdateUser } from '@/hooks/use-update-user';
@@ -15,6 +15,7 @@ import { useDeleteAccount, useExportAccount } from '@/hooks/use-account-controls
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useBetaAccess, useHasBetaPro } from '@/hooks/use-beta-access';
 
 const supabase = createClient();
 
@@ -302,6 +303,161 @@ function AppearanceSection() {
           })}
         </div>
       </div>
+    </section>
+  );
+}
+
+const FREE_FEATURES = [
+  'Unlimited tasks & subtasks',
+  'Calendar view',
+  'Goals tracking',
+  'Up to 3 projects',
+  'Mobile PWA (installable)',
+  'Daily streak & progress',
+];
+
+const PRO_FEATURES = [
+  'Everything in Free',
+  'Unlimited projects',
+  'Kanban board',
+  'Recurring routines',
+  'Push notifications',
+  'Full analytics & insights',
+  '7 themes (customization)',
+  'Priority support',
+];
+
+function PlanSection() {
+  const { data: betaAccess, isLoading } = useBetaAccess();
+  const hasPro = useHasBetaPro();
+
+  const grantedDate = betaAccess?.granted_at
+    ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(betaAccess.granted_at))
+    : null;
+
+  const expiryDate = betaAccess?.pro_expires_at
+    ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(betaAccess.pro_expires_at))
+    : null;
+
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+      <div className="mb-5 flex items-center gap-2">
+        <CreditCard className="h-5 w-5 text-slate-400" />
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Plan &amp; Billing</h2>
+        {!isLoading && (
+          hasPro ? (
+            <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
+              <Sparkles className="h-3 w-3" />
+              Pro — Beta
+            </span>
+          ) : (
+            <span className="ml-auto rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              Free
+            </span>
+          )
+        )}
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-slate-400">Loading plan…</p>
+      ) : hasPro ? (
+        /* ── Pro (beta) active ── */
+        <div className="space-y-4">
+          {/* Status banner */}
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900/40 dark:bg-green-950/20">
+            <div className="flex items-start gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                <Zap className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                  You&apos;re on Pro — Beta Access
+                </p>
+                <p className="mt-0.5 text-xs text-green-700 dark:text-green-400">
+                  {betaAccess?.pro_expires_at === null
+                    ? 'Active for the full beta period — no expiry set yet.'
+                    : `Active until ${expiryDate}.`}
+                  {grantedDate && ` Granted on ${grantedDate}.`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* What's included */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">What&apos;s included</p>
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {PRO_FEATURES.map(f => (
+                <div key={f} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <Check className="h-4 w-4 shrink-0 text-green-500" strokeWidth={2.5} />
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Info note */}
+          <div className="flex items-start gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-800/50">
+            <Gift className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Thank you for being a beta tester! Your Pro access is complimentary during the beta. Pricing details will be shared before v1.0 launch.
+            </p>
+          </div>
+        </div>
+      ) : (
+        /* ── Free plan ── */
+        <div className="space-y-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            You&apos;re on the <strong className="text-slate-700 dark:text-slate-300">Free plan</strong>. Upgrade to Pro for unlimited projects, Kanban, recurring routines, analytics and more.
+          </p>
+
+          {/* Feature comparison */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Free */}
+            <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-700">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">Free</p>
+              <div className="space-y-1.5">
+                {FREE_FEATURES.map(f => (
+                  <div key={f} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Pro */}
+            <div className="rounded-xl border-2 p-4" style={{ borderColor: 'rgb(var(--accent))' }}>
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Pro</p>
+                <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: 'rgb(var(--accent))' }}>
+                  RM 15/mo
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {PRO_FEATURES.map(f => (
+                  <div key={f} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-green-500" strokeWidth={2.5} />
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Link href="/pricing" target="_blank">
+              <Button type="button">
+                <Zap className="h-4 w-4" />
+                Upgrade to Pro
+                <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+              </Button>
+            </Link>
+            <p className="text-xs text-slate-400">First month free for beta users · Cancel anytime</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -630,6 +786,9 @@ export default function SettingsPage() {
               </div>
             </form>
           </section>
+
+          {/* Plan & Billing */}
+          <PlanSection />
 
           {/* About */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

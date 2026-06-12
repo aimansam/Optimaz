@@ -10,6 +10,7 @@ import {
   BarChart3,
   Kanban,
   Repeat2,
+  Gift,
 } from 'lucide-react';
 
 const FREE_FEATURES = [
@@ -101,7 +102,7 @@ export default function PricingPage() {
         {/* Beta banner */}
         <div className="mb-10 rounded-2xl border border-indigo-200 bg-indigo-50 px-6 py-4 text-center">
           <p className="text-sm font-medium text-indigo-900">
-            🎁 <span className="font-bold">Beta users get 1 month of Pro FREE</span> — all features unlocked, no credit card needed.
+            <Gift className="inline h-3.5 w-3.5 align-middle mr-1 text-indigo-600" /><span className="font-bold">Beta users get 1 month of Pro FREE</span> — all features unlocked, no credit card needed.
           </p>
           <p className="mt-1 text-xs text-indigo-600">Sign up today to lock in your free month before the offer ends.</p>
         </div>
@@ -140,8 +141,8 @@ export default function PricingPage() {
 
           {/* Pro */}
           <div className="relative flex flex-col rounded-2xl border-2 border-indigo-500 bg-white p-8 shadow-lg shadow-indigo-100">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-200">
-              🎁 First month FREE for beta users
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-200 inline-flex items-center gap-1.5">
+              <Gift className="h-3.5 w-3.5" /> First month FREE for beta users
             </div>
             <div className="mb-6 mt-2">
               <div className="flex items-center gap-2">

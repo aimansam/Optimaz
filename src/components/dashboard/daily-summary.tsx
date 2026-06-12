@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { BarChart3, CheckCircle2, Flame, Target, X, TrendingUp, AlertCircle, ArrowRight } from 'lucide-react';
+import { BarChart3, CheckCircle2, Flame, Target, X, TrendingUp, AlertCircle, ArrowRight, Zap, Sun } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 interface DailySummaryProps {
@@ -33,12 +33,12 @@ function getStreakCount(tasks: Task[]): number {
 
 const PRIORITY_ORDER: Record<string, number> = { urgent: 4, high: 3, medium: 2, low: 1 };
 
-function getStatusMessage(progressPct: number, overdueCount: number, doneToday: number): { text: string; emoji: string; accent?: boolean } {
-  if (overdueCount > 0) return { text: `${overdueCount} task${overdueCount > 1 ? 's' : ''} overdue`, emoji: '⚠️' };
-  if (progressPct === 100 && doneToday > 0) return { text: "You're crushing it!", emoji: '✅', accent: true };
-  if (progressPct >= 50) return { text: 'Great momentum!', emoji: '🔥', accent: true };
-  if (doneToday > 0) return { text: 'Good start, keep going!', emoji: '💪' };
-  return { text: 'Ready to start your day?', emoji: '👋' };
+function getStatusMessage(progressPct: number, overdueCount: number, doneToday: number): { text: string; icon: React.ElementType; iconClass?: string; accent?: boolean } {
+  if (overdueCount > 0) return { text: `${overdueCount} task${overdueCount > 1 ? 's' : ''} overdue`, icon: AlertCircle, iconClass: 'text-red-500' };
+  if (progressPct === 100 && doneToday > 0) return { text: "You're crushing it!", icon: CheckCircle2, iconClass: 'text-emerald-500', accent: true };
+  if (progressPct >= 50) return { text: 'Great momentum!', icon: Flame, iconClass: 'text-orange-500', accent: true };
+  if (doneToday > 0) return { text: 'Good start, keep going!', icon: Zap, iconClass: 'text-amber-500' };
+  return { text: 'Ready to start your day?', icon: Sun, iconClass: 'text-sky-500' };
 }
 
 function CircleProgress({ pct, size = 72 }: { pct: number; size?: number }) {
@@ -155,7 +155,7 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
       icon: CheckCircle2,
       label: 'Done today',
       value: totalDueToday > 0 ? `${totalDueToday - remainingToday}/${totalDueToday}` : `${doneToday}`,
-      sub: remainingToday > 0 ? `${remainingToday} remaining` : doneToday > 0 ? 'All clear! 🎉' : 'No tasks due',
+              sub: remainingToday > 0 ? `${remainingToday} remaining` : doneToday > 0 ? 'All clear!' : 'No tasks due',
       color: 'text-emerald-600 dark:text-emerald-400',
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
@@ -236,8 +236,9 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
           <div className="flex items-center gap-4 px-4 pb-3">
             <CircleProgress pct={progressPct} size={72} />
             <div className="min-w-0 flex-1">
-              <p className="text-base font-bold text-slate-900 dark:text-slate-100 leading-tight">
-                {statusMsg.emoji} {statusMsg.text}
+              <p className="flex items-center gap-1.5 text-base font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                {(() => { const Icon = statusMsg.icon; return <Icon className={`h-4 w-4 shrink-0 ${statusMsg.iconClass ?? ''}`} />; })()}
+                {statusMsg.text}
               </p>
               <p className="mt-1 text-xs text-slate-400">
                 {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}

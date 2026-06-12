@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarDays, CheckCircle2, Edit2, History, ListChecks, PauseCircle, Repeat2 } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Edit2, Flame, History, ListChecks, PauseCircle, Repeat2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
@@ -88,7 +88,7 @@ export function RoutineCard({ task, history = [], onPause, pausePending = false 
               <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{task.title}</p>
               {streak >= 2 && (
                 <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
-                  🔥 {streak}
+                  <Flame className="h-3 w-3" /> {streak}
                 </span>
               )}
             </div>

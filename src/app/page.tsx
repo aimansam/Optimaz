@@ -16,6 +16,10 @@ import {
   TrendingUp,
   Check,
   X,
+  Gift,
+  Clock,
+  ClipboardList,
+  AlertCircle,
 } from 'lucide-react';
 
 const FEATURES = [
@@ -120,7 +124,7 @@ export default async function LandingPage() {
 
       {/* ── Beta banner ──────────────────────────────────────── */}
       <div className="border-b border-indigo-100 bg-indigo-50 py-2.5 text-center text-xs font-medium text-indigo-700">
-        🎁 <span className="font-semibold">Beta offer:</span> Sign up now and get your first month of Pro{' '}
+        <Gift className="inline h-3.5 w-3.5 align-middle mr-1" /> <span className="font-semibold">Beta offer:</span> Sign up now and get your first month of Pro{' '}
         <span className="font-bold text-indigo-900">completely free</span> — no credit card required.
         <Link href="/auth/login" className="ml-2 font-semibold underline underline-offset-2 hover:text-indigo-900">
           Claim it →
@@ -293,8 +297,8 @@ export default async function LandingPage() {
 
             {/* Pro */}
             <div className="relative rounded-2xl border-2 border-indigo-500 bg-white p-8 shadow-lg shadow-indigo-100">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-200">
-                🎁 1 Month Free for Beta Users
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-200 inline-flex items-center gap-1.5">
+                <Gift className="h-3.5 w-3.5" /> 1 Month Free for Beta Users
               </div>
               <div className="mb-6 mt-2">
                 <div className="flex items-center gap-2">
@@ -349,12 +353,12 @@ export default async function LandingPage() {
             </div>
             <div className="space-y-3">
               {[
-                { emoji: '⏰', text: 'Task due reminders (15 min, 1 hour, same day)' },
-                { emoji: '📋', text: 'Daily morning digest of your day ahead' },
-                { emoji: '🔴', text: 'Overdue task alerts so nothing slips through' },
-              ].map(({ emoji, text }) => (
+                { icon: Clock, text: 'Task due reminders (15 min, 1 hour, same day)', color: 'text-amber-500' },
+                { icon: ClipboardList, text: 'Daily morning digest of your day ahead', color: 'text-indigo-500' },
+                { icon: AlertCircle, text: 'Overdue task alerts so nothing slips through', color: 'text-red-500' },
+              ].map(({ icon: Icon, text, color }) => (
                 <div key={text} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <span className="text-lg">{emoji}</span>
+                  <Icon className={`h-5 w-5 shrink-0 ${color}`} />
                   {text}
                 </div>
               ))}

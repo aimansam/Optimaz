@@ -1,3 +1,25 @@
-# Optimaz is in private beta — please don't index it yet.
+# Optimaz — allow public marketing pages, block authenticated app routes
+
 User-agent: *
-Disallow: /
+
+# Allow public pages
+Allow: /$
+Allow: /pricing
+Allow: /privacy
+Allow: /terms
+Allow: /auth/login
+
+# Block app routes and API
+Disallow: /dashboard
+Disallow: /kanban
+Disallow: /projects
+Disallow: /goals
+Disallow: /calendar
+Disallow: /routines
+Disallow: /settings
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth/callback
+Disallow: /auth/mfa
+
+Sitemap: https://optimaz.app/sitemap.xml

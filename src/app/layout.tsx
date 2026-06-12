@@ -16,12 +16,22 @@ export const metadata: Metadata = {
     siteName: 'Optimaz',
     title: 'Optimaz — Personal Productivity Workspace',
     description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
+    url: 'https://optimaz.app',
     locale: 'en_US',
+    images: [
+      {
+        url: 'https://optimaz.app/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Optimaz — Personal Productivity Workspace',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
-    title: 'Optimaz',
-    description: 'Plan tasks, projects, and goals in one quiet workspace.',
+    card: 'summary_large_image',
+    title: 'Optimaz — Personal Productivity Workspace',
+    description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
+    images: ['https://optimaz.app/opengraph-image'],
   },
   robots: {
     index: true,

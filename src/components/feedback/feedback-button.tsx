@@ -56,7 +56,8 @@ export function FeedbackButton({ className }: FeedbackButtonProps) {
         type="button"
         onClick={() => setOpen(true)}
         title="Send feedback"
-        className={`inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-indigo-400 active:scale-95 ${className ?? ''}`}
+        style={{ background: 'rgb(var(--accent))' }}
+        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95 ${className ?? ''}`}
       >
         <MessageSquare className="h-3.5 w-3.5" />
         <span className="hidden sm:inline">Feedback</span>

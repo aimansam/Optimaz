@@ -217,59 +217,6 @@ export default function DashboardPage() {
 		</div>
 	);
 
-	const goalFocusPanelFull = showGoalFocus && (
-		<DashboardWidget title="Goal Focus">
-			<div className="grid gap-3 sm:grid-cols-3">
-				<div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-					<div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-						<Target className="h-3.5 w-3.5 text-slate-500" />
-						Active goals
-					</div>
-					<p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
-					<p className="text-xs text-slate-500 dark:text-slate-400">Outcomes in motion</p>
-				</div>
-				<div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/20">
-					<div className="flex items-center gap-1.5 text-xs font-semibold text-red-700 dark:text-red-300">
-						<AlertTriangle className="h-3.5 w-3.5" />
-						At risk
-					</div>
-					<p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-300">{atRiskGoals.length}</p>
-					<p className="text-xs text-red-600/80 dark:text-red-300/80">Active goals past target date</p>
-				</div>
-				<div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-					<div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
-						<AlertTriangle className="h-3.5 w-3.5" />
-						Urgent work
-					</div>
-					<p className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-300">{urgentGoalTasks.length}</p>
-					<p className="text-xs text-amber-700/80 dark:text-amber-300/80">Urgent tasks tied to goals</p>
-				</div>
-			</div>
-			{nextGoals.length > 0 && (
-				<div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-					<p className="mb-2 text-xs font-semibold text-slate-500 dark:text-slate-400">Next outcomes</p>
-					<div className="space-y-1">
-						{nextGoals.map((goal) => {
-							const total = goal.tasks?.length ?? 0;
-							const completed = goal.tasks?.filter(t => t.status === 'done').length ?? 0;
-							const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-							return (
-								<Link key={goal.id} href={`/goals/${goal.id}`} className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800/60">
-									<span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
-									<span className="min-w-0 flex-1">
-										<span className="block truncate text-xs font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
-										<span className="block truncate text-[10px] text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
-									</span>
-									<span className="shrink-0 text-[10px] font-semibold text-slate-400">{percent}%</span>
-								</Link>
-							);
-						})}
-					</div>
-				</div>
-			)}
-		</DashboardWidget>
-	);
-
 	const taskFeeds = (
 		<>
 			{!isLoading && overdueTasks && overdueTasks.length > 0 && (
@@ -348,10 +295,11 @@ export default function DashboardPage() {
 				    ═══════════════════════════════════════════════════════ */}
 				<div className="hidden flex-1 min-h-0 lg:flex lg:flex-row lg:overflow-hidden">
 
-				{/* Left panel — stats, chart */}
-				<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
+					{/* Left panel — stats, chart, goal focus */}
+					<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
 						<DashboardStatsStrip compact />
 						<DashboardAnalytics />
+						{goalFocusPanel}
 					</aside>
 
 					{/* Right panel — task feeds */}
@@ -376,7 +324,6 @@ export default function DashboardPage() {
 							</div>
 						)}
 						<div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6">
-							{goalFocusPanelFull}
 							{taskFeeds}
 						</div>
 					</div>

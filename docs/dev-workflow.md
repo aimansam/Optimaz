@@ -9,7 +9,7 @@ feature branch  →  dev branch  →  main branch
 
 | Branch | URL | Database |
 |--------|-----|----------|
-| `main` | https://optimaz.mavoralabs.com | Production Supabase (`dunncxzd...`) |
+| `main` | https://optimaz.app | Production Supabase (`ielsqkzx...`) |
 | `dev` | Vercel preview URL | Dev Supabase (`tikxjczm...`) |
 | feature/* | Vercel preview URL | Dev Supabase |
 
@@ -88,7 +88,7 @@ git push origin feature/my-feature
 # Once tested on dev preview:
 # Open a PR from dev → main on GitHub
 # GitHub Actions runs build check automatically
-# After merge, Vercel deploys to optimaz.mavoralabs.com
+# After merge, Vercel deploys to optimaz.app
 ```
 
 ---

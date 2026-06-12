@@ -19,7 +19,7 @@ NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-Optional push notification variables:
+Optional variables:
 
 ```bash
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
@@ -27,6 +27,11 @@ VAPID_PRIVATE_KEY=your-private-key
 VAPID_EMAIL=mailto:you@example.com
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 OPTIMAZ_ADMIN_EMAILS=you@example.com,teammate@example.com
+
+# Email OTP via Resend (required for email sign-in)
+RESEND_API_KEY=re_your_api_key_here
+RESEND_FROM_EMAIL=noreply@optimaz.app
+FEEDBACK_NOTIFY_EMAIL=hello@optimaz.app
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is only used by server routes that need Supabase admin permissions, such as account deletion. Do not expose it to the browser.
@@ -92,11 +97,14 @@ The base schema is in `supabase/schema.sql`; migrations are the source of truth 
 
 ## Auth Notes
 
-The production app currently exposes Google OAuth only. GitHub OAuth was removed from the login UI because the provider was not enabled in Supabase.
+The login page supports three sign-in methods:
+- **Google OAuth** — one-click sign-in via Supabase OAuth provider
+- **GitHub OAuth** — one-click sign-in via Supabase OAuth provider
+- **Email OTP** — custom flow: `POST /api/auth/send-otp` generates a 6-digit code stored (hashed) in `pending_otps` and sent via Resend; `POST /api/auth/verify-otp` verifies the code and **only then** creates the Supabase user, returning a magic-link token the client exchanges for a session. This ensures no `auth.users` record is created for unverified emails.
 
 ## Production Monitoring
 
-TaskFlow uses Vercel runtime logs for server visibility and a Supabase-backed `app_errors` table for browser/runtime error reports. The browser monitor posts production `error` and `unhandledrejection` events to `/api/monitoring/errors`. Apply the `app_errors` migration before expecting rows in production.
+Optimaz uses Vercel runtime logs for server visibility and a Supabase-backed `app_errors` table for browser/runtime error reports. The browser monitor posts production `error` and `unhandledrejection` events to `/api/monitoring/errors`. Apply the `app_errors` migration before expecting rows in production.
 
 ## Current Known Audit State
 

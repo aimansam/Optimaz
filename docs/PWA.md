@@ -1,6 +1,6 @@
 # PWA & Installability
 
-TaskFlow uses a lightweight manual PWA setup. It does not use `next-pwa` or Workbox.
+Optimaz uses a lightweight manual PWA setup. It does not use `next-pwa` or Workbox.
 
 ## Files
 
@@ -25,8 +25,8 @@ The service worker does not implement offline page caching. The app is installab
 After deployment, verify:
 
 ```bash
-curl -I https://task-flow-ashy-nu.vercel.app/manifest.json
-curl -I https://task-flow-ashy-nu.vercel.app/sw.js
+curl -I https://optimaz.app/manifest.json
+curl -I https://optimaz.app/sw.js
 ```
 
 Both should return `200`. The service worker body should include `install` and `activate` handlers.

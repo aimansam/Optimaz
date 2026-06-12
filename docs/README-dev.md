@@ -34,7 +34,8 @@ src/
 │   │   ├── settings/   # Push notifications, account, export
 │   │   └── admin/      # Admin monitoring (restricted by email)
 │   ├── api/            # API routes (push, cron, export, monitoring)
-│   └── auth/           # Supabase OAuth callback
+│   ├── api/auth/       # Custom email OTP routes (send-otp, verify-otp)
+   └── auth/           # Supabase OAuth callback + MFA
 ├── components/
 │   ├── layout/         # Header (with GlobalSearch), Sidebar
 │   ├── tasks/          # TaskCard, TaskList (drag-to-reorder), TaskForm
@@ -83,11 +84,11 @@ CRON_SECRET=your-random-secret-string
 # Admin panel — comma-separated emails that can access /admin
 OPTIMAZ_ADMIN_EMAILS=you@example.com
 
-# Email notifications (optional) — used to email feedback@mavoralabs.com on new feedback
-# Get a free API key at https://resend.com (100 emails/day free)
+# Resend — required for email OTP sign-in and feedback notifications
+# Get a free API key at https://resend.com (3,000 emails/month free)
 RESEND_API_KEY=re_your_api_key_here
-# Optional: override the from address once you've verified your domain in Resend
-# RESEND_FROM_EMAIL=noreply@yourdomain.com
+RESEND_FROM_EMAIL=noreply@optimaz.app
+FEEDBACK_NOTIFY_EMAIL=hello@optimaz.app
 ```
 
 ### Generating VAPID keys
@@ -172,6 +173,10 @@ npm run test:smoke:headed
 - Unauthenticated users → `/auth/login`
 - Logged-in users visiting `/auth/*` → `/dashboard`
 - Public pages (`/pricing`, `/privacy`, `/terms`) — no auth check
+
+**Login supports three methods:**
+- Google OAuth / GitHub OAuth → Supabase provider redirect
+- Email OTP → `POST /api/auth/send-otp` (stores SHA-256 hashed code in `pending_otps`, sends via Resend) then `POST /api/auth/verify-otp` (verifies, creates Supabase user only on success, returns magic-link token for session exchange)
 
 ### Recurring Tasks
 When a recurring task is marked **done**:

@@ -83,7 +83,7 @@ function BarChart({ data }: { data: { day: string; label: string; count: number 
   return (
     <div className="space-y-2">
       <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Completions · last 7 days</p>
-      <div className="flex items-end gap-1.5 h-32">
+      <div className="flex items-end gap-1.5 h-20">
         {data.map((d) => {
           const height = Math.max((d.count / maxCount) * 100, d.count > 0 ? 8 : 0);
           const isToday = d.label === today;

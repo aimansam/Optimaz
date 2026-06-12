@@ -7,7 +7,7 @@ import ProvidersClient from './providers-client';
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
 export const metadata: Metadata = {
-  title: { default: 'Optimaz', template: '%s · Optimaz' },
+  title: { default: 'Optimaz — Personal Productivity Workspace', template: '%s · Optimaz' },
   description: 'Plan tasks, projects, and goals in one quiet workspace. Stay focused and ship faster.',
   manifest: '/manifest.json',
   metadataBase: new URL('https://optimaz.app'),

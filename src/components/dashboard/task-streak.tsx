@@ -172,9 +172,24 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
         <MilestoneBanner streak={streak} onDismiss={() => setShowMilestone(false)} />
       )}
 
-      {/* Top: flame icon centered */}
-      <div className="flex flex-col items-center">
-        <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: number + label */}
+        <div>
+          <div className="flex items-baseline gap-1.5">
+            <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
+              {streak}
+            </span>
+            <span className={`text-sm font-bold ${cfg.labelColor}`}>
+              {streak === 1 ? 'day' : 'days'}
+            </span>
+          </div>
+          <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
+            Task streak
+          </p>
+        </div>
+
+        {/* Right: flame icon */}
+        <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
           <Flame
             className={`h-8 w-8 ${cfg.flameClass} ${streak > 0 ? 'drop-shadow-sm' : ''}`}
             style={streak >= 30 ? { filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' } : streak >= 7 ? { filter: 'drop-shadow(0 0 4px rgba(249,115,22,0.4))' } : undefined}
@@ -183,23 +198,10 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
             <Trophy className="absolute -bottom-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-sm" />
           )}
         </div>
-
-        {/* Number + label below icon */}
-        <div className="mt-2 flex items-baseline gap-1.5">
-          <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
-            {streak}
-          </span>
-          <span className={`text-sm font-bold ${cfg.labelColor}`}>
-            {streak === 1 ? 'day' : 'days'}
-          </span>
-        </div>
-        <p className={`mt-0.5 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
-          Task streak
-        </p>
       </div>
 
       {/* Motivational label */}
-      <p className={`mt-2 text-center text-xs font-medium ${cfg.labelColor}`}>{label}</p>
+      <p className={`mt-2 text-xs font-medium ${cfg.labelColor}`}>{label}</p>
 
       {/* Progress to next milestone */}
       {nextMilestone && (

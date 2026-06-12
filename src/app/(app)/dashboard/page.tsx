@@ -72,7 +72,10 @@ export default function DashboardPage() {
 	const weekday = currentDate?.toLocaleDateString('en-US', { weekday: 'long' }) ?? 'Today';
 	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
-	const todayKey = currentDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0];
+	// Use local date (not UTC) to avoid timezone-shifted overdue classifications
+	const todayKey = currentDate
+		? `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`
+		: new Date().toLocaleDateString('en-CA'); // 'en-CA' gives YYYY-MM-DD in local tz
 
 	const activeGoals = (goals ?? []).filter((goal) => {
 		const total = goal.tasks?.length ?? 0;
@@ -96,10 +99,10 @@ export default function DashboardPage() {
 	);
 
 	function filterTasks(tasks: import('@/lib/types').Task[] = []) {
-		const todayStr = new Date().toISOString().split('T')[0];
+		const todayStr = new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
 		const weekEnd = new Date();
 		weekEnd.setDate(weekEnd.getDate() + 7);
-		const weekEndStr = weekEnd.toISOString().split('T')[0];
+		const weekEndStr = weekEnd.toLocaleDateString('en-CA');
 		return tasks.filter(t => {
 			if (filters.query && !t.title.toLowerCase().includes(filters.query.toLowerCase())) return false;
 			if (filters.status && t.status !== filters.status) return false;

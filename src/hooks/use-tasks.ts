@@ -36,6 +36,12 @@ export function useGoalTasks(goalId: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
 
 const supabase = createClient();
 
+/** Returns today's date as YYYY-MM-DD in the browser's LOCAL timezone (not UTC). */
+function localToday(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export function useTasks(projectId?: string, limit = DEFAULT_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', projectId, limit],
@@ -163,7 +169,7 @@ export function useTodayTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', 'today', limit],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = localToday();
       const { data, error } = await applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')
@@ -181,7 +187,7 @@ export function useOverdueTasks(limit = DASHBOARD_TASK_QUERY_LIMIT) {
   return useQuery({
     queryKey: ['tasks', 'overdue', limit],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = localToday();
       const { data, error } = await applyActiveTaskFilter(supabase
         .from('tasks')
         .select('*, subtasks(*), project:projects(id,name,color)')

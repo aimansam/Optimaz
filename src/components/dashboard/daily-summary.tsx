@@ -104,7 +104,7 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
 
   // Done today = tasks completed on today's date
   const doneToday = tasks.filter(

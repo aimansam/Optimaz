@@ -6,7 +6,7 @@ import crypto from 'crypto';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // How long the OTP is valid (keep in sync with the countdown on the login page)
-const OTP_TTL_MINUTES = 10;
+const OTP_TTL_MINUTES = 2;
 // Max send attempts per IP per hour (simple abuse prevention)
 const MAX_SENDS_PER_IP = 5;
 

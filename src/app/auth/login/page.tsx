@@ -8,8 +8,8 @@ import { ArrowLeft, Mail, ShieldCheck } from 'lucide-react';
 
 const supabase = createClient();
 
-// OTP expires in 10 minutes (600 seconds) — matches server OTP_TTL_MINUTES
-const OTP_EXPIRY_SECONDS = 600;
+// OTP expires in 2 minutes (120 seconds) — matches server OTP_TTL_MINUTES
+const OTP_EXPIRY_SECONDS = 120;
 
 type OAuthProvider = 'google' | 'github';
 type LoadingState = OAuthProvider | 'send_otp' | 'verify_otp' | null;

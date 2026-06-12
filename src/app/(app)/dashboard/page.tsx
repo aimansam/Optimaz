@@ -303,9 +303,6 @@ export default function DashboardPage() {
 					<DashboardStatsStrip compact />
 					<DashboardAnalytics />
 					{goalFocusPanel}
-					<div className="mt-4">
-						<TaskStreak tasks={allTasks ?? []} />
-					</div>
 				</aside>
 
 					{/* Right panel — task feeds */}

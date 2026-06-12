@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flame, Trophy } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
@@ -135,6 +135,8 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
   const streak = useMemo(() => calculateStreak(tasks), [tasks]);
   const label = getStreakLabel(streak);
   const [showMilestone, setShowMilestone] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   // Detect uncelebrated milestones
   useEffect(() => {
@@ -149,15 +151,17 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
     }
   }, [streak]);
 
-  // Inline mode — compact pill for use in header bar
-  if (inline) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
-        <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-slate-400'}`} />
-        {streak} {streak === 1 ? 'day' : 'days'}
-      </span>
-    );
-  }
+  // Click-outside to close popover
+  useEffect(() => {
+    if (!popoverOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setPopoverOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [popoverOpen]);
 
   const cfg = getStreakConfig(streak);
   const nextMilestone = getNextMilestone(streak);
@@ -166,6 +170,90 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
     ? Math.round(((streak - prevMilestone) / (nextMilestone - prevMilestone)) * 100)
     : 100;
 
+  // Inline mode — clickable pill that opens streak card as popover
+  if (inline) {
+    return (
+      <div ref={popoverRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setPopoverOpen(v => !v)}
+          className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-600 transition-colors hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50"
+        >
+          <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-slate-400'}`} />
+          {streak} {streak === 1 ? 'day' : 'days'}
+        </button>
+
+        {/* Streak card popover */}
+        {popoverOpen && (
+          <div className="absolute left-0 top-full z-50 mt-2 w-64 drop-shadow-xl">
+            <div className={`rounded-xl border p-4 ${cfg.gradient} ${cfg.border}`}>
+              {showMilestone && (
+                <MilestoneBanner streak={streak} onDismiss={() => setShowMilestone(false)} />
+              )}
+
+              <div className="flex items-center justify-between gap-3">
+                {/* Left: number + label */}
+                <div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
+                      {streak}
+                    </span>
+                    <span className={`text-sm font-bold ${cfg.labelColor}`}>
+                      {streak === 1 ? 'day' : 'days'}
+                    </span>
+                  </div>
+                  <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
+                    Task streak
+                  </p>
+                </div>
+
+                {/* Right: flame icon */}
+                <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
+                  <Flame
+                    className={`h-8 w-8 ${cfg.flameClass} ${streak > 0 ? 'drop-shadow-sm' : ''}`}
+                    style={streak >= 30 ? { filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' } : streak >= 7 ? { filter: 'drop-shadow(0 0 4px rgba(249,115,22,0.4))' } : undefined}
+                  />
+                  {streak >= 30 && (
+                    <Trophy className="absolute -bottom-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-sm" />
+                  )}
+                </div>
+              </div>
+
+              {/* Motivational label */}
+              <p className={`mt-2 text-xs font-medium ${cfg.labelColor}`}>{label}</p>
+
+              {/* Progress to next milestone */}
+              {nextMilestone && (
+                <div className="mt-3">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className={`text-[10px] font-semibold ${cfg.labelColor} opacity-80`}>
+                      Next milestone: {nextMilestone} days
+                    </span>
+                    <span className={`text-[10px] font-bold ${cfg.labelColor}`}>
+                      {nextMilestone - streak} to go
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${cfg.barColor}`}
+                      style={{ width: `${Math.max(progressToNext, 4)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              {!nextMilestone && streak > 0 && (
+                <p className={`mt-2 text-[10px] font-semibold ${cfg.labelColor}`}>
+                  🏆 Maximum milestone reached! You&apos;re a legend.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Full card mode (non-inline) — kept for any standalone use
   return (
     <div className={`rounded-xl border p-4 ${cfg.gradient} ${cfg.border}`}>
       {showMilestone && (
@@ -224,7 +312,7 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
       )}
       {!nextMilestone && streak > 0 && (
         <p className={`mt-2 text-[10px] font-semibold ${cfg.labelColor}`}>
-          🏆 Maximum milestone reached! You're a legend.
+          🏆 Maximum milestone reached! You&apos;re a legend.
         </p>
       )}
     </div>

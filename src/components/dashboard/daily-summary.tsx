@@ -35,6 +35,12 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // Auto-open on first mount (every time the dashboard page renders)
+  useEffect(() => {
+    const timer = setTimeout(() => setOpen(true), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {

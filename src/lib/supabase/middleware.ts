@@ -3,7 +3,14 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isPublicPage = pathname === '/' || pathname === '/privacy' || pathname === '/terms' || pathname === '/pricing';
+  const isPublicPage =
+    pathname === '/' ||
+    pathname === '/privacy' ||
+    pathname === '/terms' ||
+    pathname === '/pricing' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt' ||
+    pathname === '/opengraph-image';
   // API routes handle their own auth — do not redirect, let handlers return 401
   const isApiRoute = pathname.startsWith('/api/');
 

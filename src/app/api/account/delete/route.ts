@@ -33,9 +33,19 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Account deletion is not configured' }, { status: 503 });
   }
 
-  // ── Step 1: Best-effort cleanup of peripheral data (parallel) ─────────────
-  // These are non-critical rows. If a table doesn't exist or errors, we log and
-  // continue — the auth user delete in step 4 is the authoritative cleanup.
+  // ── Pre-cleanup: best-effort deletion of all user data ────────────────────
+  // All steps below are non-fatal. We log any errors and continue so that the
+  // auth user delete in the final step can proceed. Supabase will cascade any
+  // remaining FK-linked rows when the auth.users record is removed.
+  //
+  // Order matters for FK constraints:
+  //   1. notification_deliveries (refs task_id)
+  //   2. subtasks (refs task_id)
+  //   3. tasks (refs project_id, goal_id)
+  //   4. projects, goals (top-level content)
+  //   5. everything else (no FK deps on above)
+
+  // Step 1 — leaf tables (no FK children among user data)
   const step1 = await Promise.allSettled([
     admin.from('notification_deliveries').delete().eq('user_id', user.id),
     admin.from('push_subscriptions').delete().eq('user_id', user.id),
@@ -44,61 +54,40 @@ export async function DELETE(request: NextRequest) {
     admin.from('app_errors').delete().eq('user_id', user.id),
     admin.from('saved_views').delete().eq('user_id', user.id),
     admin.from('beta_access').delete().eq('user_id', user.id),
-    // Remove waitlist entry if it was their email
     ...(user.email
       ? [admin.from('pricing_waitlist').delete().eq('email', user.email)]
       : []),
   ]);
-
   const step1Errors = step1
     .filter((r) => r.status === 'fulfilled' && (r.value as { error?: { message: string } }).error)
     .map((r) => (r as PromiseFulfilledResult<{ error?: { message: string } }>).value.error?.message);
-
   if (step1Errors.filter(Boolean).length > 0) {
-    // Log but do not abort — peripheral tables may not exist yet or be empty
-    console.warn('[account/delete] Step 1 non-fatal warnings:', step1Errors);
+    console.warn('[account/delete] Step 1 warnings:', step1Errors);
   }
 
-  // ── Step 2: Delete subtasks before tasks (FK: subtasks.task_id → tasks.id) ─
-  const { error: subtasksError } = await admin
-    .from('subtasks')
-    .delete()
-    .eq('user_id', user.id);
+  // Step 2 — subtasks (before tasks, FK: subtasks.task_id → tasks.id)
+  const { error: subtasksError } = await admin.from('subtasks').delete().eq('user_id', user.id);
+  if (subtasksError) console.warn('[account/delete] subtasks warning:', subtasksError.message);
 
-  if (subtasksError) {
-    console.error('[account/delete] subtasks error:', subtasksError.message);
-    return NextResponse.json({ error: 'Could not remove subtasks' }, { status: 500 });
-  }
+  // Step 3 — tasks
+  const { error: tasksError } = await admin.from('tasks').delete().eq('user_id', user.id);
+  if (tasksError) console.warn('[account/delete] tasks warning:', tasksError.message);
 
-  // ── Step 3: Delete tasks ───────────────────────────────────────────────────
-  const { error: tasksError } = await admin
-    .from('tasks')
-    .delete()
-    .eq('user_id', user.id);
-
-  if (tasksError) {
-    console.error('[account/delete] tasks error:', tasksError.message);
-    return NextResponse.json({ error: 'Could not remove tasks' }, { status: 500 });
-  }
-
-  // ── Step 3b: Best-effort delete of top-level content (parallel) ───────────
-  const step3b = await Promise.allSettled([
+  // Step 4 — top-level content
+  const step4 = await Promise.allSettled([
     admin.from('projects').delete().eq('user_id', user.id),
     admin.from('goals').delete().eq('user_id', user.id),
   ]);
-
-  const step3bErrors = step3b
+  const step4Errors = step4
     .filter((r) => r.status === 'fulfilled' && (r.value as { error?: { message: string } }).error)
     .map((r) => (r as PromiseFulfilledResult<{ error?: { message: string } }>).value.error?.message);
-
-  if (step3bErrors.filter(Boolean).length > 0) {
-    console.warn('[account/delete] Step 3b non-fatal warnings:', step3bErrors);
+  if (step4Errors.filter(Boolean).length > 0) {
+    console.warn('[account/delete] Step 4 warnings:', step4Errors);
   }
 
-  // ── Step 4: Delete the auth user record ───────────────────────────────────
-  // This is the authoritative deletion — Supabase cascades any FK-linked rows.
+  // ── Final step: delete the auth user record ────────────────────────────────
+  // This is the only hard-fail. If this succeeds, the account is gone.
   const { error: deleteUserError } = await admin.auth.admin.deleteUser(user.id);
-
   if (deleteUserError) {
     console.error('[account/delete] auth user delete error:', deleteUserError.message);
     return NextResponse.json({ error: 'Could not delete account' }, { status: 500 });
@@ -106,10 +95,6 @@ export async function DELETE(request: NextRequest) {
 
   return NextResponse.json(
     { success: true },
-    {
-      headers: {
-        'Cache-Control': 'no-store',
-      },
-    }
+    { headers: { 'Cache-Control': 'no-store' } }
   );
 }

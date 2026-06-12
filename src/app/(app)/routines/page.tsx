@@ -144,9 +144,14 @@ export default function RoutinesPage() {
               description={error.message || 'Refresh the page and try again.'}
             />
           ) : isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="h-44 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {[...Array(3)].map((_, colIndex) => (
+                <div key={colIndex} className="flex flex-col gap-3">
+                  <div className="h-4 w-24 animate-pulse rounded-full bg-slate-200 dark:bg-slate-700" />
+                  {[...Array(2)].map((__, i) => (
+                    <div key={i} className="h-44 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                  ))}
+                </div>
               ))}
             </div>
           ) : routines.length === 0 ? (
@@ -164,18 +169,34 @@ export default function RoutinesPage() {
               action={<Button size="sm" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" />Create routine</Button>}
             />
           ) : (
-            <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {ROUTINE_GROUPS.filter(group => filter === 'all' || filter === group.value).map(group => {
                 const groupTasks = filteredRoutines.filter(task => task.recurrence_rule === group.value);
-                if (groupTasks.length === 0) return null;
+                if (groupTasks.length === 0 && filter !== 'all') return null;
 
                 return (
-                  <section key={group.value}>
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">{group.label} ({groupTasks.length})</h2>
+                  <div key={group.value} className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+                        {group.label}
+                        {groupTasks.length > 0 && <span className="ml-1.5">({groupTasks.length})</span>}
+                      </h2>
                     </div>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {groupTasks.map(task => (
+
+                    {groupTasks.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-4 py-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
+                        <Repeat2 className="mb-2 h-5 w-5 text-slate-300 dark:text-slate-600" />
+                        <p className="text-xs text-slate-400 dark:text-slate-500">No {group.value} routines</p>
+                        <button
+                          type="button"
+                          onClick={() => setAddOpen(true)}
+                          className="mt-2 text-xs font-semibold text-indigo-500 hover:text-indigo-600"
+                        >
+                          + Add one
+                        </button>
+                      </div>
+                    ) : (
+                      groupTasks.map(task => (
                         <RoutineCard
                           key={task.id}
                           task={task}
@@ -183,9 +204,9 @@ export default function RoutinesPage() {
                           onPause={pauseRoutine}
                           pausePending={updateTask.isPending}
                         />
-                      ))}
-                    </div>
-                  </section>
+                      ))
+                    )}
+                  </div>
                 );
               })}
             </div>

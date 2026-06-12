@@ -79,7 +79,7 @@ export default function RoutinesPage() {
   return (
     <>
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 sm:p-6">
+        <div className="p-4 pb-24 sm:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-end gap-2">
             <Button onClick={() => setAddOpen(true)}>
               <Plus className="h-4 w-4" />

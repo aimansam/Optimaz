@@ -15,6 +15,7 @@ function getPageTitle(pathname: string) {
   if (pathname === '/kanban') return 'Kanban';
   if (pathname === '/projects') return 'Projects';
   if (pathname.startsWith('/projects/')) return 'Project';
+  if (pathname === '/tasks') return 'Tasks';
   if (pathname === '/settings') return 'Settings';
   if (pathname === '/admin') return 'Admin';
   return 'Optimaz';

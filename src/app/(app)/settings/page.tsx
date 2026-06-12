@@ -581,7 +581,7 @@ export default function SettingsPage() {
   return (
     <>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-24">
         <div className="max-w-2xl space-y-6">
           {/* Account settings */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

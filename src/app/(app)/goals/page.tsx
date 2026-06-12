@@ -27,7 +27,7 @@ export default function GoalsPage() {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-24">
         <div className="mb-5 flex items-center justify-end">
           <Button onClick={() => setAddOpen(true)}>
             <Plus className="h-4 w-4" />

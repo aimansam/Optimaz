@@ -104,7 +104,7 @@ export default function ProjectsPage() {
   return (
     <>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-24">
         {/* Toggle for sort/search bar */}
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">

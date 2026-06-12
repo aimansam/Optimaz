@@ -23,8 +23,8 @@ const PRIORITY_BORDER: Record<string, string> = {
 };
 
 const STATUS_BG: Record<string, string> = {
-  todo: 'bg-white dark:bg-slate-900',
-  in_progress: 'bg-blue-50 dark:bg-blue-950/20',
+  todo: 'bg-red-50 dark:bg-red-950/20',
+  in_progress: 'bg-amber-50 dark:bg-amber-950/20',
   done: 'bg-emerald-50 dark:bg-emerald-950/20',
 };
 

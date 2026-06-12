@@ -118,7 +118,6 @@ export default function CalendarPage() {
       setVisibleDate(date);
       return;
     }
-
     setMonthDate(current => new Date(current.getFullYear(), current.getMonth() - 1, 1));
   }
 
@@ -129,7 +128,6 @@ export default function CalendarPage() {
       setVisibleDate(date);
       return;
     }
-
     setMonthDate(current => new Date(current.getFullYear(), current.getMonth() + 1, 1));
   }
 
@@ -141,12 +139,17 @@ export default function CalendarPage() {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4 sm:p-6">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      {/* Full-height flex column — no page scroll */}
+      <div className="flex h-full flex-col overflow-hidden">
+
+        {/* ── Header ─────────────────────────────────────────────── */}
+        <div className="shrink-0 px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Schedule</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">{view === 'month' ? getMonthLabel(monthDate) : getWeekLabel(selectedDate)}</h2>
+              <h2 className="mt-0.5 text-xl font-bold text-slate-900 dark:text-slate-100">
+                {view === 'month' ? getMonthLabel(monthDate) : getWeekLabel(selectedDate)}
+              </h2>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950">
@@ -179,42 +182,46 @@ export default function CalendarPage() {
               </Button>
             </div>
           </div>
+        </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CalendarDays className="h-4 w-4 text-slate-500" />
-                This month
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{monthTaskCount}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Scheduled tasks</p>
+        {/* ── Stats row ──────────────────────────────────────────── */}
+        <div className="shrink-0 grid grid-cols-2 gap-2 px-4 pb-3 lg:grid-cols-4 sm:px-6">
+          <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <CalendarDays className="h-3.5 w-3.5 text-slate-500" />
+              This month
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-4 w-4" />
-                Today
-              </div>
-              <p className="mt-2 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{dueTodayCount}</p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Open tasks due today</p>
-            </div>
-            <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/20 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-red-700 dark:text-red-300">
-                <Clock className="h-4 w-4" />
-                Overdue
-              </div>
-              <p className="mt-2 text-xl font-bold text-red-700 dark:text-red-300 sm:text-2xl">{overdueCount}</p>
-              <p className="text-xs text-red-700/80 dark:text-red-300/80">Past due and open</p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CheckCircle2 className="h-4 w-4 text-slate-500" />
-                Completed
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{completedThisMonth}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Completed this month</p>
-            </div>
+            <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{monthTaskCount}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Scheduled tasks</p>
           </div>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Today
+            </div>
+            <p className="mt-1 text-lg font-bold text-emerald-700 dark:text-emerald-300">{dueTodayCount}</p>
+            <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80">Open tasks due today</p>
+          </div>
+          <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-red-700 dark:text-red-300">
+              <Clock className="h-3.5 w-3.5" />
+              Overdue
+            </div>
+            <p className="mt-1 text-lg font-bold text-red-700 dark:text-red-300">{overdueCount}</p>
+            <p className="text-[11px] text-red-700/80 dark:text-red-300/80">Past due and open</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <CheckCircle2 className="h-3.5 w-3.5 text-slate-500" />
+              Completed
+            </div>
+            <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{completedThisMonth}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Completed this month</p>
+          </div>
+        </div>
 
+        {/* ── Calendar body — fills remaining height ─────────────── */}
+        <div className="flex-1 min-h-0 px-4 pb-4 sm:px-6 sm:pb-5">
           {error ? (
             <EmptyState
               icon={<CalendarDays className="h-6 w-6" />}
@@ -222,18 +229,26 @@ export default function CalendarPage() {
               description={error.message || 'Refresh the page and try again.'}
             />
           ) : isLoading ? (
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-              <div className="h-[560px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
-              <div className="h-[560px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+            <div className="grid h-full gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
+              <div className="animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+              <div className="animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-              <section className="rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950 sm:p-3">
-                <div className={cn('gap-1 pb-2 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400', view === 'week' ? 'hidden md:grid md:grid-cols-7' : 'grid grid-cols-7')}>
+            <div className="grid h-full gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
+
+              {/* Calendar grid */}
+              <section className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950 sm:p-3">
+                {/* Weekday labels */}
+                <div className={cn(
+                  'shrink-0 gap-1 pb-1.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-400',
+                  view === 'week' ? 'hidden md:grid md:grid-cols-7' : 'grid grid-cols-7'
+                )}>
                   {WEEKDAYS.map(day => <div key={day}>{day}</div>)}
                 </div>
+
+                {/* Month view */}
                 {view === 'month' ? (
-                  <div className="grid grid-cols-7 gap-1">
+                  <div className="flex-1 min-h-0 grid grid-cols-7 grid-rows-6 gap-1">
                     {monthDays.map(day => {
                       const dayKey = getDateKey(day);
                       const dayTasks = tasksByDate.get(dayKey) ?? [];
@@ -249,36 +264,46 @@ export default function CalendarPage() {
                           type="button"
                           onClick={() => setSelectedDate(dayKey)}
                           className={cn(
-                            'min-h-24 rounded-lg border p-2 text-left transition-colors sm:min-h-28',
-                            isSelected ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900',
+                            'overflow-hidden rounded-lg border p-1.5 text-left transition-colors sm:p-2',
+                            isSelected
+                              ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
+                              : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900',
                             !isCurrentMonth && 'bg-slate-50/60 text-slate-400 dark:bg-slate-950/40 dark:text-slate-600'
                           )}
                           aria-pressed={isSelected}
                         >
                           <div className="mb-1 flex items-center justify-between gap-1">
-                            <span className={cn('flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold', isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900')}>
+                            <span className={cn(
+                              'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold sm:h-6 sm:w-6 sm:text-xs',
+                              isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                            )}>
                               {day.getDate()}
                             </span>
-                            {dayTasks.length > 0 && <span className="text-[10px] font-semibold text-slate-400">{dayTasks.length}</span>}
+                            {dayTasks.length > 0 && <span className="text-[9px] font-semibold text-slate-400 sm:text-[10px]">{dayTasks.length}</span>}
                           </div>
-                          <div className="space-y-1">
-                            {dayTasks.slice(0, 3).map(task => {
+                          <div className="space-y-0.5">
+                            {dayTasks.slice(0, 2).map(task => {
                               const priority = PRIORITY_CONFIG[task.priority];
                               return (
-                                <div key={task.id} className={cn('truncate rounded px-1.5 py-0.5 text-[10px] font-medium', priority.bg, priority.color, task.status === 'done' && 'opacity-60 line-through')}>
+                                <div key={task.id} className={cn(
+                                  'truncate rounded px-1 py-0.5 text-[9px] font-medium sm:px-1.5 sm:text-[10px]',
+                                  priority.bg, priority.color,
+                                  task.status === 'done' && 'opacity-60 line-through'
+                                )}>
                                   {task.title}
                                 </div>
                               );
                             })}
-                            {dayTasks.length > 3 && <div className="text-[10px] font-medium text-slate-400">+{dayTasks.length - 3} more</div>}
-                            {openCount > 0 && doneCount > 0 && <div className="text-[10px] text-slate-400">{openCount} open, {doneCount} done</div>}
+                            {dayTasks.length > 2 && <div className="text-[9px] font-medium text-slate-400">+{dayTasks.length - 2} more</div>}
+                            {openCount > 0 && doneCount > 0 && <div className="hidden text-[9px] text-slate-400 sm:block">{openCount} open, {doneCount} done</div>}
                           </div>
                         </button>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-2 md:grid-cols-7">
+                  /* Week view */
+                  <div className="flex-1 min-h-0 grid grid-cols-1 gap-2 overflow-y-auto md:grid-cols-7">
                     {weekDays.map(day => {
                       const dayKey = getDateKey(day);
                       const dayTasks = tasksByDate.get(dayKey) ?? [];
@@ -292,19 +317,28 @@ export default function CalendarPage() {
                           type="button"
                           onClick={() => setSelectedDate(dayKey)}
                           className={cn(
-                            'min-h-32 rounded-lg border p-3 text-left transition-colors md:min-h-80',
-                            isSelected ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900'
+                            'rounded-lg border p-3 text-left transition-colors',
+                            isSelected
+                              ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
+                              : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900'
                           )}
                           aria-pressed={isSelected}
                         >
-                          <div className="mb-3 flex items-center justify-between gap-2">
+                          <div className="mb-2 flex items-center justify-between gap-2">
                             <div>
                               <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{WEEKDAYS[day.getDay()]}</p>
-                              <span className={cn('mt-1 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200', isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900')}>
+                              <span className={cn(
+                                'mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200',
+                                isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                              )}>
                                 {day.getDate()}
                               </span>
                             </div>
-                            {dayTasks.length > 0 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-900 dark:text-slate-400">{openCount}/{dayTasks.length}</span>}
+                            {dayTasks.length > 0 && (
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                                {openCount}/{dayTasks.length}
+                              </span>
+                            )}
                           </div>
                           <div className="space-y-1.5">
                             {dayTasks.length === 0 ? (
@@ -326,11 +360,12 @@ export default function CalendarPage() {
                 )}
               </section>
 
-              <aside className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
-                <div className="mb-4 flex items-start justify-between gap-3">
+              {/* Selected day panel */}
+              <aside className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+                <div className="shrink-0 flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 dark:border-slate-800">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Selected day</p>
-                    <h3 className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{formatDate(selectedDate)}</h3>
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Selected day</p>
+                    <h3 className="mt-0.5 font-semibold text-slate-900 dark:text-slate-100">{formatDate(selectedDate)}</h3>
                   </div>
                   <Button type="button" size="sm" onClick={() => setAddOpen(true)}>
                     <Plus className="h-3.5 w-3.5" />
@@ -338,41 +373,49 @@ export default function CalendarPage() {
                   </Button>
                 </div>
 
-                {selectedTasks.length === 0 ? (
-                  <EmptyState
-                    compact
-                    icon={<CalendarDays className="h-4 w-4" />}
-                    title="No tasks"
-                    description="Add a task to schedule work for this day."
-                    action={<Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}><Plus className="h-3.5 w-3.5" />Add task</Button>}
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    {selectedTasks.map(task => {
-                      const priority = PRIORITY_CONFIG[task.priority];
-                      const overdue = task.status !== 'done' && isOverdue(task.due_date, task.due_time);
-                      return (
-                        <div key={task.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="flex items-start gap-2">
-                            <div className="min-w-0 flex-1">
-                              <p className={cn('truncate text-sm font-medium text-slate-900 dark:text-slate-100', task.status === 'done' && 'text-slate-400 line-through dark:text-slate-500')}>
-                                {task.title}
-                              </p>
-                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', priority.bg, priority.color)}>{priority.label}</span>
-                                {task.due_time && <span className="text-[10px] font-medium text-slate-400">{formatDate(task.due_date, task.due_time)}</span>}
-                                {overdue && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:bg-red-900/40 dark:text-red-300">Overdue</span>}
+                <div className="flex-1 min-h-0 overflow-y-auto p-4">
+                  {selectedTasks.length === 0 ? (
+                    <EmptyState
+                      compact
+                      icon={<CalendarDays className="h-4 w-4" />}
+                      title="No tasks"
+                      description="Add a task to schedule work for this day."
+                      action={
+                        <Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}>
+                          <Plus className="h-3.5 w-3.5" />
+                          Add task
+                        </Button>
+                      }
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      {selectedTasks.map(task => {
+                        const priority = PRIORITY_CONFIG[task.priority];
+                        const overdue = task.status !== 'done' && isOverdue(task.due_date, task.due_time);
+                        return (
+                          <div key={task.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+                            <div className="flex items-start gap-2">
+                              <div className="min-w-0 flex-1">
+                                <p className={cn('truncate text-sm font-medium text-slate-900 dark:text-slate-100', task.status === 'done' && 'text-slate-400 line-through dark:text-slate-500')}>
+                                  {task.title}
+                                </p>
+                                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                                  <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', priority.bg, priority.color)}>{priority.label}</span>
+                                  {task.due_time && <span className="text-[10px] font-medium text-slate-400">{formatDate(task.due_date, task.due_time)}</span>}
+                                  {overdue && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:bg-red-900/40 dark:text-red-300">Overdue</span>}
+                                </div>
+                                {task.project && <p className="mt-1 truncate text-xs text-slate-400">{task.project.name}</p>}
                               </div>
-                              {task.project && <p className="mt-1 truncate text-xs text-slate-400">{task.project.name}</p>}
+                              <TaskActions task={task} buttonClassName="h-7 w-7 rounded-lg" />
                             </div>
-                            <TaskActions task={task} buttonClassName="h-7 w-7 rounded-lg" />
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </aside>
+
             </div>
           )}
         </div>

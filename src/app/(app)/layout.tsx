@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-      <main className="flex-1 flex min-w-0 flex-col overflow-y-auto">
+      <main className="flex-1 flex min-w-0 flex-col overflow-hidden">
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
         {children}
       </main>

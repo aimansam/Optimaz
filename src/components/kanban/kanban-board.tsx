@@ -9,6 +9,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { useState } from 'react';
 import { KanbanColumn } from './kanban-column';
 import { KanbanCard } from './kanban-card';
@@ -63,8 +64,26 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
     const overTask = tasks.find((t) => t.id === overId);
     if (overTask) {
       const task = tasks.find((t) => t.id === taskId);
-      if (task && task.status !== overTask.status) {
+      if (!task) return;
+
+      if (task.status !== overTask.status) {
+        // Cross-column move
         updateTask.mutate({ id: taskId, status: overTask.status, position: overTask.position });
+      } else {
+        // Within-column reorder: update all affected positions
+        const columnTasks = tasks
+          .filter((t) => t.status === task.status)
+          .sort((a, b) => a.position - b.position);
+        const oldIndex = columnTasks.findIndex((t) => t.id === taskId);
+        const newIndex = columnTasks.findIndex((t) => t.id === overId);
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          const reordered = arrayMove(columnTasks, oldIndex, newIndex);
+          reordered.forEach((t, i) => {
+            if (t.position !== i) {
+              updateTask.mutate({ id: t.id, position: i });
+            }
+          });
+        }
       }
     }
   };

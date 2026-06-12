@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
 type SearchResult =
-  | { type: 'task'; id: string; title: string; status: string; project_name?: string | null }
+  | { type: 'task'; id: string; title: string; status: string; project_id?: string | null; project_name?: string | null }
   | { type: 'project'; id: string; name: string; color: string }
   | { type: 'goal'; id: string; title: string; color: string };
 
@@ -21,7 +21,7 @@ async function search(query: string): Promise<SearchResult[]> {
   const [tasks, projects, goals] = await Promise.all([
     supabase
       .from('tasks')
-      .select('id, title, status, project:projects(name)')
+      .select('id, title, status, project_id, project:projects(name)')
       .ilike('title', q)
       .is('archived_at', null)
       .limit(5),
@@ -42,7 +42,7 @@ async function search(query: string): Promise<SearchResult[]> {
 
   for (const t of tasks.data ?? []) {
     const proj = t.project as { name: string } | null;
-    results.push({ type: 'task', id: t.id, title: t.title, status: t.status, project_name: proj?.name });
+    results.push({ type: 'task', id: t.id, title: t.title, status: t.status, project_id: t.project_id ?? null, project_name: proj?.name });
   }
   for (const p of projects.data ?? []) {
     results.push({ type: 'project', id: p.id, name: p.name, color: p.color });
@@ -104,9 +104,14 @@ export function GlobalSearch() {
   }, [debouncedQuery]);
 
   function navigate(result: SearchResult) {
-    if (result.type === 'task') router.push(`/dashboard`);
-    else if (result.type === 'project') router.push(`/projects/${result.id}`);
-    else if (result.type === 'goal') router.push(`/goals/${result.id}`);
+    if (result.type === 'task') {
+      if (result.project_id) router.push(`/projects/${result.project_id}`);
+      else router.push(`/kanban`);
+    } else if (result.type === 'project') {
+      router.push(`/projects/${result.id}`);
+    } else if (result.type === 'goal') {
+      router.push(`/goals/${result.id}`);
+    }
     setOpen(false);
   }
 

@@ -215,7 +215,7 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
       {/* Popout */}
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-1 w-72 rounded-2xl border bg-white shadow-2xl dark:bg-slate-900"
+          className="fixed right-4 top-[calc(3.5rem+0.35rem)] z-[9998] w-72 max-w-[calc(100vw-2rem)] rounded-2xl border bg-white shadow-2xl dark:bg-slate-900"
           style={{ borderColor: 'var(--card-border)' }}
         >
           {/* Header */}

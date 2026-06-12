@@ -367,7 +367,7 @@ export default function KanbanPage() {
         </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden px-2 pb-2 pt-3 sm:px-4 sm:pb-4 sm:pt-4 md:px-6 md:pb-6">
+        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto md:overflow-y-hidden px-2 pb-2 pt-3 sm:px-4 sm:pb-4 sm:pt-4 md:px-6 md:pb-6">
           {isLoading ? (
             <div className="flex h-full gap-4">
               {[...Array(3)].map((_, i) => (

@@ -7,6 +7,8 @@ const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), 
 import { AlertTriangle, BarChart3, Plus, Target } from 'lucide-react';
 import { DashboardAnalytics, DashboardStatsStrip } from '@/components/dashboard/dashboard-analytics';
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
+import { MotivationQuote } from '@/components/dashboard/motivation-quote';
+import { TaskStreak } from '@/components/dashboard/task-streak';
 import { TaskList } from '@/components/tasks/task-list';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { Dialog } from '@/components/ui/dialog';
@@ -250,12 +252,18 @@ export default function DashboardPage() {
 				    ═══════════════════════════════════════════════════════ */}
 				<div className="flex-1 overflow-y-auto lg:hidden">
 					<div className="px-4 py-4 space-y-4 sm:px-6">
-						{/* Stats + chart */}
-						<DashboardStatsStrip compact />
-						<DashboardAnalytics />
+					{/* Stats + chart */}
+					<DashboardStatsStrip compact />
+					<DashboardAnalytics />
 
-						{/* Goal focus — compact 3-col grid */}
-						{goalFocusPanel}
+					{/* Streak + quote */}
+					<div className="space-y-2">
+						<TaskStreak tasks={allTasks ?? []} />
+						<MotivationQuote />
+					</div>
+
+					{/* Goal focus — compact 3-col grid */}
+					{goalFocusPanel}
 
 						{/* Onboarding */}
 						{showOnboarding && (
@@ -285,10 +293,14 @@ export default function DashboardPage() {
 				    ═══════════════════════════════════════════════════════ */}
 				<div className="hidden flex-1 min-h-0 lg:flex lg:flex-row lg:overflow-hidden">
 
-					{/* Left panel — stats, chart, goal focus */}
+					{/* Left panel — stats, chart, streak, quote, goal focus */}
 					<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4">
 						<DashboardStatsStrip compact />
 						<DashboardAnalytics />
+						<div className="mt-4 space-y-2">
+							<TaskStreak tasks={allTasks ?? []} />
+							<MotivationQuote />
+						</div>
 						{goalFocusPanel}
 					</aside>
 

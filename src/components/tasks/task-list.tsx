@@ -12,7 +12,7 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { CheckCircle2, GripVertical, Plus } from 'lucide-react';
+import { ArrowUpDown, CheckCircle2, GripVertical, Plus } from 'lucide-react';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -20,7 +20,9 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { TaskQuestionFlow } from './task-question-flow';
 import { useDeleteTask, useUpdateTask } from '@/hooks/use-tasks';
-import type { Task, TaskStatus } from '@/lib/types';
+import type { Task, TaskStatus, Priority } from '@/lib/types';
+
+const PRIORITY_ORDER: Record<Priority, number> = { urgent: 4, high: 3, medium: 2, low: 1 };
 
 interface TaskListProps {
   tasks: Task[];
@@ -169,7 +171,30 @@ export function TaskList({
   return (
     <div className="space-y-2">
       {localTasks.length > 0 && !selectionMode && (
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-1.5">
+          <Button
+            size="sm"
+            variant="ghost"
+            title="Sort by priority (Urgent → High → Medium → Low)"
+            onClick={() => {
+              const sorted = [...localTasks].sort(
+                (a, b) => (PRIORITY_ORDER[b.priority] ?? 0) - (PRIORITY_ORDER[a.priority] ?? 0)
+              );
+              setLocalTasks(sorted);
+              const updates = sorted
+                .map((task, index) => ({ id: task.id, position: (index + 1) * 1000 }))
+                .filter(({ id, position }) => {
+                  const original = localTasks.find(t => t.id === id);
+                  return original && original.position !== position;
+                });
+              for (const { id, position } of updates) {
+                updateTask.mutate({ id, position });
+              }
+            }}
+          >
+            <ArrowUpDown className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Sort by priority</span>
+          </Button>
           <Button size="sm" variant="ghost" onClick={() => setSelectionMode(true)}>Select tasks</Button>
         </div>
       )}

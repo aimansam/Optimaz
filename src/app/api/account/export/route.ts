@@ -30,22 +30,17 @@ export async function GET(request: NextRequest) {
     projectsResult,
     tasksResult,
     subtasksResult,
-    routinesResult,
     savedViewsResult,
-    archiveResult,
   ] = await Promise.all([
     supabase.from('goals').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('projects').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('tasks').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('subtasks').select('*').eq('user_id', user.id).order('created_at'),
-    supabase.from('routines').select('*').eq('user_id', user.id).order('created_at'),
     supabase.from('saved_views').select('*').eq('user_id', user.id).order('created_at'),
-    supabase.from('task_completion_archive').select('*').eq('user_id', user.id).order('completed_at'),
   ]);
 
   const errors = [
-    goalsResult, projectsResult, tasksResult, subtasksResult,
-    routinesResult, savedViewsResult, archiveResult,
+    goalsResult, projectsResult, tasksResult, subtasksResult, savedViewsResult,
   ]
     .map((r) => r.error?.message)
     .filter(Boolean);
@@ -65,9 +60,7 @@ export async function GET(request: NextRequest) {
     projects: projectsResult.data ?? [],
     tasks: tasksResult.data ?? [],
     subtasks: subtasksResult.data ?? [],
-    routines: routinesResult.data ?? [],
     saved_views: savedViewsResult.data ?? [],
-    completed_tasks_archive: archiveResult.data ?? [],
   };
 
   const filename = `optimaz-export-${new Date().toISOString().slice(0, 10)}.json`;

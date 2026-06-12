@@ -22,6 +22,12 @@ const PRIORITY_BORDER: Record<string, string> = {
   urgent: 'border-l-red-500',
 };
 
+const STATUS_BG: Record<string, string> = {
+  todo: 'bg-white dark:bg-slate-900',
+  in_progress: 'bg-blue-50 dark:bg-blue-950/20',
+  done: 'bg-emerald-50 dark:bg-emerald-950/20',
+};
+
 const STATUS_ORDER: TaskStatus[] = ['todo', 'in_progress', 'done'];
 
 function getAdjacentStatus(status: TaskStatus, direction: -1 | 1) {
@@ -81,7 +87,8 @@ export function KanbanCard({ task }: { task: Task }) {
         ref={setNodeRef}
         style={style}
         className={cn(
-          'group relative rounded-xl border-l-[3px] bg-white ring-1 ring-slate-900/5 shadow-sm dark:bg-slate-900 dark:ring-slate-800 transition-all duration-150',
+          'group relative rounded-xl border-l-[3px] ring-1 ring-slate-900/5 shadow-sm dark:ring-slate-800 transition-all duration-150',
+          STATUS_BG[task.status],
           isDragging ? 'opacity-40 shadow-xl scale-[0.98]' : 'hover:shadow-md',
           overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority]
         )}

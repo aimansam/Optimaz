@@ -9,13 +9,18 @@ function getDayLabel(dateStr: string) {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString('en-US', { weekday: 'short' });
 }
 
+/** Returns a date as YYYY-MM-DD in local timezone. */
+function localDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function getLast7Days() {
   const days: string[] = [];
   const today = new Date();
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    days.push(d.toISOString().split('T')[0]);
+    days.push(localDateStr(d));
   }
   return days;
 }
@@ -27,8 +32,8 @@ function useTaskStats() {
       const today = new Date();
       const weekAgo = new Date();
       weekAgo.setDate(today.getDate() - 7);
-      const todayStr = today.toISOString().split("T")[0];
-      const weekAgoStr = weekAgo.toISOString().split("T")[0];
+      const todayStr = localDateStr(today);
+      const weekAgoStr = localDateStr(weekAgo);
 
       const [completedRes, overdueRes, upcomingRes, weeklyRes] = await Promise.all([
         supabase

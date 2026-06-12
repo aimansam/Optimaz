@@ -24,14 +24,15 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
+  // Don't render anything when closed — prevents shadow-2xl from bleeding
+  // into the visible viewport from off-screen translated panels
+  if (!open) return null;
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className={cn(
-          'fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px] transition-opacity duration-300',
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        )}
+        className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -42,9 +43,8 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'fixed right-0 top-0 z-50 flex h-full w-full flex-col shadow-2xl transition-transform duration-300 ease-out',
+          'fixed right-0 top-0 z-50 flex h-full w-full flex-col shadow-2xl',
           width,
-          open ? 'translate-x-0' : 'translate-x-full',
           'bg-white dark:bg-slate-900',
           className
         )}

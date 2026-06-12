@@ -1,14 +1,8 @@
-
-
-
-
 "use client";
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState, useSyncExternalStore } from 'react';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
-
-
 
 import { AlertTriangle, BarChart3, Plus, Target } from 'lucide-react';
 import { DashboardAnalytics, DashboardStatsStrip } from '@/components/dashboard/dashboard-analytics';
@@ -77,6 +71,7 @@ export default function DashboardPage() {
 	const dateStr = currentDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) ?? '';
 	const isLoading = loadingToday || loadingOverdue;
 	const todayKey = currentDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0];
+
 	const activeGoals = (goals ?? []).filter((goal) => {
 		const total = goal.tasks?.length ?? 0;
 		const completed = goal.tasks?.filter((task) => task.status === 'done').length ?? 0;
@@ -126,161 +121,188 @@ export default function DashboardPage() {
 
 	return (
 		<>
-			<div className="flex-1 overflow-y-auto">
-				<div className="mx-auto w-full max-w-3xl px-3 sm:px-4 md:px-6 py-3 md:py-8">
-					{/* Date hero and actions */}
-					<div className="mb-4 sm:mb-8 flex items-center justify-between gap-2 sm:gap-4">
-						<div>
-							<p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">{weekday} &middot; {dateStr}</p>
-							<h2 className="mt-0.5 sm:mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-								{greeting}{firstName ? `, ${firstName}` : ''}
-							</h2>
-						</div>
-						<div className="flex gap-2">
-							<button
-								type="button"
-								aria-label="Add Task"
-								title="Add Task"
-								onClick={() => setAddOpen(true)}
-								className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-							>
-								<Plus className="h-4 w-4" />
-								<span className="hidden sm:inline">Add Task</span>
-							</button>
-							<button
-								type="button"
-								aria-label={showGoalFocus ? 'Hide Goal Focus' : 'Show Goal Focus'}
-								className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 ${showGoalFocus ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
-								onClick={() => setShowGoalFocus((v) => !v)}
-							>
-								<Target className="h-5 w-5" />
-								<span className="hidden sm:inline">Goals</span>
-							</button>
-							<button
-								type="button"
-								aria-label={showAnalytics ? 'Hide Stats & Filter' : 'Show Stats & Filter'}
-								className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
-								onClick={() => setShowAnalytics((v) => !v)}
-							>
-								<BarChart3 className="h-5 w-5" />
-								<span className="hidden sm:inline">Filter</span>
-							</button>
-						</div>
+			{/* Full-height, no-scroll container */}
+			<div className="flex h-full flex-col overflow-hidden">
+
+				{/* ── Top bar: greeting + action buttons ────────────────── */}
+				<div className="shrink-0 flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-6">
+					<div>
+						<p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
+							{weekday} &middot; {dateStr}
+						</p>
+						<h2 className="mt-0.5 text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
+							{greeting}{firstName ? `, ${firstName}` : ''}
+						</h2>
 					</div>
-
-					{/* Always-visible stats strip */}
-					<DashboardStatsStrip />
-
-					{showOnboarding && (
-						<OnboardingPanel
-							taskCount={allTasks?.length ?? 0}
-							projectCount={projects?.length ?? 0}
-							goalCount={goals?.length ?? 0}
-							onCreateTask={() => setAddOpen(true)}
-							onSnooze={snoozeOnboarding}
-							onComplete={dismissOnboarding}
-							completing={updateOnboarding.isPending}
-						/>
-					)}
-
-					{/* Always-visible bar chart */}
-				<div className="mb-5">
-					<DashboardAnalytics />
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							aria-label="Add Task"
+							onClick={() => setAddOpen(true)}
+							className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+						>
+							<Plus className="h-4 w-4" />
+							<span className="hidden sm:inline">Add Task</span>
+						</button>
+						<button
+							type="button"
+							aria-label={showGoalFocus ? 'Hide Goal Focus' : 'Show Goal Focus'}
+							onClick={() => setShowGoalFocus(v => !v)}
+							className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showGoalFocus ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+						>
+							<Target className="h-4 w-4" />
+							<span className="hidden sm:inline">Goals</span>
+						</button>
+						<button
+							type="button"
+							aria-label={showAnalytics ? 'Hide Filter' : 'Show Filter'}
+							onClick={() => setShowAnalytics(v => !v)}
+							className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+						>
+							<BarChart3 className="h-4 w-4" />
+							<span className="hidden sm:inline">Filter</span>
+						</button>
+					</div>
 				</div>
 
-				{showAnalytics && (
-					<div className="mb-5">
-						<TaskFilterBar filters={filters} onChange={setFilters} />
-					</div>
-				)}
+				{/* ── Body: two-column on lg+, single-col scroll on mobile ── */}
+				<div className="flex-1 min-h-0 flex flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
 
-					{showGoalFocus && <DashboardWidget title="Goal Focus">
-						<div className="grid gap-3 sm:grid-cols-3">
-							<div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-								<div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-									<Target className="h-4 w-4 text-slate-500" />
-									Active goals
+					{/* LEFT PANEL — stats + chart + goal focus (fixed width) */}
+					<aside className="shrink-0 border-b border-slate-100 px-4 py-4 dark:border-slate-800 lg:w-64 lg:border-b-0 lg:border-r lg:overflow-y-auto xl:w-72">
+						{/* Stats strip */}
+						<DashboardStatsStrip compact />
+
+						{/* Bar chart */}
+						<DashboardAnalytics />
+
+						{/* Goal Focus (toggled) */}
+						{showGoalFocus && (
+							<div className="mt-4 space-y-3">
+								<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Goal Focus</p>
+								<div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
+									<div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+										<div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+											<Target className="h-3.5 w-3.5 text-slate-500" />
+											Active goals
+										</div>
+										<p className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
+										<p className="text-[10px] text-slate-500 dark:text-slate-400">Outcomes in motion</p>
+									</div>
+									<div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/20">
+										<div className="flex items-center gap-1.5 text-xs font-semibold text-red-700 dark:text-red-300">
+											<AlertTriangle className="h-3.5 w-3.5" />
+											At risk
+										</div>
+										<p className="mt-1 text-xl font-bold text-red-700 dark:text-red-300">{atRiskGoals.length}</p>
+										<p className="text-[10px] text-red-600/80 dark:text-red-300/80">Past target date</p>
+									</div>
+									<div className="rounded-xl border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/20">
+										<div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
+											<AlertTriangle className="h-3.5 w-3.5" />
+											Urgent work
+										</div>
+										<p className="mt-1 text-xl font-bold text-amber-700 dark:text-amber-300">{urgentGoalTasks.length}</p>
+										<p className="text-[10px] text-amber-700/80 dark:text-amber-300/80">Urgent goal tasks</p>
+									</div>
 								</div>
-								<p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
-								<p className="text-xs text-slate-500 dark:text-slate-400">Outcomes still in motion</p>
+								{nextGoals.length > 0 && (
+									<div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+										<p className="mb-2 text-xs font-semibold text-slate-500 dark:text-slate-400">Next outcomes</p>
+										<div className="space-y-1">
+											{nextGoals.map((goal) => {
+												const total = goal.tasks?.length ?? 0;
+												const completed = goal.tasks?.filter(t => t.status === 'done').length ?? 0;
+												const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+												return (
+													<Link key={goal.id} href={`/goals/${goal.id}`} className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800/60">
+														<span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
+														<span className="min-w-0 flex-1">
+															<span className="block truncate text-xs font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
+															<span className="block truncate text-[10px] text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
+														</span>
+														<span className="shrink-0 text-[10px] font-semibold text-slate-400">{percent}%</span>
+													</Link>
+												);
+											})}
+										</div>
+									</div>
+								)}
 							</div>
-							<div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/20">
-								<div className="flex items-center gap-2 text-sm font-semibold text-red-700 dark:text-red-300">
-									<AlertTriangle className="h-4 w-4" />
-									At risk
-								</div>
-								<p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-300">{atRiskGoals.length}</p>
-								<p className="text-xs text-red-600/80 dark:text-red-300/80">Active goals past target date</p>
+						)}
+					</aside>
+
+					{/* RIGHT PANEL — task feeds (scrollable) */}
+					<div className="flex-1 min-h-0 flex flex-col lg:overflow-hidden">
+
+						{/* Onboarding (shrink-0 — dismissible banner) */}
+						{showOnboarding && (
+							<div className="shrink-0 px-4 pt-4 sm:px-6">
+								<OnboardingPanel
+									taskCount={allTasks?.length ?? 0}
+									projectCount={projects?.length ?? 0}
+									goalCount={goals?.length ?? 0}
+									onCreateTask={() => setAddOpen(true)}
+									onSnooze={snoozeOnboarding}
+									onComplete={dismissOnboarding}
+									completing={updateOnboarding.isPending}
+								/>
 							</div>
-							<div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-								<div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
-									<AlertTriangle className="h-4 w-4" />
-									Urgent work
-								</div>
-								<p className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-300">{urgentGoalTasks.length}</p>
-								<p className="text-xs text-amber-700/80 dark:text-amber-300/80">Urgent tasks tied to goals</p>
+						)}
+
+						{/* Filter bar (shrink-0 — toggled) */}
+						{showAnalytics && (
+							<div className="shrink-0 px-4 pt-3 sm:px-6">
+								<TaskFilterBar filters={filters} onChange={setFilters} />
 							</div>
+						)}
+
+						{/* Scrollable task content */}
+						<div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6">
+
+							{/* Overdue */}
+							{!isLoading && overdueTasks && overdueTasks.length > 0 && (
+								<DashboardWidget title={`Overdue (${overdueTasks.length})`}>
+									<TaskList tasks={filterTasks(overdueTasks)} showAddButton={false} />
+								</DashboardWidget>
+							)}
+
+							{/* Today */}
+							<DashboardWidget title="Today">
+								{isLoading ? (
+									<div className="space-y-2">
+										{[...Array(3)].map((_, i) => (
+											<div key={i} className="h-12 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+										))}
+									</div>
+								) : (
+									<TaskList
+										tasks={filterTasks(todayTasks)}
+										emptyMessage={
+											(overdueTasks?.length ?? 0) > 0
+												? 'No additional tasks due today.'
+												: 'Nothing due today — great job!'
+										}
+										showAddButton={false}
+									/>
+								)}
+							</DashboardWidget>
+
+							{/* Upcoming Deadlines */}
+							<DashboardWidget title="Upcoming Deadlines">
+								<UpcomingTasks days={7} filters={filters} showHeading={false} />
+							</DashboardWidget>
+
 						</div>
-						{nextGoals.length > 0 && (
-							<div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-									<div className="mb-2 flex items-center justify-between gap-2">
-									<p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Next outcomes</p>
-								</div>
-								<div className="space-y-2">
-									{nextGoals.map((goal) => {
-										const total = goal.tasks?.length ?? 0;
-										const completed = goal.tasks?.filter((task) => task.status === 'done').length ?? 0;
-										const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-										return (
-											<Link key={goal.id} href={`/goals/${goal.id}`} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/60">
-												<span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
-												<span className="min-w-0 flex-1">
-													<span className="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
-													<span className="block truncate text-xs text-slate-500 dark:text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
-												</span>
-												<span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400">{percent}%</span>
-											</Link>
-										);
-									})}
-								</div>
-							</div>
-						)}
-					</DashboardWidget>}
+					</div>
 
-					{/* Upcoming deadlines section */}
-					<DashboardWidget title="Upcoming Deadlines">
-						<UpcomingTasks days={7} filters={filters} showHeading={false} />
-					</DashboardWidget>
-
-					{/* Overdue section */}
-					{!isLoading && overdueTasks && overdueTasks.length > 0 && (
-						<DashboardWidget title={`Overdue (${overdueTasks.length})`}>
-							<TaskList tasks={filterTasks(overdueTasks)} showAddButton={false} />
-						</DashboardWidget>
-					)}
-
-					{/* Today section */}
-					<DashboardWidget title="Today">
-						{isLoading ? null : (
-							<TaskList
-								tasks={filterTasks(todayTasks)}
-								emptyMessage={
-									(overdueTasks?.length ?? 0) > 0
-										? 'No additional tasks due today.'
-										: 'Nothing due today — great job!'
-								}
-								showAddButton={false}
-							/>
-						)}
-					</DashboardWidget>
 				</div>
 			</div>
 
 			<Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
 				<TaskQuestionFlow onClose={() => setAddOpen(false)} />
 			</Dialog>
-				<InstallPWAButton />
+			<InstallPWAButton />
 		</>
 	);
 }
-

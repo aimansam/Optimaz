@@ -4,8 +4,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicPage = pathname === '/' || pathname === '/privacy' || pathname === '/terms' || pathname === '/pricing';
+  // API routes handle their own auth — do not redirect, let handlers return 401
+  const isApiRoute = pathname.startsWith('/api/');
 
-  if (isPublicPage) {
+  if (isPublicPage || isApiRoute) {
     return NextResponse.next({ request });
   }
 

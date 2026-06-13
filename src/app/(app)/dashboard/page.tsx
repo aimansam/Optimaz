@@ -158,7 +158,7 @@ export default function DashboardPage() {
 				</div>
 				{/* Right: action buttons */}
 				<div className="flex shrink-0 items-center gap-2 pt-0.5">
-					<DailySummary tasks={allTasks ?? []} todayTasks={todayTasks ?? []} goals={goals ?? []} />
+					<DailySummary tasks={allTasks ?? []} goals={goals ?? []} />
 					<button
 						type="button"
 						aria-label="Add Task"

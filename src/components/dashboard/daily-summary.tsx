@@ -6,7 +6,6 @@ import type { Task } from '@/lib/types';
 
 interface DailySummaryProps {
   tasks: Task[];
-  todayTasks: Task[];
   goals: { id: string; title: string; tasks?: { status: string }[] }[];
 }
 
@@ -93,7 +92,7 @@ function CircleProgress({ pct, size = 72 }: { pct: number; size?: number }) {
   );
 }
 
-export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
+export function DailySummary({ tasks, goals }: DailySummaryProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -123,11 +122,10 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
     return localDate === todayStr;
   }).length;
 
-  const totalDueToday = todayTasks.length + tasks.filter(
-    t => t.status === 'done' && t.due_date === todayStr
-  ).length;
-
-  const remainingToday = todayTasks.filter(t => t.status !== 'done').length;
+  // Compute today counts entirely from allTasks (single source of truth)
+  const allTodayTasks = tasks.filter(t => t.due_date === todayStr && !t.archived_at);
+  const totalDueToday = allTodayTasks.length;
+  const remainingToday = allTodayTasks.filter(t => t.status !== 'done').length;
 
   const progressPct = totalDueToday > 0
     ? Math.round(((totalDueToday - remainingToday) / totalDueToday) * 100)

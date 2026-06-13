@@ -61,12 +61,13 @@ function useTaskStats() {
           .not("completed_at", "is", null),
       ]);
 
-      // Build per-day counts for last 7 days
+      // Build per-day counts for last 7 days — use LOCAL date to match the day labels
       const days = getLast7Days();
       const countByDay = Object.fromEntries(days.map((d) => [d, 0]));
       for (const row of weeklyRes.data ?? []) {
         if (!row.completed_at) continue;
-        const day = (row.completed_at as string).split("T")[0];
+        // completed_at is a UTC ISO string; convert to local YYYY-MM-DD before bucketing
+        const day = new Date(row.completed_at as string).toLocaleDateString('en-CA');
         if (day in countByDay) countByDay[day]++;
       }
       const chartData = days.map((d) => ({ day: d, label: getDayLabel(d), count: countByDay[d] }));

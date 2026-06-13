@@ -106,10 +106,15 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
 
   const todayStr = new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
 
-  // Done today = tasks completed on today's date
-  const doneToday = tasks.filter(
-    t => t.status === 'done' && (t.completed_at ?? t.updated_at)?.startsWith(todayStr)
-  ).length;
+  // Done today = tasks completed on today's LOCAL date
+  // completed_at is a UTC ISO string — convert to local date string before comparing
+  const doneToday = tasks.filter(t => {
+    if (t.status !== 'done') return false;
+    const rawTs = t.completed_at ?? t.updated_at;
+    if (!rawTs) return false;
+    const localDate = new Date(rawTs).toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
+    return localDate === todayStr;
+  }).length;
 
   // Total = tasks due today (pending + done with today's due_date)
   const totalDueToday = todayTasks.length + tasks.filter(

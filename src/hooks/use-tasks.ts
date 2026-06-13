@@ -238,6 +238,7 @@ export function useCreateTask() {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       void trackEvent('task_created', {
         task_id: task.id,
         has_due_date: Boolean(task.due_date),
@@ -256,6 +257,61 @@ export function useCreateTask() {
 export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
+    onMutate: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
+      // Cancel any in-flight refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      // Snapshot ALL task query caches so we can roll back on error
+      const previousSnapshots: { queryKey: unknown[]; data: unknown }[] = [];
+      const allTaskCaches = queryClient.getQueriesData<Task[]>({ queryKey: ['tasks'] });
+
+      for (const [queryKey, cachedData] of allTaskCaches) {
+        if (!Array.isArray(cachedData)) continue;
+        previousSnapshots.push({ queryKey: queryKey as unknown[], data: cachedData });
+
+        const isToday = Array.isArray(queryKey) && queryKey[1] === 'today';
+
+        queryClient.setQueryData<Task[]>(queryKey, (old) => {
+          if (!Array.isArray(old)) return old;
+
+          // If this task is being marked done, remove it from "today" queries
+          // (useTodayTasks only returns non-done tasks)
+          if (updates.status === 'done' && isToday) {
+            return old.filter((t) => t.id !== id);
+          }
+
+          // Otherwise patch the task in-place
+          return old.map((t) => {
+            if (t.id !== id) return t;
+            const now = new Date().toISOString();
+            return {
+              ...t,
+              ...updates,
+              completed_at:
+                updates.status === 'done'
+                  ? now
+                  : updates.status !== undefined
+                  ? null
+                  : t.completed_at,
+              archived_at:
+                updates.status !== undefined && updates.status !== 'done'
+                  ? null
+                  : t.archived_at,
+            } as Task;
+          });
+        });
+      }
+
+      return { previousSnapshots };
+    },
+    onError: (_err, _variables, context) => {
+      // Roll back all optimistic updates
+      if (context?.previousSnapshots) {
+        for (const { queryKey, data } of context.previousSnapshots) {
+          queryClient.setQueryData(queryKey, data);
+        }
+      }
+    },
     mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
       let previousTask: Pick<Task, 'status' | 'is_recurring' | 'recurrence_rule'> | null = null;
 
@@ -351,6 +407,7 @@ export function useUpdateTask() {
     onSuccess: (task, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       if (variables.status === 'done') {
         void trackEvent('task_completed', { task_id: task.id });
       }
@@ -368,6 +425,7 @@ export function useDeleteTask() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       toast.success('Task deleted');
     },
     onError: (error: Error) => {
@@ -393,6 +451,7 @@ export function useArchiveTask() {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       void trackEvent('task_archived', { task_id: task.id });
       toast.success('Task archived');
     },
@@ -418,6 +477,7 @@ export function useRestoreTask() {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       void trackEvent('task_restored', { task_id: task.id });
       toast.success('Task restored');
     },

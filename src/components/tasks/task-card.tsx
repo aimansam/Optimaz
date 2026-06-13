@@ -28,12 +28,19 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   const [editingTitle, setEditingTitle] = useState(false);
   const [editValue, setEditValue] = useState(task.title);
   const [detailOpen, setDetailOpen] = useState(false);
+  // Local optimistic done state — flip instantly on click, sync back when task prop updates
+  const [pendingDone, setPendingDone] = useState<boolean | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Keep editValue in sync if task.title changes externally
   useEffect(() => {
     if (!editingTitle) setEditValue(task.title);
   }, [task.title, editingTitle]);
+
+  // Once React Query propagates the real status, clear the local pending state
+  useEffect(() => {
+    setPendingDone(null);
+  }, [task.status]);
 
   // Auto-focus and select all when entering edit mode
   useEffect(() => {
@@ -44,14 +51,17 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
   }, [editingTitle]);
 
   const priority = PRIORITY_CONFIG[task.priority];
-  const overdue = isOverdue(task.due_date, task.due_time) && task.status !== 'done';
-  const isDone = task.status === 'done';
+  // isDone uses local pending state for instant visual feedback; syncs to task.status once React Query propagates
+  const isDone = pendingDone !== null ? pendingDone : task.status === 'done';
+  const overdue = isOverdue(task.due_date, task.due_time) && !isDone;
   const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
   const totalSubtasks = task.subtasks?.length ?? 0;
   const percentComplete = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
 
   const toggleDone = () => {
-    updateTask.mutate({ id: task.id, status: isDone ? 'todo' : 'done' });
+    const nextDone = !isDone;
+    setPendingDone(nextDone); // instant visual flip
+    updateTask.mutate({ id: task.id, status: nextDone ? 'done' : 'todo' });
   };
 
   function startEditing() {

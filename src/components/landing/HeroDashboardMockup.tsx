@@ -58,9 +58,8 @@ export function HeroDashboardMockup() {
         overflow: 'hidden',
         pointerEvents: 'none',
         userSelect: 'none',
-        // z-index 2 places mockup on top of the glass card (zIndex: 1)
-        zIndex: 2,
-        willChange: 'transform',
+        // No stacking context here — lets background children stay below the card (zIndex:2)
+        // while the scene (zIndex:4) floats above it. willChange on children/scene instead.
       }}
     >
       {/* ── Background gradients ─────────────────────────────── */}

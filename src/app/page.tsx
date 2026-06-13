@@ -29,7 +29,6 @@ import {
   Lock,
   MapPin,
   Users,
-  Link2,
   Smartphone,
 } from 'lucide-react';
 
@@ -64,12 +63,6 @@ const FEATURES = [
   { icon: CalendarDays,title: 'Calendar View',      desc: 'See upcoming deadlines at a glance and plan your week with confidence.',                                                                      color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
   { icon: TrendingUp,  title: 'Streaks & Analytics',desc: 'Track consistency, celebrate progress, and understand how you work over time.',                                                               color: '#f97316', bg: 'rgba(249,115,22,0.08)' },
   { icon: Palette,     title: 'Beautiful Themes',   desc: 'Choose from seven carefully designed themes built for focus, day or night.',                                                                  color: '#ec4899', bg: 'rgba(236,72,153,0.08)' },
-];
-
-const STEPS = [
-  { step: '01', title: 'Capture Everything',  desc: 'Add tasks in seconds. Set priorities, due dates, projects, and reminders without breaking your flow.',               color: '#7C3AED' },
-  { step: '02', title: 'Organize Your Way',   desc: 'Manage work however you prefer — list, Kanban, calendar, goals, or projects.',                                       color: '#8b5cf6' },
-  { step: '03', title: 'Stay Accountable',    desc: 'Daily summaries, streaks, and progress tracking help you stay consistent every day.',                                 color: '#7C3AED' },
 ];
 
 const FREE_FEATURES = ['Unlimited tasks', 'Calendar view', 'Goals tracking', '3 projects', 'Mobile PWA', 'Daily streak'];
@@ -234,34 +227,6 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── Connected strip ── */}
-      <section className="py-16" style={{ borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}`, background: C.bgAlt }}>
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Everything stays connected.</h2>
-          <p className="mt-4 max-w-xl mx-auto text-sm leading-7" style={{ color: C.muted }}>
-            Most productivity tools live in separate silos. In Optimaz, a task can belong to a project, contribute to a goal, and repeat as a routine — all at the same time. Update it once. Everything stays connected.
-          </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center">
-            {[
-              { icon: ListTodo,   label: 'Task',    color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
-              { icon: FolderOpen, label: 'Project', color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
-              { icon: Target,     label: 'Goal',    color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
-              { icon: Repeat2,    label: 'Routine', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-            ].map(({ icon: Icon, label, color, bg }, i, arr) => (
-              <div key={label} className="flex items-center gap-3">
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: bg, border: `1px solid ${C.cardBorder}` }}>
-                    <Icon className="h-5 w-5" style={{ color }} />
-                  </div>
-                  <span className="text-xs font-semibold" style={{ color: C.fg }}>{label}</span>
-                </div>
-                {i < arr.length - 1 && <Link2 className="h-4 w-4 shrink-0 sm:rotate-0 rotate-90" style={{ color: C.cardBorder }} />}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Features ── */}
       <section id="features" className="py-20" style={{ background: C.bgAlt, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -330,28 +295,6 @@ export default async function LandingPage() {
             </table>
           </div>
           <p className="mt-4 text-center text-xs" style={{ color: C.muted }}>One workspace. One login. One monthly subscription.</p>
-        </div>
-      </section>
-
-      {/* ── How it works ── */}
-      <section className="py-20" style={{ background: C.bg }}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Built Around How You Actually Work</h2>
-            <p className="mt-3" style={{ color: C.muted }}>Three simple phases. Infinite clarity.</p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {STEPS.map(({ step, title, desc, color }) => (
-              <div key={step} className="rounded-2xl p-7" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black text-white"
-                  style={{ background: `linear-gradient(135deg, ${color}, ${color}bb)`, boxShadow: `0 2px 10px ${color}40` }}>
-                  {step}
-                </div>
-                <h3 className="mb-2 text-base font-semibold" style={{ color: C.fg }}>{title}</h3>
-                <p className="text-sm leading-6" style={{ color: C.muted }}>{desc}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

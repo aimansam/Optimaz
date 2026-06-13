@@ -125,13 +125,16 @@ export function DailySummary({ tasks, goals }: DailySummaryProps) {
   // Tasks due today that are still pending
   const todayDuePending = tasks.filter(t => t.due_date === todayStr && t.status !== 'done' && !t.archived_at);
 
-  // Total = completed today + still pending today (gives meaningful denominator)
-  const totalForProgress = doneToday + todayDuePending.length;
+  // Overdue tasks still pending (due before today, not done, not archived)
+  const overdueStillPending = tasks.filter(t => t.status !== 'done' && !t.archived_at && t.due_date && t.due_date < todayStr);
+
+  // Total = completed today + today pending + overdue pending
+  const remainingToday = todayDuePending.length + overdueStillPending.length;
+  const totalForProgress = doneToday + remainingToday;
   const progressPct = totalForProgress > 0 ? Math.round((doneToday / totalForProgress) * 100) : 0;
 
   // For the "Done today" stat row display
   const totalDueToday = totalForProgress;
-  const remainingToday = todayDuePending.length;
 
   const overdueCount = tasks.filter(
     t => t.status !== 'done' && !t.archived_at && t.due_date && t.due_date < todayStr

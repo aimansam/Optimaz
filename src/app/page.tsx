@@ -141,25 +141,29 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero — full-bleed background image ── */}
+      {/* ── Hero — full-bleed background image (no zoom) ── */}
       <section
         className="relative min-h-[92vh] flex items-center overflow-hidden"
         style={{
           backgroundImage: 'url(/hero-background.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center right',
+          backgroundSize: 'auto 100%',
+          backgroundPosition: 'right center',
           backgroundRepeat: 'no-repeat',
+          backgroundColor: C.bgAlt,
         }}
       >
-        {/* Left gradient overlay */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{ background: 'linear-gradient(90deg, rgba(247,246,251,0.97) 0%, rgba(247,246,251,0.92) 35%, rgba(247,246,251,0.55) 60%, rgba(247,246,251,0.0) 100%)' }}
-        />
-
         <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8">
-          <div className="max-w-xl">
-
+          {/* Glass card container — Apple-style frosted panel */}
+          <div
+            className="max-w-xl rounded-3xl p-8 sm:p-10"
+            style={{
+              background: 'rgba(255,255,255,0.60)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)',
+              border: '1px solid rgba(255,255,255,0.72)',
+              boxShadow: '0 8px 40px rgba(124,58,237,0.10), 0 2px 12px rgba(0,0,0,0.06)',
+            }}
+          >
             {/* Social proof line */}
             <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: C.muted }}>
               Used by students, freelancers, founders &amp; high-performers
@@ -174,10 +178,16 @@ export default async function LandingPage() {
               Now in beta — free Pro month for early users
             </div>
 
-            {/* Headline */}
+            {/* Headline — gradient text */}
             <h1
               className="font-black uppercase leading-[0.9] tracking-tight"
-              style={{ color: C.fg, fontSize: 'clamp(2.2rem, 4.5vw, 4rem)' }}
+              style={{
+                fontSize: 'clamp(2.2rem, 4.5vw, 4rem)',
+                background: 'linear-gradient(135deg, #5b21b6 0%, #7C3AED 40%, #a78bfa 80%, #6d28d9 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
             >
               RECLAIM YOUR<br />
               FOCUS. OPTIMIZE<br />
@@ -194,7 +204,11 @@ export default async function LandingPage() {
               <Link
                 href="/auth/login"
                 className="inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.8))`, boxShadow: `0 6px 28px ${C.accentGlow}`, letterSpacing: '0.06em' }}
+                style={{
+                  background: `linear-gradient(135deg, #5b21b6, ${C.accent})`,
+                  boxShadow: `0 6px 28px ${C.accentGlow}`,
+                  letterSpacing: '0.06em',
+                }}
               >
                 Get started free
                 <ArrowRight className="h-4 w-4" />
@@ -207,7 +221,7 @@ export default async function LandingPage() {
               <div className="flex -space-x-2">
                 {(['#7C3AED','#ec4899','#0ea5e9','#10b981'] as const).map((color, i) => (
                   <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-bold text-white"
-                    style={{ background: color, borderColor: C.bgAlt }}>
+                    style={{ background: color, borderColor: 'rgba(255,255,255,0.8)' }}>
                     {['A','B','C','D'][i]}
                   </div>
                 ))}

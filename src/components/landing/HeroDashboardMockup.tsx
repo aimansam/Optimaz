@@ -58,6 +58,9 @@ export function HeroDashboardMockup() {
         overflow: 'hidden',
         pointerEvents: 'none',
         userSelect: 'none',
+        // Promote entire component to its own GPU layer
+        willChange: 'transform',
+        contain: 'layout style paint',
       }}
     >
       {/* ── Background gradients ─────────────────────────────── */}
@@ -88,6 +91,9 @@ export function HeroDashboardMockup() {
         borderRadius: '50%',
         background: 'radial-gradient(ellipse, rgba(167,139,250,0.2) 0%, rgba(236,72,153,0.09) 45%, transparent 70%)',
         filter: 'blur(48px)',
+        // Promotes blur to GPU composited layer — prevents main-thread repaint
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }} />
 
       {/* ── Top-right soft fill ───────────────────────────────── */}
@@ -97,6 +103,8 @@ export function HeroDashboardMockup() {
         borderRadius: '50%',
         background: 'radial-gradient(ellipse, rgba(221,214,254,0.28) 0%, transparent 70%)',
         filter: 'blur(60px)',
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }} />
 
       {/* ── Right-edge white vignette ─────────────────────────── */}
@@ -119,13 +127,11 @@ export function HeroDashboardMockup() {
       <div style={{
         position: 'absolute',
         top: '50%', left: '44%',
+        // Single 3D transform — browser allocates one GPU layer for the whole subtree
         transform: 'translateY(-50%) perspective(2800px) rotateY(-10deg) rotateX(3deg)',
         transformOrigin: 'center center',
-        filter: [
-          'drop-shadow(0 60px 120px rgba(124,58,237,0.30))',
-          'drop-shadow(0 30px 60px rgba(0,0,0,0.16))',
-          'drop-shadow(0 0 100px rgba(167,139,250,0.20))',
-        ].join(' '),
+        // No filter here — box-shadow on the shell is GPU-accelerated and avoids re-rasterising every child
+        willChange: 'transform',
         zIndex: 4,
       }}>
         <div style={{ position: 'relative' }}>
@@ -137,7 +143,13 @@ export function HeroDashboardMockup() {
             borderRadius: 20,
             border: '1px solid rgba(124,58,237,0.10)',
             overflow: 'hidden',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9)',
+            // box-shadow is GPU-composited — replaces the expensive drop-shadow filter on the parent
+            boxShadow: [
+              'inset 0 1px 0 rgba(255,255,255,0.9)',
+              '0 60px 120px rgba(124,58,237,0.28)',
+              '0 30px 60px rgba(0,0,0,0.14)',
+              '0 0 80px rgba(167,139,250,0.18)',
+            ].join(', '),
             display: 'flex', flexDirection: 'column',
           }}>
 
@@ -291,9 +303,8 @@ export function HeroDashboardMockup() {
             position: 'absolute',
             right: -110, top: 100,
             width: 200,
-            background: 'rgba(255,255,255,0.94)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            // Solid background — removes backdropFilter which is one of the most expensive CSS properties
+            background: 'rgba(255,255,255,0.97)',
             border: '1px solid rgba(124,58,237,0.12)',
             borderRadius: 16,
             boxShadow: '0 20px 50px rgba(124,58,237,0.16), 0 6px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',

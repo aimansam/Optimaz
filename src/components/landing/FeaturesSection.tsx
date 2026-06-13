@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import {
   ListTodo, Target, FolderOpen, Repeat2,
   Kanban, CalendarDays, TrendingUp, Palette,
@@ -9,8 +10,8 @@ const PUR  = '#7C3AED';
 const PINK = '#EC4899';
 
 // ── Skeleton helpers ────────────────────────────────────────
-function Bar({ w = '100%', h = 8, color = 'rgba(124,58,237,0.12)', r = 4 }: { w?: string | number; h?: number; color?: string; r?: number }) {
-  return <div style={{ width: w, height: h, borderRadius: r, background: color, flexShrink: 0 }} />;
+function Bar({ w = '100%', h = 8, color = 'rgba(124,58,237,0.12)', r = 4, style }: { w?: string | number; h?: number; color?: string; r?: number; style?: CSSProperties }) {
+  return <div style={{ width: w, height: h, borderRadius: r, background: color, flexShrink: 0, ...style }} />;
 }
 function TaskRow({ accent }: { accent: string }) {
   return (

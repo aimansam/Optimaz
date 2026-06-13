@@ -304,13 +304,14 @@ export function useUpdateTask() {
 
       return { previousSnapshots };
     },
-    onError: (_err, _variables, context) => {
+    onError: (err: Error, _variables, context) => {
       // Roll back all optimistic updates
       if (context?.previousSnapshots) {
         for (const { queryKey, data } of context.previousSnapshots) {
           queryClient.setQueryData(queryKey, data);
         }
       }
+      toast.error(`Failed to update task: ${err.message}`);
     },
     mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
       let previousTask: Pick<Task, 'status' | 'is_recurring' | 'recurrence_rule'> | null = null;
@@ -410,6 +411,8 @@ export function useUpdateTask() {
       queryClient.invalidateQueries({ queryKey: ['task-stats'] });
       if (variables.status === 'done') {
         void trackEvent('task_completed', { task_id: task.id });
+      } else if ('title' in variables || 'notes' in variables || 'priority' in variables || 'due_date' in variables || 'project_id' in variables || 'goal_id' in variables) {
+        toast.success('Task updated!');
       }
     },
   });

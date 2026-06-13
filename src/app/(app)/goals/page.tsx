@@ -57,7 +57,7 @@ export default function GoalsPage() {
             {/* Active goals */}
             {(active?.length ?? 0) > 0 && (
               <section>
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+                <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   In Progress ({active?.length})
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +71,7 @@ export default function GoalsPage() {
             {/* Achieved goals */}
             {(achieved?.length ?? 0) > 0 && (
               <section>
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+                <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   Achieved ({achieved?.length})
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

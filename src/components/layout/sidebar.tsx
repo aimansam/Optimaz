@@ -65,10 +65,7 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
             <img src="/icon-192x192.png" alt="Optimaz" className="h-7 w-7 rounded-lg" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span
-              className="text-base font-bold tracking-tight"
-              style={{ color: 'var(--foreground)' }}
-            >
+            <span className="gradient-text text-base font-bold tracking-tight">
               Optimaz
             </span>
             <span

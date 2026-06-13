@@ -106,7 +106,7 @@ function MfaSection() {
     <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
       <div className="mb-4 flex items-center gap-2">
         <ShieldCheck className="h-5 w-5 text-slate-400" />
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Two-factor authentication</h2>
+        <h2 className="gradient-text font-semibold">Two-factor authentication</h2>
         {mfaStatus === 'enabled' && (
           <span className="ml-auto rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/40 dark:text-green-300">
             Enabled
@@ -207,7 +207,7 @@ function AppearanceSection() {
     <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
       <div className="flex items-center gap-2 mb-5">
         <Palette className="h-5 w-5 text-slate-400" />
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Appearance</h2>
+        <h2 className="gradient-text font-semibold">Appearance</h2>
       </div>
 
       {/* Light themes */}
@@ -343,7 +343,7 @@ function PlanSection() {
     <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
       <div className="mb-5 flex items-center gap-2">
         <CreditCard className="h-5 w-5 text-slate-400" />
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Plan &amp; Billing</h2>
+        <h2 className="gradient-text font-semibold">Plan &amp; Billing</h2>
         {!isLoading && (
           hasPro ? (
             <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
@@ -587,7 +587,7 @@ export default function SettingsPage() {
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-5 flex items-center gap-2">
               <User className="h-5 w-5 text-slate-400" />
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Account settings</h2>
+              <h2 className="gradient-text font-semibold">Account settings</h2>
             </div>
             <div className="flex items-center gap-3 border-b border-slate-100 pb-5 dark:border-slate-800">
               <div
@@ -674,7 +674,7 @@ export default function SettingsPage() {
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center gap-2 mb-4">
               <Bell className="h-5 w-5 text-slate-400" />
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">Push Notifications</h2>
+              <h2 className="gradient-text font-semibold">Push Notifications</h2>
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               Get notified about upcoming tasks on your device (desktop and mobile).
@@ -792,7 +792,7 @@ export default function SettingsPage() {
 
           {/* About */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">About Optimaz</h2>
+            <h2 className="gradient-text font-semibold mb-2">About Optimaz</h2>
             <p className="text-sm text-slate-400">
               Optimaz helps you organize projects, goals, tasks, deadlines, and daily progress in one focused workspace.
               Install it on your phone or desktop for quick access whenever you plan your day.

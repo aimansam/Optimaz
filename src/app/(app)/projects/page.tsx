@@ -180,7 +180,7 @@ export default function ProjectsPage() {
           <div className="space-y-8">
             {(parentProjects.length > 0 || search.trim()) && (
               <section>
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+                <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   {search.trim() ? `Projects (${filteredProjects.length})` : `Projects (${parentProjects.length})`}
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -203,7 +203,7 @@ export default function ProjectsPage() {
             )}
             {!search.trim() && visibleSubprojects.length > 0 && (
               <section>
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+                <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   Subprojects ({visibleSubprojects.length})
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

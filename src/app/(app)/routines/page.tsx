@@ -177,7 +177,7 @@ export default function RoutinesPage() {
                 return (
                   <div key={group.value} className="flex flex-col gap-3">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+                      <h2 className="gradient-text text-sm font-semibold uppercase tracking-wider">
                         {group.label}
                         {groupTasks.length > 0 && <span className="ml-1.5">({groupTasks.length})</span>}
                       </h2>

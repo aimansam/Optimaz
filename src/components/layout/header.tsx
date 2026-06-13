@@ -54,10 +54,7 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
         >
           <Menu className="h-4 w-4" />
         </button>
-        <h1
-          className="truncate text-base font-semibold tracking-tight"
-          style={{ color: 'var(--foreground)' }}
-        >
+        <h1 className="gradient-text truncate text-base font-semibold tracking-tight">
           {title}
         </h1>
       </div>

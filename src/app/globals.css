@@ -253,3 +253,11 @@ body {
   border-color: rgb(var(--accent) / 0.55) !important;
   box-shadow: 0 0 0 2px rgb(var(--accent) / 0.12);
 }
+
+/* Gradient text — foreground → accent */
+.gradient-text {
+  background: linear-gradient(130deg, var(--foreground) 30%, rgb(var(--accent)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

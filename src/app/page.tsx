@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { HeroDashboardMockup } from '@/components/landing/HeroDashboardMockup';
+import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import {
   FolderOpen,
   Target,
@@ -265,23 +266,12 @@ export default async function LandingPage() {
       <section id="features" className="py-20" style={{ background: C.bgAlt, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em]" style={{ color: C.accent }}>Everything you need to stay organized</p>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Tasks. Goals. Projects. Habits. Calendar.</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Everything you need to stay organized</h2>
             <p className="mt-3 max-w-xl mx-auto" style={{ color: C.muted }}>
               One workspace built to help you focus on execution instead of managing software.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
-              <div key={title} className="rounded-2xl p-5 transition-all hover:shadow-lg" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: bg }}>
-                  <Icon className="h-5 w-5" style={{ color }} />
-                </div>
-                <h3 className="mb-1.5 text-sm font-semibold uppercase tracking-wide" style={{ color: C.fg }}>{title}</h3>
-                <p className="text-xs leading-5" style={{ color: C.muted }}>{desc}</p>
-              </div>
-            ))}
-          </div>
+          <FeaturesSection />
         </div>
       </section>
 

@@ -28,58 +28,57 @@ import {
   MapPin,
   Users,
   Link2,
+  Smartphone,
 } from 'lucide-react';
 
 // ── Static design tokens (landing page never changes with user theme)
 const C = {
-  bg:         '#ffffff',
-  bgAlt:      '#f7f6fb',
-  fg:         '#0f0b1a',
-  muted:      '#6b7280',
-  accent:     '#7C3AED',
-  accentHex:  '#7C3AED',
-  accentLight:'rgba(124,58,237,0.1)',
+  bg:          '#ffffff',
+  bgAlt:       '#f7f6fb',
+  fg:          '#0f0b1a',
+  muted:       '#6b7280',
+  accent:      '#7C3AED',
+  accentLight: 'rgba(124,58,237,0.1)',
   accentBorder:'rgba(124,58,237,0.2)',
-  accentGlow: 'rgba(124,58,237,0.28)',
-  cardBg:     '#ffffff',
-  cardBorder: '#e5e7eb',
-  mutedBg:    '#f7f6fb',
+  accentGlow:  'rgba(124,58,237,0.28)',
+  cardBg:      '#ffffff',
+  cardBorder:  '#e5e7eb',
 };
 
 const FEATURES = [
-  { icon: ListTodo,    title: 'Smart Task List',    desc: 'Capture, prioritise and complete work. Sort by urgency, drag to reorder, filter by project — all in one view.',                              color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
-  { icon: Target,      title: 'Goals',              desc: 'Set long-term outcomes, track progress with linked tasks, and see your completion rate over time.',                                         color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
-  { icon: FolderOpen,  title: 'Projects',           desc: 'Group tasks into focused projects with support for sub-projects so your structure matches how you think.',                                  color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
-  { icon: Repeat2,     title: 'Routines',           desc: 'Set up daily habits and recurring tasks that rebuild themselves automatically when completed.',                                              color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-  { icon: Kanban,      title: 'Kanban Board',       desc: 'Drag tasks across To Do → In Progress → Done. Visual workflow that stays in sync with your task list.',                                    color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
-  { icon: CalendarDays,title: 'Calendar View',      desc: 'See every due date on a clean timeline. Click any day to quickly add tasks.',                                                               color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
-  { icon: TrendingUp,  title: 'Streak & Analytics', desc: 'Build consistency with a daily task streak. Track completions and progress at a glance.',                                                  color: '#f97316', bg: 'rgba(249,115,22,0.08)' },
-  { icon: Palette,     title: '7 Beautiful Themes', desc: 'Cloud, Sand, Mint, Blossom, Midnight, Obsidian, Forest. Light and dark included.',                                                         color: '#ec4899', bg: 'rgba(236,72,153,0.08)' },
+  { icon: ListTodo,    title: 'Smart Task List',    desc: 'Capture, prioritize, organize, and complete work without clutter. Quickly sort by urgency, project, or due date.',                            color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
+  { icon: Target,      title: 'Goals',              desc: 'Turn long-term ambitions into measurable progress. Connect goals directly to the tasks that move them forward.',                              color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
+  { icon: FolderOpen,  title: 'Projects',           desc: 'Organize work into focused projects and sub-projects so everything has a place.',                                                             color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
+  { icon: Repeat2,     title: 'Routines',           desc: 'Build habits that stick with recurring tasks that automatically reset when completed.',                                                        color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
+  { icon: Kanban,      title: 'Kanban Board',       desc: 'Visualize work from To Do to Done with a simple drag-and-drop workflow.',                                                                     color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
+  { icon: CalendarDays,title: 'Calendar View',      desc: 'See upcoming deadlines at a glance and plan your week with confidence.',                                                                      color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
+  { icon: TrendingUp,  title: 'Streaks & Analytics',desc: 'Track consistency, celebrate progress, and understand how you work over time.',                                                               color: '#f97316', bg: 'rgba(249,115,22,0.08)' },
+  { icon: Palette,     title: 'Beautiful Themes',   desc: 'Choose from seven carefully designed themes built for focus, day or night.',                                                                  color: '#ec4899', bg: 'rgba(236,72,153,0.08)' },
 ];
 
 const STEPS = [
-  { step: '01', title: 'Capture everything',  desc: 'Add tasks in seconds with the Quick-Add button or floater. Set priority, due date, and project without leaving the flow.', color: '#7C3AED' },
-  { step: '02', title: 'Organise your way',   desc: 'Group by project, visualise in Kanban, schedule on calendar, or connect to long-term goals.',                              color: '#8b5cf6' },
-  { step: '03', title: 'Stay accountable',    desc: 'A daily summary pops up on every dashboard visit. Your streak keeps you consistent day after day.',                        color: '#7C3AED' },
+  { step: '01', title: 'Capture Everything',  desc: 'Add tasks in seconds. Set priorities, due dates, projects, and reminders without breaking your flow.',               color: '#7C3AED' },
+  { step: '02', title: 'Organize Your Way',   desc: 'Manage work however you prefer — list, Kanban, calendar, goals, or projects.',                                       color: '#8b5cf6' },
+  { step: '03', title: 'Stay Accountable',    desc: 'Daily summaries, streaks, and progress tracking help you stay consistent every day.',                                 color: '#7C3AED' },
 ];
 
 const FREE_FEATURES = ['Unlimited tasks', 'Calendar view', 'Goals tracking', '3 projects', 'Mobile PWA', 'Daily streak'];
 const PRO_FEATURES  = ['Everything in Free', 'Unlimited projects', 'Kanban board', 'Recurring routines', 'Push notifications & reminders', 'Full analytics dashboard', '7 premium themes', 'Priority support'];
 
 const WHY_REASONS = [
-  { icon: Layers,          title: 'Everything connected',  desc: 'Tasks link to goals, projects, and routines. No more jumping between four different apps to understand your day.', color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
-  { icon: MonitorSmartphone,title: 'Works on every device', desc: 'No app store. No download. Installs as a PWA on iPhone, Android, and desktop in under 10 seconds.',              color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
-  { icon: Wind,            title: 'Quiet by design',       desc: 'No social feeds, no algorithm, no noise. A focused workspace built for deep work and calm thinking.',             color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
-  { icon: ShieldCheck,     title: 'Your data, your rules', desc: 'Export everything at any time. Delete your account with one click. PDPA compliant. Hosted in Singapore.',         color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
+  { icon: Layers,           title: 'Everything connected',  desc: 'See the full picture. Tasks, goals, projects, and routines work together instead of living in separate apps.',    color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
+  { icon: Smartphone,       title: 'Works on every device', desc: 'Install in seconds on desktop, Android, iPhone, and tablet. No app store required.',                              color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
+  { icon: Wind,             title: 'Built for focus',       desc: 'No social feeds. No distractions. Just a clean workspace designed for meaningful work.',                          color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
+  { icon: ShieldCheck,      title: 'Your data stays yours', desc: 'Export your data anytime. Delete your account anytime. Full control from day one.',                               color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
 ];
 
 const COMPARISON = [
-  { need: 'Task management',  other: 'Todoist / TickTick' },
-  { need: 'Goal tracking',    other: 'Separate app' },
-  { need: 'Recurring habits', other: 'Habit tracker' },
-  { need: 'Project boards',   other: 'Trello / Asana' },
-  { need: 'Calendar view',    other: 'Calendar app' },
-  { need: 'Daily summary',    other: 'Another dashboard' },
+  { need: 'Tasks',          other: 'Todoist / TickTick' },
+  { need: 'Goals',          other: 'Notion / Goal Tracker' },
+  { need: 'Habits',         other: 'Habit Tracker' },
+  { need: 'Projects',       other: 'Trello / Asana' },
+  { need: 'Calendar',       other: 'Calendar App' },
+  { need: 'Daily Planning', other: 'Another Dashboard' },
 ];
 
 const TRUST_BADGES = [
@@ -152,17 +151,19 @@ export default async function LandingPage() {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        {/* Left gradient overlay for text readability */}
+        {/* Left gradient overlay */}
         <div
           className="pointer-events-none absolute inset-0"
-          style={{
-            background: 'linear-gradient(90deg, rgba(247,246,251,0.97) 0%, rgba(247,246,251,0.92) 35%, rgba(247,246,251,0.55) 60%, rgba(247,246,251,0.0) 100%)',
-          }}
+          style={{ background: 'linear-gradient(90deg, rgba(247,246,251,0.97) 0%, rgba(247,246,251,0.92) 35%, rgba(247,246,251,0.55) 60%, rgba(247,246,251,0.0) 100%)' }}
         />
 
-        {/* Content */}
         <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8">
           <div className="max-w-xl">
+
+            {/* Social proof line */}
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: C.muted }}>
+              Used by students, freelancers, founders &amp; high-performers
+            </p>
 
             {/* Badge */}
             <div
@@ -198,20 +199,15 @@ export default async function LandingPage() {
                 Get started free
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <p className="text-xs" style={{ color: C.muted }}>
-                No credit card required. Free 14-day trial.
-              </p>
+              <p className="text-xs" style={{ color: C.muted }}>No credit card required. Free 14-day trial.</p>
             </div>
 
-            {/* Social proof */}
+            {/* Avatar social proof */}
             <div className="mt-10 flex items-center gap-3">
               <div className="flex -space-x-2">
                 {(['#7C3AED','#ec4899','#0ea5e9','#10b981'] as const).map((color, i) => (
-                  <div
-                    key={i}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-bold text-white"
-                    style={{ background: color, borderColor: C.bgAlt }}
-                  >
+                  <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-bold text-white"
+                    style={{ background: color, borderColor: C.bgAlt }}>
                     {['A','B','C','D'][i]}
                   </div>
                 ))}
@@ -225,10 +221,13 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Connected strip ── */}
-      <section className="py-10" style={{ borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}`, background: C.bgAlt }}>
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-widest" style={{ color: C.muted }}>Everything is connected</p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center">
+      <section className="py-16" style={{ borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}`, background: C.bgAlt }}>
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Everything stays connected.</h2>
+          <p className="mt-4 max-w-xl mx-auto text-sm leading-7" style={{ color: C.muted }}>
+            Most productivity tools live in separate silos. In Optimaz, a task can belong to a project, contribute to a goal, and repeat as a routine — all at the same time. Update it once. Everything stays connected.
+          </p>
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center">
             {[
               { icon: ListTodo,   label: 'Task',    color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
               { icon: FolderOpen, label: 'Project', color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
@@ -246,18 +245,18 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="mt-6 text-center text-sm" style={{ color: C.muted }}>
-            Update a task — the linked project, goal, and routine stay in sync automatically.
-          </p>
         </div>
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
+      <section id="features" className="py-20" style={{ background: C.bgAlt, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Every tool you need — nothing you don&apos;t</h2>
-            <p className="mt-3" style={{ color: C.muted }}>Eight purpose-built views. One login. Zero bloat.</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em]" style={{ color: C.accent }}>Everything you need to stay organized</p>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Tasks. Goals. Projects. Habits. Calendar.</h2>
+            <p className="mt-3 max-w-xl mx-auto" style={{ color: C.muted }}>
+              One workspace built to help you focus on execution instead of managing software.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
@@ -265,7 +264,7 @@ export default async function LandingPage() {
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: bg }}>
                   <Icon className="h-5 w-5" style={{ color }} />
                 </div>
-                <h3 className="mb-1.5 text-sm font-semibold" style={{ color: C.fg }}>{title}</h3>
+                <h3 className="mb-1.5 text-sm font-semibold uppercase tracking-wide" style={{ color: C.fg }}>{title}</h3>
                 <p className="text-xs leading-5" style={{ color: C.muted }}>{desc}</p>
               </div>
             ))}
@@ -298,15 +297,17 @@ export default async function LandingPage() {
       <section id="compare" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Replace 5 apps with one</h2>
-            <p className="mt-3" style={{ color: C.muted }}>Most people piece together productivity from multiple tools. Optimaz brings it all together.</p>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Replace 5 Apps With One</h2>
+            <p className="mt-3 max-w-lg mx-auto" style={{ color: C.muted }}>
+              Stop paying for five productivity apps. Most people manage tasks, goals, habits, projects, and planning across multiple tools. Optimaz combines everything into one focused workspace.
+            </p>
           </div>
           <div className="overflow-hidden rounded-2xl" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: `1px solid ${C.cardBorder}` }}>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: C.muted }}>Your need</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: C.muted }}>Separate apps</th>
+                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: C.muted }}>Your Need</th>
+                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: C.muted }}>Separate Apps</th>
                   <th className="px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-widest" style={{ color: C.accent }}>Optimaz</th>
                 </tr>
               </thead>
@@ -325,7 +326,7 @@ export default async function LandingPage() {
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-center text-xs" style={{ color: C.muted }}>One account. One interface. One monthly cost — or free forever on the Free plan.</p>
+          <p className="mt-4 text-center text-xs" style={{ color: C.muted }}>One workspace. One login. One monthly subscription.</p>
         </div>
       </section>
 
@@ -333,7 +334,7 @@ export default async function LandingPage() {
       <section className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Built around how you actually work</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Built Around How You Actually Work</h2>
             <p className="mt-3" style={{ color: C.muted }}>Three simple phases. Infinite clarity.</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
@@ -362,16 +363,17 @@ export default async function LandingPage() {
                 <Bell className="h-3.5 w-3.5" />
                 Smart Reminders
               </div>
-              <h2 className="text-2xl font-bold tracking-tight" style={{ color: C.fg }}>Never miss a deadline again</h2>
+              <h2 className="text-2xl font-bold tracking-tight" style={{ color: C.fg }}>Never miss a deadline again.</h2>
               <p className="mt-3 leading-7" style={{ color: C.muted }}>
-                Optimaz sends push notifications to your phone before tasks are due. Set time-aware reminders, get daily digests, and stay on top of overdue items — even when the app is closed.
+                Optimaz keeps important work visible before it becomes urgent. Stay on top of your work even when the app is closed.
               </p>
             </div>
             <div className="space-y-3">
               {[
-                { icon: Clock,         text: 'Task due reminders (15 min, 1 hour, same day)', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-                { icon: ClipboardList, text: 'Daily morning digest of your day ahead',          color: C.accent,  bg: C.accentLight },
-                { icon: AlertCircle,   text: 'Overdue task alerts so nothing slips through',    color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
+                { icon: Clock,         text: 'Due task reminders',                   color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
+                { icon: ClipboardList, text: 'Daily morning summary',                color: C.accent,  bg: C.accentLight },
+                { icon: AlertCircle,   text: 'Overdue task alerts',                  color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
+                { icon: Bell,          text: 'Push notifications on all devices',    color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
               ].map(({ icon: Icon, text, color, bg }) => (
                 <div key={text} className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm"
                   style={{ background: bg, border: `1px solid ${C.cardBorder}`, color: C.fg }}>
@@ -472,11 +474,15 @@ export default async function LandingPage() {
             style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.7))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
             <img src="/icon-192x192.png" alt="Optimaz" className="h-10 w-10 rounded-xl" />
           </div>
-          <h2 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: C.fg }}>Why we built Optimaz</h2>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: C.fg }}>Why We Built Optimaz</h2>
           <p className="mt-4 text-sm leading-7 sm:text-base" style={{ color: C.muted }}>
-            We were tired of managing tasks in Todoist, goals in Notion, habits in a separate tracker, and projects in Trello — switching between four different apps just to understand our own work. Optimaz was built to bring everything into one focused workspace where a task can belong to a project, link to a goal, and reset as a routine. One place for your entire work life.
+            We were tired of switching between Todoist for tasks, Notion for goals, Trello for projects, and separate habit trackers just to understand what needed attention.
           </p>
-          <p className="mt-3 text-sm font-semibold" style={{ color: C.fg }}>— The Optimaz team, Mavora Digital · Malaysia</p>
+          <p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: C.muted }}>
+            The more tools we added, the harder it became to stay organized. So we built Optimaz — a single workspace where tasks, goals, projects, routines, and planning finally work together.
+          </p>
+          <p className="mt-4 text-sm font-semibold" style={{ color: C.fg }}>Less app switching. More meaningful progress.</p>
+          <p className="mt-2 text-sm" style={{ color: C.muted }}>— Mavora Digital, Malaysia</p>
         </div>
       </section>
 

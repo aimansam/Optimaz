@@ -82,6 +82,8 @@ function useTaskStats() {
   });
 }
 
+const MAX_BAR_HEIGHT = 56; // px — fixed reference height for bars
+
 function BarChart({ data }: { data: { day: string; label: string; count: number }[] }) {
   const maxCount = Math.max(...data.map((d) => d.count), 1);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
@@ -89,22 +91,24 @@ function BarChart({ data }: { data: { day: string; label: string; count: number 
   return (
     <div className="space-y-2">
       <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Completions · last 7 days</p>
-      <div className="flex items-end gap-1.5 h-20">
+      {/* Fixed-height row; bars are anchored to the bottom via items-end */}
+      <div className="flex items-end gap-1.5" style={{ height: `${MAX_BAR_HEIGHT + 24}px` }}>
         {data.map((d) => {
-          const height = Math.max((d.count / maxCount) * 100, d.count > 0 ? 8 : 0);
+          // Compute bar height in px — never use % inside flex to avoid inheritance issues
+          const barPx = d.count > 0
+            ? Math.max(Math.round((d.count / maxCount) * MAX_BAR_HEIGHT), 8)
+            : 3;
           const isToday = d.label === today;
           return (
             <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
               {d.count > 0 && (
                 <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">{d.count}</span>
               )}
-              <div className="w-full flex-1 flex items-end">
-                <div
-                  className={`w-full rounded-sm transition-all duration-500 ${isToday ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-slate-700'}`}
-                  style={{ height: d.count > 0 ? `${height}%` : '3px', minHeight: '3px' }}
-                  aria-label={`${d.label}: ${d.count} tasks`}
-                />
-              </div>
+              <div
+                className={`w-full rounded-sm transition-all duration-500 ${isToday ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-slate-700'}`}
+                style={{ height: `${barPx}px` }}
+                aria-label={`${d.label}: ${d.count} tasks`}
+              />
               <span className={`text-[9px] font-medium ${isToday ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-400'}`}>
                 {d.label}
               </span>

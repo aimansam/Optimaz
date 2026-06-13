@@ -153,12 +153,16 @@ export function HeroDashboardMockup() {
                   <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
                 ))}
               </div>
-              {/* URL bar — skeleton */}
+              {/* URL bar — with text */}
               <div style={{
-                flex: 1, maxWidth: 240, height: 24,
+                flex: 1, maxWidth: 260, height: 24,
                 background: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.09)',
-                borderRadius: 6,
-              }} />
+                borderRadius: 6, display: 'flex', alignItems: 'center',
+                paddingLeft: 10, fontSize: 9, color: '#9ca3af', fontFamily: 'monospace',
+                letterSpacing: 0,
+              }}>
+                https://optimaz.app/dashboard
+              </div>
             </div>
 
             {/* App body */}
@@ -175,26 +179,27 @@ export function HeroDashboardMockup() {
                 {/* Brand */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 14, borderBottom: '1px solid rgba(124,58,237,0.07)', marginBottom: 4 }}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, background: `linear-gradient(135deg, ${PUR}, ${PINK})`, flexShrink: 0 }} />
-                  <Bar w="55%" h={10} color="rgba(26,26,46,0.18)" radius={5} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>Optimaz</span>
+                  <span style={{ fontSize: 7, fontWeight: 700, background: `linear-gradient(135deg, ${PUR}, ${PINK})`, color: '#fff', padding: '1px 4px', borderRadius: 3 }}>BETA</span>
                 </div>
                 {/* Active nav item */}
                 <div style={{ background: 'rgba(124,58,237,0.08)', borderRadius: 8, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: PUR, flexShrink: 0 }} />
-                  <Bar w="55%" h={7} color={`rgba(124,58,237,0.3)`} radius={4} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: PUR }}>Today</span>
                 </div>
-                {/* Nav items */}
-                {[1,2,3,4,5,6].map(i => (
-                  <div key={i} style={{ padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                {/* Nav items with text */}
+                {(['Tasks','Goals','Calendar','Projects','Routines','Settings'] as const).map(label => (
+                  <div key={label} style={{ padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(209,213,219,0.8)', flexShrink: 0 }} />
-                    <Bar w={`${48 + (i % 3) * 10}%`} h={7} color="rgba(107,114,128,0.15)" radius={4} />
+                    <span style={{ fontSize: 11, fontWeight: 500, color: '#6b7280' }}>{label}</span>
                   </div>
                 ))}
                 {/* Section divider */}
                 <div style={{ height: 1, background: 'rgba(124,58,237,0.07)', margin: '4px 0' }} />
-                {/* Project items */}
-                {[1,2,3].map(i => (
+                {/* Project items — skeleton (dots + bars, no text) */}
+                {([PUR, PINK, '#10b981'] as const).map((color, i) => (
                   <div key={i} style={{ padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: [PUR, PINK, '#10b981'][i-1], flexShrink: 0 }} />
+                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
                     <Bar w={`${52 + i * 8}%`} h={6} color="rgba(107,114,128,0.14)" radius={3} />
                   </div>
                 ))}

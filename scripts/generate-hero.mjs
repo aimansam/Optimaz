@@ -72,21 +72,41 @@ const HTML = `<!DOCTYPE html>
     filter: blur(100px);
   }
 
+  /* ─── Right-edge white vignette ─────────────────────────── */
+  .edge-fade-r {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 500px;
+    background: linear-gradient(to left, rgba(250,249,255,0.95) 0%, transparent 100%);
+    z-index: 20;
+    pointer-events: none;
+  }
+  /* ─── Bottom-edge fade ───────────────────────────────────── */
+  .edge-fade-b {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 300px;
+    background: linear-gradient(to top, rgba(250,249,255,0.6) 0%, transparent 100%);
+    z-index: 20;
+    pointer-events: none;
+  }
+
   /* ─── Dashboard wrapper ──────────────────────────────────── */
   .scene {
     position: absolute;
     top: 50%;
-    left: 52%;
-    transform: translateY(-50%) perspective(4000px) rotateY(-14deg) rotateX(4deg);
+    left: 50%;
+    transform: translateY(-50%) perspective(4000px) rotateY(-10deg) rotateX(3deg);
     transform-origin: center center;
-    filter: drop-shadow(0 80px 160px rgba(124,58,237,0.28))
-            drop-shadow(0 40px 80px rgba(0,0,0,0.18))
-            drop-shadow(0 0 120px rgba(167,139,250,0.2));
+    filter: drop-shadow(0 100px 200px rgba(124,58,237,0.35))
+            drop-shadow(0 50px 100px rgba(0,0,0,0.22))
+            drop-shadow(0 0 160px rgba(167,139,250,0.25))
+            drop-shadow(0 0 60px rgba(236,72,153,0.12));
   }
 
   /* ─── Dashboard shell ────────────────────────────────────── */
   .shell {
-    width: 1980px;
+    width: 2100px;
     background: rgba(255,255,255,0.96);
     border-radius: 24px;
     border: 1px solid rgba(124,58,237,0.12);
@@ -127,7 +147,19 @@ const HTML = `<!DOCTYPE html>
   /* ─── App body ───────────────────────────────────────────── */
   .app-body {
     display: flex;
-    height: 960px;
+    height: 1000px;
+    filter: blur(1.3px);
+    position: relative;
+  }
+  /* Depth-of-field vignette inside dashboard */
+  .app-body::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 280px;
+    background: linear-gradient(to top, rgba(255,255,255,0.55) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 5;
   }
 
   /* ─── Sidebar ────────────────────────────────────────────── */
@@ -424,9 +456,9 @@ const HTML = `<!DOCTYPE html>
   /* ─── Floating analytics panel ────────────────────────────── */
   .analytics-float {
     position: absolute;
-    right: -180px;
-    top: 160px;
-    width: 280px;
+    right: -200px;
+    top: 140px;
+    width: 295px;
     background: rgba(255,255,255,0.92);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -438,6 +470,11 @@ const HTML = `<!DOCTYPE html>
       inset 0 1px 0 rgba(255,255,255,0.9);
     padding: 20px;
     z-index: 10;
+    filter: blur(0.6px);
+  }
+  /* Keep the header of analytics panel sharp */
+  .analytics-float .af-header {
+    filter: blur(0px);
   }
   .af-header {
     display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
@@ -495,6 +532,8 @@ const HTML = `<!DOCTYPE html>
 <div class="dots"></div>
 <div class="glow-bl"></div>
 <div class="glow-tr"></div>
+<div class="edge-fade-r"></div>
+<div class="edge-fade-b"></div>
 
 <!-- Dashboard scene -->
 <div class="scene">

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { HeroDashboardMockup } from '@/components/landing/HeroDashboardMockup';
 import {
   FolderOpen,
   Target,
@@ -149,17 +150,12 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero — full-bleed background image (no zoom) ── */}
+      {/* ── Hero — pure-code dashboard background ── */}
       <section
         className="relative min-h-[92vh] flex items-center overflow-hidden"
-        style={{
-          backgroundImage: 'url(/hero-background.png)',
-          backgroundSize: 'auto 100%',
-          backgroundPosition: 'right center',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: C.bgAlt,
-        }}
+        style={{ backgroundColor: C.bgAlt }}
       >
+        <HeroDashboardMockup />
         <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8">
           {/* Glass card container — Apple-style frosted panel */}
           <div

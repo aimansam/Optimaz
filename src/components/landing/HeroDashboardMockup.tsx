@@ -58,9 +58,9 @@ export function HeroDashboardMockup() {
         overflow: 'hidden',
         pointerEvents: 'none',
         userSelect: 'none',
-        // Promote entire component to its own GPU layer
+        // z-index 2 places mockup on top of the glass card (zIndex: 1)
+        zIndex: 2,
         willChange: 'transform',
-        contain: 'layout style paint',
       }}
     >
       {/* ── Background gradients ─────────────────────────────── */}

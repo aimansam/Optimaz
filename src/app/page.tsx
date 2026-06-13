@@ -156,7 +156,7 @@ export default async function LandingPage() {
         style={{ backgroundColor: C.bgAlt }}
       >
         <HeroDashboardMockup />
-        <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8">
+        <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8" style={{ zIndex: 1 }}>
           {/* Glass card container — Apple-style frosted panel */}
           <div
             className="max-w-xl rounded-3xl p-8 sm:p-10"
@@ -168,11 +168,6 @@ export default async function LandingPage() {
               boxShadow: '0 8px 40px rgba(124,58,237,0.10), 0 2px 12px rgba(0,0,0,0.06)',
             }}
           >
-            {/* Social proof line */}
-            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: C.muted }}>
-              Used by students, freelancers, founders &amp; high-performers
-            </p>
-
             {/* Badge */}
             <div
               className="mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
@@ -231,7 +226,7 @@ export default async function LandingPage() {
                 ))}
               </div>
               <p className="text-xs font-medium" style={{ color: C.muted }}>
-                Used by <span style={{ color: C.fg, fontWeight: 700 }}>10,000+</span> high-performers
+                Used by <span style={{ color: C.fg, fontWeight: 700 }}>100+</span> students, freelancers, founders &amp; high-performers
               </p>
             </div>
           </div>

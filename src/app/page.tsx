@@ -176,7 +176,7 @@ export default async function LandingPage() {
             {/* Headline */}
             <h1
               className="font-black uppercase leading-[0.9] tracking-tight"
-              style={{ color: C.fg, fontSize: 'clamp(3.5rem, 8vw, 6.5rem)' }}
+              style={{ color: C.fg, fontSize: 'clamp(2.2rem, 4.5vw, 4rem)' }}
             >
               RECLAIM YOUR<br />
               FOCUS. OPTIMIZE<br />

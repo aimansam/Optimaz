@@ -64,20 +64,44 @@ const FAQ = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
 
       {/* Nav */}
-      <header className="border-b border-slate-100 bg-white">
+      <header
+        className="sticky top-0 z-50"
+        style={{
+          background: 'var(--sidebar-bg)',
+          borderBottom: '1px solid var(--sidebar-border)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        }}
+      >
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 text-sm text-slate-500 transition-colors hover:text-slate-900">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm transition-colors hover:opacity-70"
+            style={{ color: 'var(--muted-fg)' }}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
           <Link href="/" className="flex items-center gap-2.5">
-            <img src="/icon-192x192.png" alt="Optimaz" className="h-7 w-7 rounded-xl shadow-sm" />
-            <span className="text-sm font-bold tracking-tight text-slate-900">Optimaz</span>
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+              style={{
+                background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.7))',
+                boxShadow: '0 2px 8px var(--glow)',
+              }}
+            >
+              <img src="/icon-192x192.png" alt="Optimaz" className="h-6 w-6 rounded-lg" />
+            </div>
+            <span className="text-sm font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>Optimaz</span>
           </Link>
-          <Link href="/auth/login" className="text-sm font-medium text-slate-500 transition-colors hover:text-slate-900">
+          <Link
+            href="/auth/login"
+            className="text-sm font-medium transition-colors hover:opacity-70"
+            style={{ color: 'var(--muted-fg)' }}
+          >
             Sign in →
           </Link>
         </div>
@@ -87,51 +111,79 @@ export default function PricingPage() {
 
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-xs font-semibold text-indigo-700">
+          <div
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
+            style={{
+              background: 'rgb(var(--accent) / 0.1)',
+              border: '1px solid rgb(var(--accent) / 0.2)',
+              color: 'rgb(var(--accent))',
+            }}
+          >
             <Sparkles className="h-3.5 w-3.5" />
             Beta offer active
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl" style={{ color: 'var(--foreground)' }}>
             Simple, honest pricing
           </h1>
-          <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-500">
+          <p className="mx-auto mt-4 max-w-xl leading-7" style={{ color: 'var(--muted-fg)' }}>
             Start completely free. Upgrade when Optimaz becomes indispensable. Cancel any time with zero friction.
           </p>
         </div>
 
         {/* Beta banner */}
-        <div className="mb-10 rounded-2xl border border-indigo-200 bg-indigo-50 px-6 py-4 text-center">
-          <p className="text-sm font-medium text-indigo-900">
-            <Gift className="inline h-3.5 w-3.5 align-middle mr-1 text-indigo-600" /><span className="font-bold">Beta users get 1 month of Pro FREE</span> — all features unlocked, no credit card needed.
+        <div
+          className="mb-10 rounded-2xl px-6 py-4 text-center"
+          style={{
+            background: 'rgb(var(--accent) / 0.08)',
+            border: '1px solid rgb(var(--accent) / 0.2)',
+          }}
+        >
+          <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+            <Gift className="inline h-3.5 w-3.5 align-middle mr-1" style={{ color: 'rgb(var(--accent))' }} />
+            <span className="font-bold">Beta users get 1 month of Pro FREE</span> — all features unlocked, no credit card needed.
           </p>
-          <p className="mt-1 text-xs text-indigo-600">Sign up today to lock in your free month before the offer ends.</p>
+          <p className="mt-1 text-xs" style={{ color: 'rgb(var(--accent))' }}>Sign up today to lock in your free month before the offer ends.</p>
         </div>
 
         {/* Pricing cards */}
         <div className="mb-16 grid gap-6 sm:grid-cols-2">
 
           {/* Free */}
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div
+            className="flex flex-col rounded-2xl p-8"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+            }}
+          >
             <div className="mb-6">
-              <p className="text-sm font-semibold uppercase tracking-widest text-slate-400">Free</p>
+              <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-fg)' }}>Free</p>
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="text-5xl font-black text-slate-900">RM 0</span>
-                <span className="text-slate-400">/month</span>
+                <span className="text-5xl font-black" style={{ color: 'var(--foreground)' }}>RM 0</span>
+                <span style={{ color: 'var(--muted-fg)' }}>/month</span>
               </div>
-              <p className="mt-2 text-sm text-slate-500">Forever free. No expiry.</p>
+              <p className="mt-2 text-sm" style={{ color: 'var(--muted-fg)' }}>Forever free. No expiry.</p>
             </div>
             <Link
               href="/auth/login"
-              className="mb-8 block w-full rounded-xl border border-slate-200 py-3 text-center text-sm font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50"
+              className="mb-8 block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all hover:opacity-80"
+              style={{
+                background: 'var(--muted-bg)',
+                border: '1px solid var(--card-border)',
+                color: 'var(--foreground)',
+              }}
             >
               Get started free
             </Link>
             <ul className="flex-1 space-y-3">
               {FREE_FEATURES.map(({ text, included }) => (
-                <li key={text} className={`flex items-center gap-3 text-sm ${included ? 'text-slate-700' : 'text-slate-400'}`}>
+                <li key={text} className="flex items-center gap-3 text-sm" style={{ color: included ? 'var(--foreground)' : 'var(--muted-fg)' }}>
                   {included
                     ? <Check className="h-4 w-4 shrink-0 text-emerald-500" />
-                    : <X className="h-4 w-4 shrink-0 text-slate-300" />
+                    : <X className="h-4 w-4 shrink-0" style={{ color: 'var(--muted-fg)', opacity: 0.5 }} />
                   }
                   {text}
                 </li>
@@ -140,35 +192,60 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div className="relative flex flex-col rounded-2xl border-2 border-indigo-500 bg-white p-8 shadow-lg shadow-indigo-100">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-200 inline-flex items-center gap-1.5">
+          <div
+            className="relative flex flex-col rounded-2xl p-8"
+            style={{
+              background: 'var(--card-bg)',
+              border: '2px solid rgb(var(--accent) / 0.5)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 24px var(--glow), 0 8px 32px rgba(0,0,0,0.08)',
+            }}
+          >
+            <div
+              className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-5 py-1.5 text-xs font-bold text-white inline-flex items-center gap-1.5"
+              style={{
+                background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.85))',
+                boxShadow: '0 2px 8px var(--glow)',
+              }}
+            >
               <Gift className="h-3.5 w-3.5" /> First month FREE for beta users
             </div>
             <div className="mb-6 mt-2">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold uppercase tracking-widest text-indigo-600">Pro</p>
-                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-700">
+                <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'rgb(var(--accent))' }}>Pro</p>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+                  style={{
+                    background: 'rgb(var(--accent) / 0.12)',
+                    color: 'rgb(var(--accent))',
+                  }}
+                >
                   Most Popular
                 </span>
               </div>
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="text-base font-semibold text-slate-400 line-through">RM 15</span>
-                <span className="ml-1 text-5xl font-black text-slate-900">RM 0</span>
-                <span className="text-slate-400">/first month</span>
+                <span className="text-base font-semibold line-through" style={{ color: 'var(--muted-fg)' }}>RM 15</span>
+                <span className="ml-1 text-5xl font-black" style={{ color: 'var(--foreground)' }}>RM 0</span>
+                <span style={{ color: 'var(--muted-fg)' }}>/first month</span>
               </div>
-              <p className="mt-1 text-xs font-medium text-indigo-600">then RM 15/month — cancel any time</p>
+              <p className="mt-1 text-xs font-medium" style={{ color: 'rgb(var(--accent))' }}>then RM 15/month — cancel any time</p>
             </div>
             <Link
               href="/auth/login"
-              className="mb-8 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:bg-indigo-500"
+              className="mb-8 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-all hover:opacity-90"
+              style={{
+                background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.85))',
+                boxShadow: '0 4px 16px var(--glow)',
+              }}
             >
               <Zap className="h-4 w-4" />
               Claim your free month
             </Link>
             <ul className="flex-1 space-y-3">
               {PRO_FEATURES.map(({ text, bold }) => (
-                <li key={text} className={`flex items-center gap-3 text-sm ${bold ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <Check className="h-4 w-4 shrink-0 text-indigo-500" />
+                <li key={text} className={`flex items-center gap-3 text-sm ${bold ? 'font-semibold' : ''}`} style={{ color: 'var(--foreground)' }}>
+                  <Check className="h-4 w-4 shrink-0" style={{ color: 'rgb(var(--accent))' }} />
                   {text}
                 </li>
               ))}
@@ -177,83 +254,124 @@ export default function PricingPage() {
         </div>
 
         {/* What's in Pro */}
-        <div className="mb-16 rounded-2xl border border-slate-200 bg-slate-50 p-8">
-          <h2 className="mb-6 text-center text-lg font-bold text-slate-900">What&apos;s included in Pro?</h2>
+        <div
+          className="mb-16 rounded-2xl p-8"
+          style={{
+            background: 'var(--muted-bg)',
+            border: '1px solid var(--card-border)',
+          }}
+        >
+          <h2 className="mb-6 text-center text-lg font-bold" style={{ color: 'var(--foreground)' }}>What&apos;s included in Pro?</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Kanban, title: 'Kanban Board', desc: 'Drag tasks across visual columns. Perfect for project workflows.', accent: 'bg-emerald-50 text-emerald-600' },
-              { icon: Repeat2, title: 'Recurring Routines', desc: 'Daily habits that auto-reset. Consistency made effortless.', accent: 'bg-amber-50 text-amber-600' },
-              { icon: Bell, title: 'Smart Reminders', desc: 'Push notifications before deadlines. Never forget a task.', accent: 'bg-orange-50 text-orange-600' },
-              { icon: Palette, title: '7 Themes', desc: 'Cloud, Sand, Mint, Blossom, Midnight, Obsidian, Forest.', accent: 'bg-pink-50 text-pink-600' },
-            ].map(({ icon: Icon, title, desc, accent }) => (
-              <div key={title} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg ${accent}`}>
-                  <Icon className="h-4 w-4" />
+              { icon: Kanban, title: 'Kanban Board', desc: 'Drag tasks across visual columns. Perfect for project workflows.', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+              { icon: Repeat2, title: 'Recurring Routines', desc: 'Daily habits that auto-reset. Consistency made effortless.', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+              { icon: Bell, title: 'Smart Reminders', desc: 'Push notifications before deadlines. Never forget a task.', color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
+              { icon: Palette, title: '7 Themes', desc: 'Cloud, Sand, Mint, Blossom, Midnight, Obsidian, Forest.', color: 'rgb(var(--accent))', bg: 'rgb(var(--accent) / 0.1)' },
+            ].map(({ icon: Icon, title, desc, color, bg }) => (
+              <div
+                key={title}
+                className="rounded-xl p-4"
+                style={{
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                <div
+                  className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: bg }}
+                >
+                  <Icon className="h-4 w-4" style={{ color }} />
                 </div>
-                <h3 className="mb-1 text-sm font-semibold text-slate-900">{title}</h3>
-                <p className="text-xs leading-5 text-slate-500">{desc}</p>
+                <h3 className="mb-1 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>{title}</h3>
+                <p className="text-xs leading-5" style={{ color: 'var(--muted-fg)' }}>{desc}</p>
               </div>
             ))}
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {[
-              { icon: BarChart3, title: 'Full Analytics', desc: 'Complete productivity history and weekly completion charts.', accent: 'bg-indigo-50 text-indigo-600' },
-            ].map(({ icon: Icon, title, desc, accent }) => (
-              <div key={title} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg ${accent}`}>
-                  <Icon className="h-4 w-4" />
-                </div>
-                <h3 className="mb-1 text-sm font-semibold text-slate-900">{title}</h3>
-                <p className="text-xs leading-5 text-slate-500">{desc}</p>
+          <div className="mt-4">
+            <div
+              className="rounded-xl p-4"
+              style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'rgb(var(--accent) / 0.1)' }}>
+                <BarChart3 className="h-4 w-4" style={{ color: 'rgb(var(--accent))' }} />
               </div>
-            ))}
+              <h3 className="mb-1 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>Full Analytics</h3>
+              <p className="text-xs leading-5" style={{ color: 'var(--muted-fg)' }}>Complete productivity history and weekly completion charts.</p>
+            </div>
           </div>
         </div>
 
         {/* FAQ */}
         <div className="mb-16">
-          <h2 className="mb-8 text-center text-xl font-bold text-slate-900">Frequently asked questions</h2>
+          <h2 className="mb-8 text-center text-xl font-bold" style={{ color: 'var(--foreground)' }}>Frequently asked questions</h2>
           <div className="space-y-3">
             {FAQ.map(({ q, a }) => (
-              <div key={q} className="rounded-xl border border-slate-200 bg-white p-5">
-                <h3 className="mb-2 text-sm font-semibold text-slate-900">{q}</h3>
-                <p className="text-sm leading-6 text-slate-500">{a}</p>
+              <div
+                key={q}
+                className="rounded-xl p-5"
+                style={{
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)',
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                <h3 className="mb-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>{q}</h3>
+                <p className="text-sm leading-6" style={{ color: 'var(--muted-fg)' }}>{a}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Final CTA */}
-        <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 p-10 text-center text-white">
-          <h2 className="text-2xl font-bold">Ready to get organised?</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-indigo-100">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{
+            background: `linear-gradient(135deg, rgb(var(--accent) / 0.9), rgb(var(--accent) / 0.7))`,
+            boxShadow: '0 8px 32px var(--glow)',
+          }}
+        >
+          <h2 className="text-2xl font-bold text-white">Ready to get organised?</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm text-white/80">
             Join beta today, get 1 month of Pro on us. No card, no commitment. Just a better way to manage your work.
           </p>
           <Link
             href="/auth/login"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold text-indigo-700 shadow-lg shadow-indigo-900/20 transition-all hover:bg-indigo-50"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold shadow-lg transition-all hover:opacity-90"
+            style={{ color: 'rgb(var(--accent))' }}
           >
             <Zap className="h-4 w-4" />
             Start for free — Pro included
           </Link>
-          <p className="mt-3 text-xs text-indigo-200">No credit card required. Takes under 30 seconds.</p>
+          <p className="mt-3 text-xs text-white/60">No credit card required. Takes under 30 seconds.</p>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-100 bg-white py-8">
+      <footer
+        className="py-8"
+        style={{
+          borderTop: '1px solid var(--card-border)',
+          background: 'var(--background)',
+        }}
+      >
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <div className="flex flex-col items-center justify-between gap-4 text-xs text-slate-400 sm:flex-row">
+          <div className="flex flex-col items-center justify-between gap-4 text-xs sm:flex-row" style={{ color: 'var(--muted-fg)' }}>
             <div className="flex items-center gap-2">
               <img src="/icon-192x192.png" alt="Optimaz" className="h-5 w-5 rounded-md" />
-              <span className="font-medium text-slate-600">Optimaz</span>
-              <span className="text-slate-300">·</span>
+              <span className="font-medium" style={{ color: 'var(--foreground)' }}>Optimaz</span>
+              <span style={{ opacity: 0.3 }}>·</span>
               <span>by Mavora Digital</span>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/" className="transition-colors hover:text-slate-700">Home</Link>
-              <Link href="/privacy" className="transition-colors hover:text-slate-700">Privacy</Link>
-              <Link href="/terms" className="transition-colors hover:text-slate-700">Terms</Link>
+              <Link href="/" className="transition-colors hover:opacity-70">Home</Link>
+              <Link href="/privacy" className="transition-colors hover:opacity-70">Privacy</Link>
+              <Link href="/terms" className="transition-colors hover:opacity-70">Terms</Link>
             </div>
           </div>
         </div>

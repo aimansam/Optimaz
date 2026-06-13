@@ -12,16 +12,12 @@ import {
   ArrowRight,
   Sparkles,
   Zap,
-  Bell,
   Palette,
   ListTodo,
   TrendingUp,
   Check,
   X,
   Gift,
-  Clock,
-  ClipboardList,
-  AlertCircle,
   Layers,
   MonitorSmartphone,
   Wind,
@@ -295,40 +291,6 @@ export default async function LandingPage() {
             </table>
           </div>
           <p className="mt-4 text-center text-xs" style={{ color: C.muted }}>One workspace. One login. One monthly subscription.</p>
-        </div>
-      </section>
-
-      {/* ── Push notification highlight ── */}
-      <section className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid gap-8 rounded-2xl p-8 sm:grid-cols-2 sm:items-center sm:p-12"
-            style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', color: '#d97706' }}>
-                <Bell className="h-3.5 w-3.5" />
-                Smart Reminders
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight" style={GT}>Never miss a deadline again.</h2>
-              <p className="mt-3 leading-7" style={{ color: C.muted }}>
-                Optimaz keeps important work visible before it becomes urgent. Stay on top of your work even when the app is closed.
-              </p>
-            </div>
-            <div className="space-y-3">
-              {[
-                { icon: Clock,         text: 'Due task reminders',                   color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-                { icon: ClipboardList, text: 'Daily morning summary',                color: C.accent,  bg: C.accentLight },
-                { icon: AlertCircle,   text: 'Overdue task alerts',                  color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
-                { icon: Bell,          text: 'Push notifications on all devices',    color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
-              ].map(({ icon: Icon, text, color, bg }) => (
-                <div key={text} className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm"
-                  style={{ background: bg, border: `1px solid ${C.cardBorder}`, color: C.fg }}>
-                  <Icon className="h-5 w-5 shrink-0" style={{ color }} />
-                  {text}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 

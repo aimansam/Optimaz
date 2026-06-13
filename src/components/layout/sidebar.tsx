@@ -17,8 +17,6 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Settings', icon: Settings, description: 'Preferences & account settings' },
 ];
 
-
-
 export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   const pathname = usePathname();
   const { data: projects } = useProjects();
@@ -35,9 +33,10 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
       {/* Sidebar overlay for mobile */}
       <div
         className={cn(
-          'fixed inset-0 z-30 bg-black/40 transition-opacity md:hidden',
+          'fixed inset-0 z-30 backdrop-blur-sm transition-opacity md:hidden',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
+        style={{ background: 'rgba(0,0,0,0.5)' }}
         onClick={() => setOpen(false)}
       />
 
@@ -50,18 +49,34 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         style={{
           background: 'var(--sidebar-bg)',
           borderRight: '1px solid var(--sidebar-border)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
         }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-4 md:px-5 md:py-5">
-          <img src="/icon-192x192.png" alt="Optimaz" className="h-8 w-8 shrink-0 rounded-xl shadow-sm shadow-black/20" />
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-lg"
+            style={{
+              background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.7))',
+              boxShadow: '0 4px 14px var(--glow)',
+            }}
+          >
+            <img src="/icon-192x192.png" alt="Optimaz" className="h-7 w-7 rounded-lg" />
+          </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-base font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>Optimaz</span>
+            <span
+              className="text-base font-bold tracking-tight"
+              style={{ color: 'var(--foreground)' }}
+            >
+              Optimaz
+            </span>
             <span
               className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
               style={{
                 background: 'rgb(var(--accent) / 0.15)',
                 color: 'rgb(var(--accent))',
+                border: '1px solid rgb(var(--accent) / 0.2)',
               }}
             >
               Beta
@@ -78,17 +93,18 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                 <Link
                   href={href}
                   className={cn(
-                    'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3 md:py-2.5',
+                    'flex items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200 md:gap-3 md:px-3',
                   )}
                   style={active ? {
-                    background: 'var(--muted-bg)',
+                    background: 'rgb(var(--accent) / 0.12)',
                     color: 'var(--foreground)',
+                    boxShadow: 'inset 0 0 0 1px rgb(var(--accent) / 0.2)',
                   } : {
                     color: 'var(--muted-fg)',
                   }}
                   onMouseEnter={e => {
                     if (!active) {
-                      (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'rgb(var(--accent) / 0.07)';
                       (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
                     }
                   }}
@@ -102,12 +118,12 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                 >
                   <span
                     className={cn(
-                      'flex h-6 w-6 items-center justify-center rounded-lg transition-all md:h-7 md:w-7',
+                      'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200',
                     )}
                     style={active ? {
-                      background: 'rgb(var(--accent))',
+                      background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.75))',
                       color: '#ffffff',
-                      boxShadow: '0 1px 3px rgb(var(--accent) / 0.4)',
+                      boxShadow: '0 2px 8px var(--glow)',
                     } : {
                       color: 'var(--muted-fg)',
                     }}
@@ -119,19 +135,20 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
 
                 {/* Hover tooltip */}
                 <div
-                  className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl border bg-white px-3 py-2 shadow-lg opacity-0 transition-all duration-150 group-hover:opacity-100 dark:bg-slate-900"
-                  style={{ borderColor: 'var(--card-border)' }}
+                  className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl px-3 py-2 shadow-xl opacity-0 transition-all duration-150 group-hover:opacity-100"
+                  style={{
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--glass-border)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                  }}
                 >
                   <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>{label}</p>
                   <p className="mt-0.5 text-[11px] leading-snug" style={{ color: 'var(--muted-fg)' }}>{description}</p>
                   {/* Arrow */}
                   <div
                     className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent"
-                    style={{ borderRightColor: 'var(--card-border)' }}
-                  />
-                  <div
-                    className="absolute right-full top-1/2 mr-px -translate-y-1/2 border-4 border-transparent"
-                    style={{ borderRightColor: 'var(--background)' }}
+                    style={{ borderRightColor: 'var(--glass-border)' }}
                   />
                 </div>
               </div>
@@ -142,8 +159,8 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         {projects && projects.length > 0 && (
           <div className="pt-5">
             <p
-              className="mb-1 px-2.5 text-[10px] font-semibold uppercase tracking-widest md:px-3"
-              style={{ color: 'var(--muted-fg)' }}
+              className="mb-2 px-2.5 text-[10px] font-semibold uppercase tracking-widest md:px-3"
+              style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
             >
               Projects
             </p>
@@ -154,17 +171,18 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                   key={project.id}
                   href={`/projects/${project.id}`}
                   className={cn(
-                    'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-150 md:gap-3 md:rounded-xl md:px-3',
+                    'flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium transition-all duration-200 md:gap-3 md:px-3',
                   )}
                   style={active ? {
-                    background: 'var(--muted-bg)',
+                    background: 'rgb(var(--accent) / 0.12)',
                     color: 'var(--foreground)',
+                    boxShadow: 'inset 0 0 0 1px rgb(var(--accent) / 0.2)',
                   } : {
                     color: 'var(--muted-fg)',
                   }}
                   onMouseEnter={e => {
                     if (!active) {
-                      (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'rgb(var(--accent) / 0.07)';
                       (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
                     }
                   }}
@@ -177,19 +195,19 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
                   onClick={() => setOpen(false)}
                 >
                   <span
-                    className="h-2.5 w-2.5 rounded-full shrink-0"
+                    className="h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/20"
                     style={{ backgroundColor: project.color }}
                   />
-                  <span className="truncate">{project.parent_project_id ? `Sub: ${project.name}` : project.name}</span>
+                  <span className="truncate">{project.parent_project_id ? `↳ ${project.name}` : project.name}</span>
                 </Link>
               );
             })}
             <Link
               href="/projects"
-              className="mt-1 flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors md:rounded-xl md:px-3"
+              className="mt-1 flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all duration-200 md:px-3"
               style={{ color: 'var(--muted-fg)' }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--muted-bg)';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'rgb(var(--accent) / 0.07)';
                 (e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground)';
               }}
               onMouseLeave={e => {
@@ -199,7 +217,17 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
               onClick={() => setOpen(false)}
             >
               <span>View all projects</span>
-              {hiddenProjectCount > 0 && <span>+{hiddenProjectCount}</span>}
+              {hiddenProjectCount > 0 && (
+                <span
+                  className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
+                  style={{
+                    background: 'rgb(var(--accent) / 0.12)',
+                    color: 'rgb(var(--accent))',
+                  }}
+                >
+                  +{hiddenProjectCount}
+                </span>
+              )}
             </Link>
           </div>
         )}
@@ -208,22 +236,30 @@ export function Sidebar({ open, setOpen }: { open: boolean, setOpen: (v: boolean
         {/* Sidebar footer */}
         <div
           className="shrink-0 px-4 py-3"
-          style={{ borderTop: '1px solid var(--sidebar-border)' }}
+          style={{
+            borderTop: '1px solid var(--sidebar-border)',
+          }}
         >
           <div className="flex items-center justify-between">
-            <p className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>
+            <p className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.6 }}>
               © {new Date().getFullYear()} Mavora Digital
             </p>
             {process.env.NEXT_PUBLIC_APP_VERSION && (
-              <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.5 }}>
+              <span
+                className="rounded-full px-1.5 py-0.5 text-[9px] font-medium"
+                style={{
+                  background: 'rgb(var(--accent) / 0.1)',
+                  color: 'rgb(var(--accent) / 0.7)',
+                }}
+              >
                 v{process.env.NEXT_PUBLIC_APP_VERSION}
               </span>
             )}
           </div>
           <div className="mt-0.5 flex items-center gap-2">
-            <a href="/privacy" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)' }}>Privacy</a>
-            <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.4 }}>·</span>
-            <a href="/terms" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)' }}>Terms</a>
+            <a href="/privacy" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)', opacity: 0.7 }}>Privacy</a>
+            <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.3 }}>·</span>
+            <a href="/terms" className="text-[10px] transition-colors hover:underline" style={{ color: 'var(--muted-fg)', opacity: 0.7 }}>Terms</a>
           </div>
         </div>
       </aside>

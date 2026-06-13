@@ -54,8 +54,8 @@ function CircleProgress({ pct, size = 72 }: { pct: number; size?: number }) {
         cy={size / 2}
         r={r}
         fill="none"
-        className="stroke-slate-100 dark:stroke-slate-800"
-        strokeWidth={6}
+        strokeWidth={5}
+        style={{ stroke: 'var(--muted-bg)' }}
       />
       {/* Progress */}
       <circle
@@ -64,11 +64,16 @@ function CircleProgress({ pct, size = 72 }: { pct: number; size?: number }) {
         r={r}
         fill="none"
         stroke="rgb(var(--accent))"
-        strokeWidth={6}
+        strokeWidth={5}
         strokeLinecap="round"
         strokeDasharray={circ}
         strokeDashoffset={offset}
-        style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 0.7s ease' }}
+        style={{
+          transform: 'rotate(-90deg)',
+          transformOrigin: '50% 50%',
+          transition: 'stroke-dashoffset 0.7s ease',
+          filter: 'drop-shadow(0 0 6px rgb(var(--accent) / 0.5))',
+        }}
       />
       {/* Center label */}
       <text
@@ -76,8 +81,11 @@ function CircleProgress({ pct, size = 72 }: { pct: number; size?: number }) {
         y={size / 2 + 1}
         textAnchor="middle"
         dominantBaseline="middle"
-        className="fill-slate-900 dark:fill-slate-100"
-        style={{ fontSize: size * 0.22, fontWeight: 700 }}
+        style={{
+          fontSize: size * 0.22,
+          fontWeight: 700,
+          fill: 'var(--foreground)',
+        }}
       >
         {pct}%
       </text>
@@ -107,28 +115,24 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
   const todayStr = new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
 
   // Done today = tasks completed on today's LOCAL date
-  // completed_at is a UTC ISO string — convert to local date string before comparing
   const doneToday = tasks.filter(t => {
     if (t.status !== 'done') return false;
     const rawTs = t.completed_at ?? t.updated_at;
     if (!rawTs) return false;
-    const localDate = new Date(rawTs).toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
+    const localDate = new Date(rawTs).toLocaleDateString('en-CA');
     return localDate === todayStr;
   }).length;
 
-  // Total = tasks due today (pending + done with today's due_date)
   const totalDueToday = todayTasks.length + tasks.filter(
     t => t.status === 'done' && t.due_date === todayStr
   ).length;
 
   const remainingToday = todayTasks.filter(t => t.status !== 'done').length;
 
-  // Progress: if tasks were due today, use that; otherwise if something was done, show 100%
   const progressPct = totalDueToday > 0
     ? Math.round(((totalDueToday - remainingToday) / totalDueToday) * 100)
     : doneToday > 0 ? 100 : 0;
 
-  // Overdue tasks
   const overdueCount = tasks.filter(
     t => t.status !== 'done' && !t.archived_at && t.due_date && t.due_date < todayStr
   ).length;
@@ -141,7 +145,7 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
     return total === 0 || done < total;
   }).length;
 
-  // Next task to tackle: most urgent non-done task
+  // Next task: most urgent non-done task
   const nextTask = tasks
     .filter(t => t.status !== 'done' && !t.archived_at)
     .sort((a, b) => {
@@ -160,33 +164,33 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
       icon: CheckCircle2,
       label: 'Done today',
       value: totalDueToday > 0 ? `${totalDueToday - remainingToday}/${totalDueToday}` : `${doneToday}`,
-              sub: remainingToday > 0 ? `${remainingToday} remaining` : doneToday > 0 ? 'All clear!' : 'No tasks due',
-      color: 'text-emerald-600 dark:text-emerald-400',
-      bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+      sub: remainingToday > 0 ? `${remainingToday} remaining` : doneToday > 0 ? 'All clear!' : 'No tasks due',
+      color: '#10b981',
+      glowColor: 'rgba(16,185,129,0.15)',
     },
     ...(overdueCount > 0 ? [{
       icon: AlertCircle,
       label: 'Overdue',
       value: String(overdueCount),
       sub: 'Need attention',
-      color: 'text-red-600 dark:text-red-400',
-      bg: 'bg-red-50 dark:bg-red-950/30',
+      color: '#ef4444',
+      glowColor: 'rgba(239,68,68,0.12)',
     }] : []),
     {
       icon: Flame,
       label: 'Streak',
       value: `${streak}d`,
       sub: streak > 0 ? 'Keep it going!' : 'Start today',
-      color: 'text-orange-500 dark:text-orange-400',
-      bg: 'bg-orange-50 dark:bg-orange-950/30',
+      color: '#f97316',
+      glowColor: 'rgba(249,115,22,0.12)',
     },
     {
       icon: Target,
       label: 'Active goals',
       value: String(activeGoals),
       sub: activeGoals === 0 ? 'No active goals' : 'In progress',
-      color: 'text-indigo-600 dark:text-indigo-400',
-      bg: 'bg-indigo-50 dark:bg-indigo-950/30',
+      color: 'rgb(var(--accent))',
+      glowColor: 'var(--glow)',
     },
   ];
 
@@ -195,17 +199,29 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
       {/* Trigger button */}
       <button
         onClick={() => setOpen(v => !v)}
-        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all duration-200"
+        style={{ color: 'var(--muted-fg)' }}
         title="Daily summary"
         aria-label="View daily summary"
         aria-expanded={open}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.08)';
+          (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--accent))';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.background = '';
+          (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-fg)';
+        }}
       >
         <TrendingUp className="h-3.5 w-3.5" style={{ color: 'rgb(var(--accent))' }} />
         <span className="hidden sm:inline">Summary</span>
         {progressPct > 0 && (
           <span
             className="rounded-full px-1.5 py-0.5 text-[10px] font-bold text-white"
-            style={{ background: 'rgb(var(--accent))' }}
+            style={{
+              background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.8))',
+              boxShadow: '0 2px 6px var(--glow)',
+            }}
           >
             {progressPct}%
           </span>
@@ -220,79 +236,167 @@ export function DailySummary({ tasks, todayTasks, goals }: DailySummaryProps) {
       {/* Popout */}
       {open && (
         <div
-          className="fixed right-4 top-[calc(3.5rem+0.35rem)] z-[9998] w-72 max-w-[calc(100vw-2rem)] rounded-2xl border bg-white shadow-2xl dark:bg-slate-900"
-          style={{ borderColor: 'var(--card-border)' }}
+          className="fixed right-4 top-[calc(3.5rem+0.5rem)] z-[9998] w-72 max-w-[calc(100vw-2rem)] rounded-2xl shadow-2xl"
+          style={{
+            background: 'var(--card-bg)',
+            border: '1px solid var(--glass-border)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px var(--glass-border), 0 0 40px var(--glow)',
+          }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 pt-4 pb-3">
-            <div className="flex items-center gap-1.5">
-              <BarChart3 className="h-4 w-4" style={{ color: 'rgb(var(--accent))' }} />
-              <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">Today's Progress</span>
+          <div
+            className="flex items-center justify-between px-4 pt-4 pb-3"
+            style={{ borderBottom: '1px solid var(--card-border)' }}
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-lg"
+                style={{
+                  background: 'rgb(var(--accent) / 0.12)',
+                  boxShadow: '0 0 10px var(--glow)',
+                }}
+              >
+                <BarChart3 className="h-3.5 w-3.5" style={{ color: 'rgb(var(--accent))' }} />
+              </div>
+              <span
+                className="text-sm font-semibold"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Today's Progress
+              </span>
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="flex h-6 w-6 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="flex h-6 w-6 items-center justify-center rounded-lg transition-all duration-150"
+              style={{ color: 'var(--muted-fg)' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.1)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--accent))';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = '';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-fg)';
+              }}
             >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
 
           {/* Ring + status */}
-          <div className="flex items-center gap-4 px-4 pb-3">
+          <div className="flex items-center gap-4 px-4 py-4">
             <CircleProgress pct={progressPct} size={72} />
             <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1.5 text-base font-bold text-slate-900 dark:text-slate-100 leading-tight">
+              <p
+                className="flex items-center gap-1.5 text-sm font-bold leading-tight"
+                style={{ color: 'var(--foreground)' }}
+              >
                 {(() => { const Icon = statusMsg.icon; return <Icon className={`h-4 w-4 shrink-0 ${statusMsg.iconClass ?? ''}`} />; })()}
                 {statusMsg.text}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p
+                className="mt-1 text-xs"
+                style={{ color: 'var(--muted-fg)' }}
+              >
                 {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="mx-4 border-t border-slate-100 dark:border-slate-800" />
-
           {/* Stats */}
-          <div className="px-4 py-3 space-y-2">
-            {statsRows.map(item => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className={`flex items-center gap-3 rounded-xl p-2.5 ${item.bg}`}
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/70 dark:bg-black/20">
-                    <Icon className={`h-4 w-4 ${item.color}`} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline justify-between gap-1">
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{item.label}</span>
-                      <span className={`text-sm font-bold ${item.color}`}>{item.value}</span>
+          <div
+            className="px-4 pb-3 space-y-2"
+            style={{ borderTop: '1px solid var(--card-border)' }}
+          >
+            <div className="pt-3 space-y-2">
+              {statsRows.map(item => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.label}
+                    className="flex items-center gap-3 rounded-xl p-2.5 transition-all duration-150"
+                    style={{
+                      background: item.glowColor,
+                      border: '1px solid rgba(255,255,255,0.04)',
+                    }}
+                  >
+                    <div
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                      style={{
+                        background: 'var(--card-bg)',
+                        backdropFilter: 'blur(8px)',
+                      }}
+                    >
+                      <Icon className="h-4 w-4" style={{ color: item.color }} />
                     </div>
-                    <p className="text-[10px] text-slate-400">{item.sub}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-1">
+                        <span
+                          className="text-xs"
+                          style={{ color: 'var(--muted-fg)' }}
+                        >
+                          {item.label}
+                        </span>
+                        <span
+                          className="text-sm font-bold"
+                          style={{ color: item.color }}
+                        >
+                          {item.value}
+                        </span>
+                      </div>
+                      <p
+                        className="text-[10px]"
+                        style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+                      >
+                        {item.sub}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           {/* Up next task */}
           {nextTask && (
-            <>
-              <div className="mx-4 border-t border-slate-100 dark:border-slate-800" />
-              <div className="px-4 py-3">
-                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Up next</p>
-                <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-800/60">
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" style={{ color: 'rgb(var(--accent))' }} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-slate-800 dark:text-slate-100">{nextTask.title}</p>
-                    <p className="text-[10px] capitalize text-slate-400">{nextTask.priority} priority{nextTask.due_date ? ` · ${nextTask.due_date}` : ''}</p>
-                  </div>
+            <div
+              className="px-4 pb-4"
+              style={{ borderTop: '1px solid var(--card-border)' }}
+            >
+              <p
+                className="mb-2 pt-3 text-[10px] font-semibold uppercase tracking-widest"
+                style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+              >
+                Up next
+              </p>
+              <div
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                style={{
+                  background: 'rgb(var(--accent) / 0.07)',
+                  border: '1px solid rgb(var(--accent) / 0.12)',
+                }}
+              >
+                <ArrowRight
+                  className="h-3.5 w-3.5 shrink-0"
+                  style={{ color: 'rgb(var(--accent))' }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="truncate text-xs font-medium"
+                    style={{ color: 'var(--foreground)' }}
+                  >
+                    {nextTask.title}
+                  </p>
+                  <p
+                    className="text-[10px] capitalize"
+                    style={{ color: 'var(--muted-fg)' }}
+                  >
+                    {nextTask.priority} priority{nextTask.due_date ? ` · ${nextTask.due_date}` : ''}
+                  </p>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}

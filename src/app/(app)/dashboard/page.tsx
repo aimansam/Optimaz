@@ -127,15 +127,29 @@ export default function DashboardPage() {
 	// ── Shared sub-components rendered in both layouts ──────────
 
 	const topBar = (
-		<div className="shrink-0 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-6">
+		<div
+			className="shrink-0 px-4 py-4 sm:px-6"
+			style={{ borderBottom: '1px solid var(--card-border)' }}
+		>
 			<div className="flex items-start justify-between gap-4">
 				{/* Left: date, greeting + streak pill, quote */}
 				<div className="min-w-0">
-				<p className="text-xs font-semibold uppercase tracking-widest text-slate-400 sm:text-sm">
-					{weekday} &middot; {dateStr}
-				</p>
-					<div className="mt-0.5 flex flex-wrap items-center gap-2">
-						<h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
+					<p
+						className="text-xs font-semibold uppercase tracking-widest"
+						style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+					>
+						{weekday} &middot; {dateStr}
+					</p>
+					<div className="mt-1 flex flex-wrap items-center gap-2">
+						<h2
+							className="text-lg font-bold tracking-tight sm:text-xl"
+							style={{
+								background: 'linear-gradient(135deg, var(--foreground) 0%, rgb(var(--accent)) 100%)',
+								WebkitBackgroundClip: 'text',
+								WebkitTextFillColor: 'transparent',
+								backgroundClip: 'text',
+							}}
+						>
 							{greeting}{firstName ? `, ${firstName}` : ''}
 						</h2>
 						<TaskStreak tasks={allTasks ?? []} inline />
@@ -149,8 +163,19 @@ export default function DashboardPage() {
 						type="button"
 						aria-label="Add Task"
 						onClick={() => setAddOpen(true)}
-						className="inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
-						style={{ background: 'rgb(var(--accent))' }}
+						className="inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-white transition-all duration-200 focus:outline-none"
+						style={{
+							background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.8))',
+							boxShadow: '0 2px 12px var(--glow)',
+						}}
+						onMouseEnter={e => {
+							(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+							(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 18px var(--glow)';
+						}}
+						onMouseLeave={e => {
+							(e.currentTarget as HTMLButtonElement).style.transform = '';
+							(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 12px var(--glow)';
+						}}
 					>
 						<Plus className="h-4 w-4" />
 						<span className="hidden sm:inline">Add Task</span>
@@ -159,7 +184,16 @@ export default function DashboardPage() {
 						type="button"
 						aria-label={showAnalytics ? 'Hide Filter' : 'Show Filter'}
 						onClick={() => setShowAnalytics(v => !v)}
-						className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${showAnalytics ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+						className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-all duration-200 focus:outline-none"
+						style={showAnalytics ? {
+							background: 'rgb(var(--accent) / 0.15)',
+							color: 'rgb(var(--accent))',
+							border: '1px solid rgb(var(--accent) / 0.3)',
+						} : {
+							background: 'var(--card-bg)',
+							color: 'var(--muted-fg)',
+							border: '1px solid var(--card-border)',
+						}}
 					>
 						<BarChart3 className="h-4 w-4" />
 						<span className="hidden sm:inline">Filter</span>
@@ -171,49 +205,105 @@ export default function DashboardPage() {
 
 	const goalFocusPanel = (
 		<div className="mt-4 space-y-3">
-			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Goal Focus</p>
+			<p
+				className="text-[10px] font-semibold uppercase tracking-widest"
+				style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+			>
+				Goal Focus
+			</p>
 			<div className="grid grid-cols-3 gap-2">
-				<div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-800 dark:bg-slate-900">
-				<div className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
-					<Target className="h-3 w-3 text-slate-400" />
-					Active
+				{/* Active */}
+				<div
+					className="rounded-xl p-2.5"
+					style={{
+						background: 'var(--card-bg)',
+						border: '1px solid var(--card-border)',
+						backdropFilter: 'blur(12px)',
+					}}
+				>
+					<div className="flex items-center gap-1 text-xs font-semibold" style={{ color: 'rgb(var(--accent))' }}>
+						<Target className="h-3 w-3" />
+						Active
+					</div>
+					<p className="mt-1 text-lg font-bold" style={{ color: 'var(--foreground)' }}>{activeGoals.length}</p>
+					<p className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>Goals in motion</p>
 				</div>
-				<p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{activeGoals.length}</p>
-				<p className="text-xs text-slate-400">Goals in motion</p>
+				{/* At risk */}
+				<div
+					className="rounded-xl p-2.5"
+					style={{
+						background: 'rgba(239,68,68,0.06)',
+						border: '1px solid rgba(239,68,68,0.15)',
+						backdropFilter: 'blur(12px)',
+					}}
+				>
+					<div className="flex items-center gap-1 text-xs font-semibold" style={{ color: '#ef4444' }}>
+						<AlertTriangle className="h-3 w-3" />
+						At risk
+					</div>
+					<p className="mt-1 text-lg font-bold" style={{ color: '#ef4444' }}>{atRiskGoals.length}</p>
+					<p className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>Past target</p>
 				</div>
-				<div className="rounded-xl border border-red-200 bg-red-50 p-2.5 dark:border-red-900/50 dark:bg-red-950/20">
-				<div className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-300">
-					<AlertTriangle className="h-3 w-3" />
-					At risk
-				</div>
-				<p className="mt-1 text-lg font-bold text-red-600 dark:text-red-300">{atRiskGoals.length}</p>
-				<p className="text-xs text-red-500/80 dark:text-red-300/80">Past target</p>
-				</div>
-				<div className="rounded-xl border border-amber-200 bg-amber-50 p-2.5 dark:border-amber-900/50 dark:bg-amber-950/20">
-				<div className="flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-					<AlertTriangle className="h-3 w-3" />
-					Urgent
-				</div>
-				<p className="mt-1 text-lg font-bold text-amber-600 dark:text-amber-300">{urgentGoalTasks.length}</p>
-				<p className="text-xs text-amber-600/80 dark:text-amber-300/80">Urgent tasks</p>
+				{/* Urgent */}
+				<div
+					className="rounded-xl p-2.5"
+					style={{
+						background: 'rgba(245,158,11,0.06)',
+						border: '1px solid rgba(245,158,11,0.15)',
+						backdropFilter: 'blur(12px)',
+					}}
+				>
+					<div className="flex items-center gap-1 text-xs font-semibold" style={{ color: '#d97706' }}>
+						<AlertTriangle className="h-3 w-3" />
+						Urgent
+					</div>
+					<p className="mt-1 text-lg font-bold" style={{ color: '#d97706' }}>{urgentGoalTasks.length}</p>
+					<p className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>Urgent tasks</p>
 				</div>
 			</div>
 			{nextGoals.length > 0 && (
-				<div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-					<p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">Next outcomes</p>
+				<div
+					className="rounded-xl p-3"
+					style={{
+						background: 'var(--card-bg)',
+						border: '1px solid var(--card-border)',
+						backdropFilter: 'blur(12px)',
+					}}
+				>
+					<p
+						className="mb-2 text-[10px] font-semibold uppercase tracking-widest"
+						style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+					>
+						Next outcomes
+					</p>
 					<div className="space-y-1">
 						{nextGoals.map((goal) => {
 							const total = goal.tasks?.length ?? 0;
 							const completed = goal.tasks?.filter(t => t.status === 'done').length ?? 0;
 							const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 							return (
-								<Link key={goal.id} href={`/goals/${goal.id}`} className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800/60">
-									<span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: goal.color }} />
+								<Link
+									key={goal.id}
+									href={`/goals/${goal.id}`}
+									className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 transition-all duration-150"
+									onMouseEnter={e => {
+										(e.currentTarget as HTMLAnchorElement).style.background = 'rgb(var(--accent) / 0.07)';
+									}}
+									onMouseLeave={e => {
+										(e.currentTarget as HTMLAnchorElement).style.background = '';
+									}}
+								>
+									<span className="h-2 w-2 shrink-0 rounded-full ring-1 ring-white/20" style={{ backgroundColor: goal.color }} />
 									<span className="min-w-0 flex-1">
-										<span className="block truncate text-xs font-medium text-slate-800 dark:text-slate-100">{goal.title}</span>
-										<span className="block truncate text-xs text-slate-400">{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
+										<span className="block truncate text-xs font-medium" style={{ color: 'var(--foreground)' }}>{goal.title}</span>
+										<span className="block truncate text-[10px]" style={{ color: 'var(--muted-fg)' }}>{goal.due_date ? `Target ${goal.due_date}` : 'No target date'}</span>
 									</span>
-									<span className="shrink-0 text-xs font-semibold text-slate-400">{percent}%</span>
+									<span
+										className="shrink-0 text-[10px] font-bold"
+										style={{ color: 'rgb(var(--accent))' }}
+									>
+										{percent}%
+									</span>
 								</Link>
 							);
 						})}
@@ -302,7 +392,15 @@ export default function DashboardPage() {
 				<div className="hidden flex-1 min-h-0 lg:flex lg:flex-row lg:overflow-hidden">
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
-				<aside className="shrink-0 w-64 xl:w-72 flex flex-col border-r border-slate-100 dark:border-slate-800 overflow-y-auto px-4 py-4" style={{ background: 'var(--background)' }}>
+				<aside
+				className="shrink-0 w-64 xl:w-72 flex flex-col overflow-y-auto px-4 py-4"
+				style={{
+					background: 'var(--sidebar-bg)',
+					borderRight: '1px solid var(--card-border)',
+					backdropFilter: 'blur(12px)',
+					WebkitBackdropFilter: 'blur(12px)',
+				}}
+			>
 					<DashboardStatsStrip compact />
 					<DashboardAnalytics />
 					{goalFocusPanel}

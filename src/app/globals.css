@@ -4,126 +4,147 @@
 @custom-variant dark (&:where(.dark, .dark *, .midnight, .midnight *, .obsidian, .obsidian *, .forest, .forest *));
 
 /* ============================================================
-   THEME DEFINITIONS
+   THEME DEFINITIONS — Premium Optimaz UI
    --accent: space-separated R G B for use with rgb(var(--accent))
    ============================================================ */
 
-/* Cloud — default light, indigo accent */
+/* Cloud — premium light, violet accent */
 :root, .cloud {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --accent: 99 102 241;
-  --accent-subtle: 238 240 255;
-  --sidebar-bg: #f8fafc;
-  --sidebar-border: #e2e8f0;
-  --card-bg: #ffffff;
-  --card-border: #e2e8f0;
-  --muted-bg: #f1f5f9;
-  --muted-fg: #64748b;
-  --scrollbar: #cbd5e1;
-  --scrollbar-hover: #94a3b8;
+  --background: #f8f7ff;
+  --foreground: #0d0b1e;
+  --accent: 124 58 237;
+  --accent-subtle: 237 233 254;
+  --sidebar-bg: rgba(248, 247, 255, 0.92);
+  --sidebar-border: rgba(124, 58, 237, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(124, 58, 237, 0.08);
+  --muted-bg: rgba(237, 233, 254, 0.5);
+  --muted-fg: #6d5fa0;
+  --scrollbar: #ddd6fe;
+  --scrollbar-hover: #c4b5fd;
+  --glow: rgba(124, 58, 237, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(124, 58, 237, 0.12);
   color-scheme: light;
 }
 
-/* Sand — warm light, amber accent */
+/* Sand — warm premium, amber accent */
 .sand {
-  --background: #fdf8f0;
-  --foreground: #1c1309;
-  --accent: 217 119 6;
-  --accent-subtle: 254 243 199;
-  --sidebar-bg: #fefce8;
-  --sidebar-border: #fde68a;
-  --card-bg: #fffdf7;
-  --card-border: #fde68a;
-  --muted-bg: #fef3c7;
-  --muted-fg: #92400e;
-  --scrollbar: #fcd34d;
-  --scrollbar-hover: #f59e0b;
+  --background: #fdf9f0;
+  --foreground: #1a1209;
+  --accent: 202 138 4;
+  --accent-subtle: 254 249 195;
+  --sidebar-bg: rgba(253, 249, 240, 0.92);
+  --sidebar-border: rgba(202, 138, 4, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(202, 138, 4, 0.1);
+  --muted-bg: rgba(254, 249, 195, 0.6);
+  --muted-fg: #92620e;
+  --scrollbar: #fde68a;
+  --scrollbar-hover: #fbbf24;
+  --glow: rgba(202, 138, 4, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(202, 138, 4, 0.12);
   color-scheme: light;
 }
 
-/* Mint — cool light, emerald accent */
+/* Mint — cool premium, emerald accent */
 .mint {
-  --background: #f0fdf4;
-  --foreground: #052e16;
-  --accent: 16 185 129;
+  --background: #f0fdf8;
+  --foreground: #031f12;
+  --accent: 5 150 105;
   --accent-subtle: 209 250 229;
-  --sidebar-bg: #ecfdf5;
-  --sidebar-border: #a7f3d0;
-  --card-bg: #f0fdf4;
-  --card-border: #a7f3d0;
-  --muted-bg: #d1fae5;
-  --muted-fg: #065f46;
-  --scrollbar: #6ee7b7;
-  --scrollbar-hover: #34d399;
+  --sidebar-bg: rgba(240, 253, 248, 0.92);
+  --sidebar-border: rgba(5, 150, 105, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(5, 150, 105, 0.1);
+  --muted-bg: rgba(209, 250, 229, 0.5);
+  --muted-fg: #047857;
+  --scrollbar: #a7f3d0;
+  --scrollbar-hover: #6ee7b7;
+  --glow: rgba(5, 150, 105, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(5, 150, 105, 0.12);
   color-scheme: light;
 }
 
-/* Blossom — soft light, pink accent */
+/* Blossom — soft premium, pink accent */
 .blossom {
   --background: #fdf2f8;
-  --foreground: #1f0916;
-  --accent: 236 72 153;
+  --foreground: #1a0611;
+  --accent: 219 39 119;
   --accent-subtle: 252 231 243;
-  --sidebar-bg: #fdf2f8;
-  --sidebar-border: #fbcfe8;
-  --card-bg: #fdf2f8;
-  --card-border: #fbcfe8;
-  --muted-bg: #fce7f3;
+  --sidebar-bg: rgba(253, 242, 248, 0.92);
+  --sidebar-border: rgba(219, 39, 119, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(219, 39, 119, 0.08);
+  --muted-bg: rgba(252, 231, 243, 0.5);
   --muted-fg: #9d174d;
-  --scrollbar: #f9a8d4;
-  --scrollbar-hover: #f472b6;
+  --scrollbar: #fbcfe8;
+  --scrollbar-hover: #f9a8d4;
+  --glow: rgba(219, 39, 119, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(219, 39, 119, 0.1);
   color-scheme: light;
 }
 
-/* Midnight — dark, indigo accent */
+/* Midnight — premium deep dark, violet accent */
 .midnight, .dark {
-  --background: #0a0a0f;
-  --foreground: #f1f5f9;
-  --accent: 99 102 241;
-  --accent-subtle: 30 27 75;
-  --sidebar-bg: #0f0f1a;
-  --sidebar-border: #1e293b;
-  --card-bg: #0f172a;
-  --card-border: #1e293b;
-  --muted-bg: #1e293b;
-  --muted-fg: #94a3b8;
-  --scrollbar: #334155;
-  --scrollbar-hover: #475569;
-  color-scheme: dark;
-}
-
-/* Obsidian — dark, violet accent */
-.obsidian {
-  --background: #0d0d0d;
-  --foreground: #f5f5f5;
+  --background: #07071a;
+  --foreground: #e8e4ff;
   --accent: 139 92 246;
-  --accent-subtle: 46 16 101;
-  --sidebar-bg: #111111;
-  --sidebar-border: #292524;
-  --card-bg: #171717;
-  --card-border: #292524;
-  --muted-bg: #262626;
-  --muted-fg: #a8a29e;
-  --scrollbar: #44403c;
-  --scrollbar-hover: #57534e;
+  --accent-subtle: 30 20 65;
+  --sidebar-bg: rgba(8, 7, 22, 0.88);
+  --sidebar-border: rgba(139, 92, 246, 0.15);
+  --card-bg: rgba(16, 12, 40, 0.75);
+  --card-border: rgba(139, 92, 246, 0.12);
+  --muted-bg: rgba(28, 20, 62, 0.6);
+  --muted-fg: #9d8ecc;
+  --scrollbar: #2d1f6e;
+  --scrollbar-hover: #4c3896;
+  --glow: rgba(139, 92, 246, 0.2);
+  --glass-bg: rgba(16, 12, 40, 0.6);
+  --glass-border: rgba(139, 92, 246, 0.14);
   color-scheme: dark;
 }
 
-/* Forest — dark, emerald accent */
+/* Obsidian — premium aurora dark, bright violet accent */
+.obsidian {
+  --background: #06060f;
+  --foreground: #f0ecff;
+  --accent: 147 51 234;
+  --accent-subtle: 46 16 101;
+  --sidebar-bg: rgba(8, 6, 18, 0.9);
+  --sidebar-border: rgba(147, 51, 234, 0.18);
+  --card-bg: rgba(18, 12, 38, 0.72);
+  --card-border: rgba(147, 51, 234, 0.14);
+  --muted-bg: rgba(35, 20, 72, 0.55);
+  --muted-fg: #a889d4;
+  --scrollbar: #3b1f72;
+  --scrollbar-hover: #5d33b0;
+  --glow: rgba(147, 51, 234, 0.25);
+  --glass-bg: rgba(18, 12, 38, 0.55);
+  --glass-border: rgba(147, 51, 234, 0.18);
+  color-scheme: dark;
+}
+
+/* Forest — premium dark emerald */
 .forest {
-  --background: #0a0f0a;
-  --foreground: #f0fdf4;
+  --background: #060f08;
+  --foreground: #eafef0;
   --accent: 16 185 129;
-  --accent-subtle: 6 50 23;
-  --sidebar-bg: #0d150d;
-  --sidebar-border: #14532d;
-  --card-bg: #0f1f0f;
-  --card-border: #14532d;
-  --muted-bg: #14532d;
-  --muted-fg: #86efac;
-  --scrollbar: #166534;
-  --scrollbar-hover: #15803d;
+  --accent-subtle: 6 40 22;
+  --sidebar-bg: rgba(6, 15, 8, 0.9);
+  --sidebar-border: rgba(16, 185, 129, 0.15);
+  --card-bg: rgba(10, 24, 14, 0.72);
+  --card-border: rgba(16, 185, 129, 0.12);
+  --muted-bg: rgba(14, 40, 24, 0.55);
+  --muted-fg: #6bbf97;
+  --scrollbar: #1a5c38;
+  --scrollbar-hover: #2a8850;
+  --glow: rgba(16, 185, 129, 0.2);
+  --glass-bg: rgba(10, 24, 14, 0.55);
+  --glass-border: rgba(16, 185, 129, 0.15);
   color-scheme: dark;
 }
 
@@ -134,7 +155,7 @@
 * {
   box-sizing: border-box;
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar, #cbd5e1) var(--background, #ffffff);
+  scrollbar-color: var(--scrollbar, #cbd5e1) transparent;
 }
 
 html, body {
@@ -156,14 +177,32 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Aurora background glow for dark themes */
+.midnight body,
+.obsidian body,
+.forest body,
+.dark body {
+  background-attachment: fixed;
+}
+
+.midnight,
+.obsidian,
+.forest,
+.dark {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgb(var(--accent) / 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgb(var(--accent) / 0.06) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -189,4 +228,21 @@ body {
 ::selection {
   background: rgb(var(--accent) / 0.2);
   color: inherit;
+}
+
+/* Glass utility */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Glow utilities */
+.glow-accent {
+  box-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow);
+}
+
+.glow-sm {
+  box-shadow: 0 0 10px var(--glow);
 }

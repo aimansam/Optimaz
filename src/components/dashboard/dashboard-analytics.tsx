@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
 
 const supabase = createClient();
 
@@ -66,7 +67,6 @@ function useTaskStats() {
       const countByDay = Object.fromEntries(days.map((d) => [d, 0]));
       for (const row of weeklyRes.data ?? []) {
         if (!row.completed_at) continue;
-        // completed_at is a UTC ISO string; convert to local YYYY-MM-DD before bucketing
         const day = new Date(row.completed_at as string).toLocaleDateString('en-CA');
         if (day in countByDay) countByDay[day]++;
       }
@@ -82,19 +82,22 @@ function useTaskStats() {
   });
 }
 
-const MAX_BAR_HEIGHT = 56; // px — fixed reference height for bars
+const MAX_BAR_HEIGHT = 52; // px
 
 function BarChart({ data }: { data: { day: string; label: string; count: number }[] }) {
   const maxCount = Math.max(...data.map((d) => d.count), 1);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
 
   return (
-    <div className="space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Completions · last 7 days</p>
-      {/* Fixed-height row; bars are anchored to the bottom via items-end */}
-      <div className="flex items-end gap-1.5" style={{ height: `${MAX_BAR_HEIGHT + 24}px` }}>
+    <div className="space-y-3">
+      <p
+        className="text-[10px] font-semibold uppercase tracking-widest"
+        style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+      >
+        Completions · last 7 days
+      </p>
+      <div className="flex items-end gap-1.5" style={{ height: `${MAX_BAR_HEIGHT + 28}px` }}>
         {data.map((d) => {
-          // Compute bar height in px — never use % inside flex to avoid inheritance issues
           const barPx = d.count > 0
             ? Math.max(Math.round((d.count / maxCount) * MAX_BAR_HEIGHT), 8)
             : 3;
@@ -102,14 +105,31 @@ function BarChart({ data }: { data: { day: string; label: string; count: number 
           return (
             <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
               {d.count > 0 && (
-                <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">{d.count}</span>
+                <span
+                  className="text-[9px] font-bold"
+                  style={{ color: isToday ? 'rgb(var(--accent))' : 'var(--muted-fg)' }}
+                >
+                  {d.count}
+                </span>
               )}
               <div
-                className={`w-full rounded-sm transition-all duration-500 ${isToday ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-slate-700'}`}
-                style={{ height: `${barPx}px` }}
+                className="w-full rounded-md transition-all duration-500"
+                style={{
+                  height: `${barPx}px`,
+                  background: isToday
+                    ? 'linear-gradient(to top, rgb(var(--accent)), rgb(var(--accent) / 0.7))'
+                    : 'rgb(var(--accent) / 0.2)',
+                  boxShadow: isToday ? '0 0 10px var(--glow)' : 'none',
+                }}
                 aria-label={`${d.label}: ${d.count} tasks`}
               />
-              <span className={`text-[9px] font-medium ${isToday ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-400'}`}>
+              <span
+                className="text-[9px] font-medium"
+                style={{
+                  color: isToday ? 'rgb(var(--accent))' : 'var(--muted-fg)',
+                  fontWeight: isToday ? 700 : 500,
+                }}
+              >
                 {d.label}
               </span>
             </div>
@@ -120,27 +140,97 @@ function BarChart({ data }: { data: { day: string; label: string; count: number 
   );
 }
 
+// Stat card for the compact 3-col layout
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+  color,
+  glowColor,
+  isLoading,
+}: {
+  icon: React.ElementType;
+  value: number;
+  label: string;
+  color: string;
+  glowColor: string;
+  isLoading: boolean;
+}) {
+  return (
+    <div
+      className="rounded-xl p-3 flex flex-col items-center text-center transition-all duration-200"
+      style={{
+        background: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}
+    >
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-lg mb-2"
+        style={{
+          background: `${glowColor}22`,
+          boxShadow: `0 0 12px ${glowColor}33`,
+        }}
+      >
+        <Icon className="h-4 w-4" style={{ color }} />
+      </div>
+      <div
+        className="text-xl font-bold leading-none"
+        style={{ color: 'var(--foreground)' }}
+      >
+        {isLoading ? '…' : value}
+      </div>
+      <div
+        className="mt-1 text-[10px] font-semibold uppercase tracking-wide"
+        style={{ color: 'var(--muted-fg)' }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
 export function DashboardStatsStrip({ compact }: { compact?: boolean }) {
   const { data, isLoading } = useTaskStats();
 
+  const stats = [
+    {
+      icon: CheckCircle2,
+      value: data?.completed ?? 0,
+      label: compact ? 'Done' : 'Done this week',
+      color: '#10b981',
+      glowColor: '#10b981',
+    },
+    {
+      icon: AlertCircle,
+      value: data?.overdue ?? 0,
+      label: 'Overdue',
+      color: '#ef4444',
+      glowColor: '#ef4444',
+    },
+    {
+      icon: Clock,
+      value: data?.upcoming ?? 0,
+      label: compact ? 'Soon' : 'Upcoming',
+      color: '#f59e0b',
+      glowColor: '#f59e0b',
+    },
+  ];
+
   if (compact) {
-    // Stacked list style for the left sidebar panel
     return (
       <div className="mb-4 space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">This week</p>
+        <p
+          className="text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+        >
+          This week
+        </p>
         <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-2.5 text-center dark:bg-emerald-900/20 dark:border-emerald-900/40">
-            <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{isLoading ? '…' : data?.completed ?? 0}</div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/80 dark:text-emerald-400/80">Done</div>
-          </div>
-          <div className="rounded-xl bg-red-50 border border-red-100 p-2.5 text-center dark:bg-red-900/20 dark:border-red-900/40">
-            <div className="text-xl font-bold text-red-600 dark:text-red-400">{isLoading ? '…' : data?.overdue ?? 0}</div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-red-500/80 dark:text-red-400/80">Overdue</div>
-          </div>
-          <div className="rounded-xl bg-amber-50 border border-amber-100 p-2.5 text-center dark:bg-amber-900/20 dark:border-amber-900/40">
-            <div className="text-xl font-bold text-amber-600 dark:text-amber-300">{isLoading ? '…' : data?.upcoming ?? 0}</div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-500/80 dark:text-amber-400/80">Soon</div>
-          </div>
+          {stats.map((s) => (
+            <StatCard key={s.label} {...s} isLoading={isLoading} />
+          ))}
         </div>
       </div>
     );
@@ -148,18 +238,9 @@ export function DashboardStatsStrip({ compact }: { compact?: boolean }) {
 
   return (
     <div className="mb-5 grid grid-cols-3 gap-2 sm:gap-3">
-      <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center dark:bg-emerald-900/20 dark:border-emerald-900/40">
-        <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{isLoading ? '…' : data?.completed ?? 0}</div>
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/80 dark:text-emerald-400/80">Done this week</div>
-      </div>
-      <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-center dark:bg-red-900/20 dark:border-red-900/40">
-        <div className="text-xl font-bold text-red-600 dark:text-red-400">{isLoading ? '…' : data?.overdue ?? 0}</div>
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-red-500/80 dark:text-red-400/80">Overdue</div>
-      </div>
-      <div className="rounded-xl bg-amber-50 border border-amber-100 p-3 text-center dark:bg-amber-900/20 dark:border-amber-900/40">
-        <div className="text-xl font-bold text-amber-600 dark:text-amber-300">{isLoading ? '…' : data?.upcoming ?? 0}</div>
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-500/80 dark:text-amber-400/80">Upcoming</div>
-      </div>
+      {stats.map((s) => (
+        <StatCard key={s.label} {...s} isLoading={isLoading} />
+      ))}
     </div>
   );
 }
@@ -168,9 +249,20 @@ export function DashboardAnalytics() {
   const { data, isLoading } = useTaskStats();
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+    <div
+      className="rounded-xl p-4"
+      style={{
+        background: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}
+    >
       {isLoading ? (
-        <div className="h-28 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+        <div
+          className="h-24 animate-pulse rounded-lg"
+          style={{ background: 'var(--muted-bg)' }}
+        />
       ) : (
         <BarChart data={data?.chartData ?? []} />
       )}

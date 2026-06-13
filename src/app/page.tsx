@@ -45,6 +45,14 @@ const C = {
   cardBorder:  '#e5e7eb',
 };
 
+// Reusable gradient-text style (Apple-style heading treatment)
+const GT = {
+  background: 'linear-gradient(135deg, #5b21b6 0%, #7C3AED 45%, #a78bfa 80%, #6d28d9 100%)',
+  WebkitBackgroundClip: 'text' as const,
+  WebkitTextFillColor: 'transparent' as const,
+  backgroundClip: 'text' as const,
+};
+
 const FEATURES = [
   { icon: ListTodo,    title: 'Smart Task List',    desc: 'Capture, prioritize, organize, and complete work without clutter. Quickly sort by urgency, project, or due date.',                            color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
   { icon: Target,      title: 'Goals',              desc: 'Turn long-term ambitions into measurable progress. Connect goals directly to the tasks that move them forward.',                              color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)' },
@@ -237,7 +245,7 @@ export default async function LandingPage() {
       {/* ── Connected strip ── */}
       <section className="py-16" style={{ borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}`, background: C.bgAlt }}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Everything stays connected.</h2>
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Everything stays connected.</h2>
           <p className="mt-4 max-w-xl mx-auto text-sm leading-7" style={{ color: C.muted }}>
             Most productivity tools live in separate silos. In Optimaz, a task can belong to a project, contribute to a goal, and repeat as a routine — all at the same time. Update it once. Everything stays connected.
           </p>
@@ -267,7 +275,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em]" style={{ color: C.accent }}>Everything you need to stay organized</p>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Tasks. Goals. Projects. Habits. Calendar.</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Tasks. Goals. Projects. Habits. Calendar.</h2>
             <p className="mt-3 max-w-xl mx-auto" style={{ color: C.muted }}>
               One workspace built to help you focus on execution instead of managing software.
             </p>
@@ -290,7 +298,7 @@ export default async function LandingPage() {
       <section className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Why Optimaz?</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Why Optimaz?</h2>
             <p className="mt-3" style={{ color: C.muted }}>Four reasons people make it their default workspace.</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -311,7 +319,7 @@ export default async function LandingPage() {
       <section id="compare" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Replace 5 Apps With One</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Replace 5 Apps With One</h2>
             <p className="mt-3 max-w-lg mx-auto" style={{ color: C.muted }}>
               Stop paying for five productivity apps. Most people manage tasks, goals, habits, projects, and planning across multiple tools. Optimaz combines everything into one focused workspace.
             </p>
@@ -348,7 +356,7 @@ export default async function LandingPage() {
       <section className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Built Around How You Actually Work</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Built Around How You Actually Work</h2>
             <p className="mt-3" style={{ color: C.muted }}>Three simple phases. Infinite clarity.</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
@@ -377,7 +385,7 @@ export default async function LandingPage() {
                 <Bell className="h-3.5 w-3.5" />
                 Smart Reminders
               </div>
-              <h2 className="text-2xl font-bold tracking-tight" style={{ color: C.fg }}>Never miss a deadline again.</h2>
+              <h2 className="text-2xl font-bold tracking-tight" style={GT}>Never miss a deadline again.</h2>
               <p className="mt-3 leading-7" style={{ color: C.muted }}>
                 Optimaz keeps important work visible before it becomes urgent. Stay on top of your work even when the app is closed.
               </p>
@@ -404,7 +412,7 @@ export default async function LandingPage() {
       <section id="pricing" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: C.fg }}>Simple, honest pricing</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Simple, honest pricing</h2>
             <p className="mt-3" style={{ color: C.muted }}>Start free. Upgrade when you&apos;re ready. Cancel any time.</p>
           </div>
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
@@ -488,7 +496,7 @@ export default async function LandingPage() {
             style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.7))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
             <img src="/icon-192x192.png" alt="Optimaz" className="h-10 w-10 rounded-xl" />
           </div>
-          <h2 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: C.fg }}>Why We Built Optimaz</h2>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl" style={GT}>Why We Built Optimaz</h2>
           <p className="mt-4 text-sm leading-7 sm:text-base" style={{ color: C.muted }}>
             We were tired of switching between Todoist for tasks, Notion for goals, Trello for projects, and separate habit trackers just to understand what needed attention.
           </p>

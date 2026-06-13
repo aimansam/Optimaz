@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Flame, Crown, X, Zap, Trophy, Star } from 'lucide-react';
+import { Flame, Crown, X, Zap, Trophy, Star, Medal, Gem } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 interface TaskStreakProps {
@@ -46,10 +46,10 @@ function calculateStreak(tasks: Task[]): number {
 
 // ── Achievement tiers
 const TIERS = [
-  { name: 'Bronze',  emoji: '🥉', days: 7,   color: '#d97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.25)',  glow: '0 0 12px rgba(217,119,6,0.35)' },
-  { name: 'Silver',  emoji: '🥈', days: 14,  color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.25)', glow: '0 0 12px rgba(148,163,184,0.35)' },
-  { name: 'Gold',    emoji: '🏆', days: 30,  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)',   glow: '0 0 14px rgba(245,158,11,0.45)' },
-  { name: 'Diamond', emoji: '💎', days: 100, color: '#818cf8', bg: 'rgba(129,140,248,0.1)',  border: 'rgba(129,140,248,0.3)',  glow: '0 0 16px rgba(129,140,248,0.5)' },
+  { name: 'Bronze',  icon: Medal,  days: 7,   color: '#d97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.25)',  glow: '0 0 12px rgba(217,119,6,0.35)' },
+  { name: 'Silver',  icon: Medal,  days: 14,  color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.25)', glow: '0 0 12px rgba(148,163,184,0.35)' },
+  { name: 'Gold',    icon: Trophy, days: 30,  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)',   glow: '0 0 14px rgba(245,158,11,0.45)' },
+  { name: 'Diamond', icon: Gem,    days: 100, color: '#818cf8', bg: 'rgba(129,140,248,0.1)',  border: 'rgba(129,140,248,0.3)',  glow: '0 0 16px rgba(129,140,248,0.5)' },
 ];
 
 function getCurrentTier(streak: number) {
@@ -68,7 +68,7 @@ function getStatusLabel(streak: number): string {
   if (streak < 14) return 'On a roll!';
   if (streak < 30) return "You're on fire!";
   if (streak < 100) return 'Legendary!';
-  return 'Hall of fame 💎';
+  return 'Hall of fame';
 }
 
 // ── Flame glow filter
@@ -89,11 +89,11 @@ function getFlameColor(streak: number): string {
 // ── Milestone banner (celebration)
 const MILESTONE_KEY = 'streak_celebrated_milestone';
 const MILESTONE_MSGS: Record<number, { icon: React.ElementType; text: string }> = {
-  7:   { icon: Flame,  text: "7-day streak! 🥉 Bronze achieved!" },
-  14:  { icon: Zap,    text: '2 weeks! 🥈 Silver tier unlocked!' },
-  30:  { icon: Trophy, text: '30 days! 🏆 Gold tier — legendary!' },
-  100: { icon: Crown,  text: '100 DAYS! 💎 Diamond — elite status!' },
-  365: { icon: Star,   text: 'One full year! 🌟 Hall of fame forever!' },
+  7:   { icon: Medal,  text: 'Bronze achieved! 7-day streak.' },
+  14:  { icon: Zap,    text: 'Silver tier unlocked! 2 weeks strong.' },
+  30:  { icon: Trophy, text: 'Gold tier — 30 days legendary!' },
+  100: { icon: Gem,    text: 'Diamond status — 100 day elite!' },
+  365: { icon: Star,   text: 'One full year — Hall of fame forever!' },
 };
 
 function MilestoneBanner({ streak, onDismiss }: { streak: number; onDismiss: () => void }) {
@@ -256,10 +256,10 @@ function StreakCard({
             />
             {currentTier && (
               <span
-                className="absolute -bottom-1.5 -right-1.5 select-none bg-white dark:bg-black rounded-full"
-                style={{ fontSize: '14px', lineHeight: 1, padding: '1px' }}
+                className="absolute -bottom-1.5 -right-1.5 flex items-center justify-center bg-white dark:bg-black rounded-full"
+                style={{ width: '20px', height: '20px', padding: '2px' }}
               >
-                {currentTier.emoji}
+                <currentTier.icon style={{ width: '12px', height: '12px', color: currentTier.color }} />
               </span>
             )}
           </div>
@@ -277,7 +277,7 @@ function StreakCard({
                 boxShadow: currentTier.glow,
               }}
             >
-              {currentTier.emoji} {currentTier.name} Tier
+              <currentTier.icon className="h-3 w-3 shrink-0" /> {currentTier.name} Tier
             </span>
           </div>
         )}
@@ -287,7 +287,7 @@ function StreakCard({
           <div>
             <div className="mb-1.5 flex items-center justify-between text-[10px]">
               <span style={{ color: 'var(--muted-fg)' }}>
-                {nextTier.emoji} {nextTier.name} in {nextTier.days - streak} day{(nextTier.days - streak) === 1 ? '' : 's'}
+                <nextTier.icon className="inline h-3 w-3 mr-0.5" style={{ color: nextTier.color }} />{nextTier.name} in {nextTier.days - streak} day{(nextTier.days - streak) === 1 ? '' : 's'}
               </span>
               <span className="font-semibold" style={{ color: '#f97316' }}>
                 {tierProgressPct}%
@@ -421,33 +421,6 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
             </>
           )}
 
-          {/* Tier or progress — md+ */}
-          {streak > 0 && (
-            <>
-              {nextTier && (
-                <>
-                  <span className="hidden md:inline text-xs opacity-30" style={{ color: '#f97316' }}>·</span>
-                  <span
-                    className="hidden md:inline text-xs font-semibold whitespace-nowrap"
-                    style={{ color: '#d97706' }}
-                  >
-                    {nextTier.days - streak}d to {nextTier.emoji} {nextTier.name}
-                  </span>
-                </>
-              )}
-              {!nextTier && currentTier && (
-                <>
-                  <span className="hidden md:inline text-xs opacity-30" style={{ color: '#f97316' }}>·</span>
-                  <span
-                    className="hidden md:inline text-xs font-semibold whitespace-nowrap"
-                    style={{ color: currentTier.color }}
-                  >
-                    {currentTier.emoji} {currentTier.name}
-                  </span>
-                </>
-              )}
-            </>
-          )}
         </button>
 
         {/* Premium popover */}

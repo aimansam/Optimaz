@@ -137,19 +137,22 @@ export default function CalendarPage() {
     setSelectedDate(getDateKey(today));
   }
 
-  // ── Shared header + stats (used in both layouts) ─────────────
+  // ── Shared header + stats ────────────────────────────────────
 
   const pageHeader = (
     <div className="shrink-0 px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Schedule</p>
-          <h2 className="mt-0.5 text-xl font-bold text-slate-900 dark:text-slate-100">
+          <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-fg)' }}>Schedule</p>
+          <h2 className="gradient-text mt-0.5 text-xl font-bold">
             {view === 'month' ? getMonthLabel(monthDate) : getWeekLabel(selectedDate)}
           </h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950">
+          <div
+            className="flex items-center gap-1 rounded-xl p-1"
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+          >
             {(['month', 'week'] as CalendarView[]).map(item => (
               <Button
                 key={item}
@@ -165,7 +168,10 @@ export default function CalendarPage() {
             ))}
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={goToToday}>Today</Button>
-          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950">
+          <div
+            className="flex items-center gap-1 rounded-xl p-1"
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+          >
             <Button type="button" variant="ghost" size="icon" onClick={goToPreviousPeriod} aria-label={view === 'month' ? 'Previous month' : 'Previous week'}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -184,13 +190,13 @@ export default function CalendarPage() {
 
   const statsRow = (
     <div className="shrink-0 grid grid-cols-2 gap-2 px-4 pb-3 lg:grid-cols-4 sm:px-6">
-      <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-          <CalendarDays className="h-3.5 w-3.5 text-slate-500" />
+      <div className="rounded-xl px-3 py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--foreground)' }}>
+          <CalendarDays className="h-3.5 w-3.5" style={{ color: 'var(--muted-fg)' }} />
           This month
         </div>
-        <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{monthTaskCount}</p>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">Scheduled tasks</p>
+        <p className="mt-1 text-lg font-bold" style={{ color: 'var(--foreground)' }}>{monthTaskCount}</p>
+        <p className="text-[11px]" style={{ color: 'var(--muted-fg)' }}>Scheduled tasks</p>
       </div>
       <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-900/50 dark:bg-emerald-950/20">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
@@ -208,13 +214,13 @@ export default function CalendarPage() {
         <p className="mt-1 text-lg font-bold text-red-700 dark:text-red-300">{overdueCount}</p>
         <p className="text-[11px] text-red-700/80 dark:text-red-300/80">Past due and open</p>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="h-3.5 w-3.5 text-slate-500" />
+      <div className="rounded-xl px-3 py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--foreground)' }}>
+          <CheckCircle2 className="h-3.5 w-3.5" style={{ color: 'var(--muted-fg)' }} />
           Completed
         </div>
-        <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{completedThisMonth}</p>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">Completed this month</p>
+        <p className="mt-1 text-lg font-bold" style={{ color: 'var(--foreground)' }}>{completedThisMonth}</p>
+        <p className="text-[11px]" style={{ color: 'var(--muted-fg)' }}>Completed this month</p>
       </div>
     </div>
   );
@@ -223,10 +229,10 @@ export default function CalendarPage() {
 
   const dayPanelContent = (
     <>
-      <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 dark:border-slate-800">
+      <div className="flex items-start justify-between gap-3 px-4 py-3" style={{ borderBottom: '1px solid var(--card-border)' }}>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Selected day</p>
-          <h3 className="mt-0.5 font-semibold text-slate-900 dark:text-slate-100">{formatDate(selectedDate)}</h3>
+          <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-fg)' }}>Selected day</p>
+          <h3 className="mt-0.5 font-semibold" style={{ color: 'var(--foreground)' }}>{formatDate(selectedDate)}</h3>
         </div>
         <Button type="button" size="sm" onClick={() => setAddOpen(true)}>
           <Plus className="h-3.5 w-3.5" />
@@ -253,18 +259,18 @@ export default function CalendarPage() {
               const priority = PRIORITY_CONFIG[task.priority];
               const overdue = task.status !== 'done' && isOverdue(task.due_date, task.due_time);
               return (
-                <div key={task.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+                <div key={task.id} className="rounded-lg border p-3" style={{ borderColor: 'var(--card-border)' }}>
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className={cn('truncate text-sm font-medium text-slate-900 dark:text-slate-100', task.status === 'done' && 'text-slate-400 line-through dark:text-slate-500')}>
+                      <p className={cn('truncate text-sm font-medium', task.status === 'done' && 'line-through opacity-50')} style={{ color: 'var(--foreground)' }}>
                         {task.title}
                       </p>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5">
                         <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', priority.bg, priority.color)}>{priority.label}</span>
-                        {task.due_time && <span className="text-[10px] font-medium text-slate-400">{formatDate(task.due_date, task.due_time)}</span>}
+                        {task.due_time && <span className="text-[10px] font-medium" style={{ color: 'var(--muted-fg)' }}>{formatDate(task.due_date, task.due_time)}</span>}
                         {overdue && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:bg-red-900/40 dark:text-red-300">Overdue</span>}
                       </div>
-                      {task.project && <p className="mt-1 truncate text-xs text-slate-400">{task.project.name}</p>}
+                      {task.project && <p className="mt-1 truncate text-xs" style={{ color: 'var(--muted-fg)' }}>{task.project.name}</p>}
                     </div>
                     <TaskActions task={task} buttonClassName="h-7 w-7 rounded-lg" />
                   </div>
@@ -286,7 +292,7 @@ export default function CalendarPage() {
         {/* ═══════════════════════════════════════════════════════
             MOBILE layout (< lg): single natural scroll column
             ═══════════════════════════════════════════════════════ */}
-		<div className="overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
+        <div className="overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
           <div className="space-y-3 px-4 pb-6 sm:px-6">
 
             {error ? (
@@ -297,18 +303,18 @@ export default function CalendarPage() {
               />
             ) : isLoading ? (
               <>
-                <div className="h-64 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
-                <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                <div className="h-64 animate-pulse rounded-xl" style={{ background: 'var(--muted-bg)' }} />
+                <div className="h-40 animate-pulse rounded-xl" style={{ background: 'var(--muted-bg)' }} />
               </>
             ) : (
               <>
-                {/* Calendar grid — auto-height cells, no h-full */}
-                <section className="rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950">
+                {/* Calendar grid — auto-height cells */}
+                <section className="rounded-xl p-2" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                   {/* Weekday labels */}
                   <div className={cn(
-                    'gap-1 pb-1.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-400',
+                    'gap-1 pb-1.5 text-center text-[10px] font-semibold uppercase tracking-wider',
                     view === 'week' ? 'hidden' : 'grid grid-cols-7'
-                  )}>
+                  )} style={{ color: 'var(--muted-fg)' }}>
                     {WEEKDAYS.map(day => <div key={day}>{day}</div>)}
                   </div>
 
@@ -326,24 +332,25 @@ export default function CalendarPage() {
                             key={dayKey}
                             type="button"
                             onClick={() => setSelectedDate(dayKey)}
-                            className={cn(
-                              'min-h-[48px] overflow-hidden rounded-lg border p-1 text-left transition-colors',
-                              isSelected
-                                ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
-                                : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900',
-                              !isCurrentMonth && 'bg-slate-50/60 text-slate-400 dark:bg-slate-950/40 dark:text-slate-600'
-                            )}
+                            className="min-h-[48px] overflow-hidden rounded-lg border p-1 text-left transition-colors hover:bg-[var(--muted-bg)]"
+                            style={{
+                              borderColor: isSelected ? 'var(--accent)' : 'var(--card-border)',
+                              background: isSelected ? 'rgba(var(--accent-rgb,99,102,241),0.08)' : undefined,
+                              opacity: !isCurrentMonth ? 0.45 : undefined,
+                            }}
                             aria-pressed={isSelected}
                           >
                             <div className="flex items-center justify-between gap-0.5 mb-0.5">
-                              <span className={cn(
-                                'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold',
-                                isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                              )}>
+                              <span
+                                className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
+                                style={isToday
+                                  ? { background: 'var(--accent)', color: '#fff' }
+                                  : { color: 'var(--foreground)' }}
+                              >
                                 {day.getDate()}
                               </span>
                               {dayTasks.length > 0 && (
-                                <span className="text-[8px] font-semibold text-slate-400">{dayTasks.length}</span>
+                                <span className="text-[8px] font-semibold" style={{ color: 'var(--muted-fg)' }}>{dayTasks.length}</span>
                               )}
                             </div>
                             <div className="space-y-0.5">
@@ -360,7 +367,7 @@ export default function CalendarPage() {
                                 );
                               })}
                               {dayTasks.length > 1 && (
-                                <div className="text-[8px] font-medium text-slate-400">+{dayTasks.length - 1}</div>
+                                <div className="text-[8px] font-medium" style={{ color: 'var(--muted-fg)' }}>+{dayTasks.length - 1}</div>
                               )}
                             </div>
                           </button>
@@ -382,32 +389,33 @@ export default function CalendarPage() {
                             key={dayKey}
                             type="button"
                             onClick={() => setSelectedDate(dayKey)}
-                            className={cn(
-                              'w-full rounded-lg border p-3 text-left transition-colors',
-                              isSelected
-                                ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
-                                : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900'
-                            )}
+                            className="w-full rounded-lg border p-3 text-left transition-colors hover:bg-[var(--muted-bg)]"
+                            style={{
+                              borderColor: isSelected ? 'var(--accent)' : 'var(--card-border)',
+                              background: isSelected ? 'rgba(var(--accent-rgb,99,102,241),0.06)' : undefined,
+                            }}
                             aria-pressed={isSelected}
                           >
                             <div className="mb-2 flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2">
-                                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{WEEKDAYS[day.getDay()]}</p>
-                                <span className={cn(
-                                  'flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200',
-                                  isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                                )}>
+                                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-fg)' }}>{WEEKDAYS[day.getDay()]}</p>
+                                <span
+                                  className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold"
+                                  style={isToday
+                                    ? { background: 'var(--accent)', color: '#fff' }
+                                    : { color: 'var(--foreground)' }}
+                                >
                                   {day.getDate()}
                                 </span>
                               </div>
                               {dayTasks.length > 0 && (
-                                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                                <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: 'var(--muted-bg)', color: 'var(--muted-fg)' }}>
                                   {openCount}/{dayTasks.length}
                                 </span>
                               )}
                             </div>
                             {dayTasks.length === 0 ? (
-                              <p className="text-xs text-slate-400">No tasks</p>
+                              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>No tasks</p>
                             ) : (
                               <div className="space-y-1">
                                 {dayTasks.map(task => {
@@ -429,7 +437,7 @@ export default function CalendarPage() {
                 </section>
 
                 {/* Selected day panel — regular card, scrolls with page */}
-                <aside className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+                <aside className="rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                   {dayPanelContent}
                 </aside>
               </>
@@ -449,19 +457,22 @@ export default function CalendarPage() {
             />
           ) : isLoading ? (
             <div className="grid h-full gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
-              <div className="animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
-              <div className="animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+              <div className="animate-pulse rounded-xl" style={{ background: 'var(--muted-bg)' }} />
+              <div className="animate-pulse rounded-xl" style={{ background: 'var(--muted-bg)' }} />
             </div>
           ) : (
             <div className="grid h-full gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
 
               {/* Calendar grid */}
-              <section className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950 sm:p-3">
+              <section className="flex flex-col overflow-hidden rounded-xl p-2 sm:p-3" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                 {/* Weekday labels */}
-                <div className={cn(
-                  'shrink-0 gap-1 pb-1.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-400',
-                  view === 'week' ? 'hidden md:grid md:grid-cols-7' : 'grid grid-cols-7'
-                )}>
+                <div
+                  className={cn(
+                    'shrink-0 gap-1 pb-1.5 text-center text-[10px] font-semibold uppercase tracking-wider',
+                    view === 'week' ? 'hidden md:grid md:grid-cols-7' : 'grid grid-cols-7'
+                  )}
+                  style={{ color: 'var(--muted-fg)' }}
+                >
                   {WEEKDAYS.map(day => <div key={day}>{day}</div>)}
                 </div>
 
@@ -482,23 +493,24 @@ export default function CalendarPage() {
                           key={dayKey}
                           type="button"
                           onClick={() => setSelectedDate(dayKey)}
-                          className={cn(
-                            'overflow-hidden rounded-lg border p-1.5 text-left transition-colors sm:p-2',
-                            isSelected
-                              ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
-                              : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900',
-                            !isCurrentMonth && 'bg-slate-50/60 text-slate-400 dark:bg-slate-950/40 dark:text-slate-600'
-                          )}
+                          className="overflow-hidden rounded-lg border p-1.5 text-left transition-colors sm:p-2 hover:bg-[var(--muted-bg)]"
+                          style={{
+                            borderColor: isSelected ? 'var(--accent)' : 'var(--card-border)',
+                            background: isSelected ? 'rgba(var(--accent-rgb,99,102,241),0.08)' : undefined,
+                            opacity: !isCurrentMonth ? 0.45 : undefined,
+                          }}
                           aria-pressed={isSelected}
                         >
                           <div className="mb-1 flex items-center justify-between gap-1">
-                            <span className={cn(
-                              'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold sm:h-6 sm:w-6 sm:text-xs',
-                              isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                            )}>
+                            <span
+                              className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold sm:h-6 sm:w-6 sm:text-xs"
+                              style={isToday
+                                ? { background: 'var(--accent)', color: '#fff' }
+                                : { color: 'var(--foreground)' }}
+                            >
                               {day.getDate()}
                             </span>
-                            {dayTasks.length > 0 && <span className="text-[9px] font-semibold text-slate-400 sm:text-[10px]">{dayTasks.length}</span>}
+                            {dayTasks.length > 0 && <span className="text-[9px] font-semibold sm:text-[10px]" style={{ color: 'var(--muted-fg)' }}>{dayTasks.length}</span>}
                           </div>
                           <div className="space-y-0.5">
                             {dayTasks.slice(0, 2).map(task => {
@@ -513,8 +525,8 @@ export default function CalendarPage() {
                                 </div>
                               );
                             })}
-                            {dayTasks.length > 2 && <div className="text-[9px] font-medium text-slate-400">+{dayTasks.length - 2} more</div>}
-                            {openCount > 0 && doneCount > 0 && <div className="hidden text-[9px] text-slate-400 sm:block">{openCount} open, {doneCount} done</div>}
+                            {dayTasks.length > 2 && <div className="text-[9px] font-medium" style={{ color: 'var(--muted-fg)' }}>+{dayTasks.length - 2} more</div>}
+                            {openCount > 0 && doneCount > 0 && <div className="hidden text-[9px] sm:block" style={{ color: 'var(--muted-fg)' }}>{openCount} open, {doneCount} done</div>}
                           </div>
                         </button>
                       );
@@ -535,33 +547,34 @@ export default function CalendarPage() {
                           key={dayKey}
                           type="button"
                           onClick={() => setSelectedDate(dayKey)}
-                          className={cn(
-                            'rounded-lg border p-3 text-left transition-colors',
-                            isSelected
-                              ? 'border-slate-900 bg-slate-100 dark:border-slate-100 dark:bg-slate-800'
-                              : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-900'
-                          )}
+                          className="rounded-lg border p-3 text-left transition-colors hover:bg-[var(--muted-bg)]"
+                          style={{
+                            borderColor: isSelected ? 'var(--accent)' : 'var(--card-border)',
+                            background: isSelected ? 'rgba(var(--accent-rgb,99,102,241),0.08)' : undefined,
+                          }}
                           aria-pressed={isSelected}
                         >
                           <div className="mb-2 flex items-center justify-between gap-2">
                             <div>
-                              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{WEEKDAYS[day.getDay()]}</p>
-                              <span className={cn(
-                                'mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200',
-                                isToday && 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                              )}>
+                              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-fg)' }}>{WEEKDAYS[day.getDay()]}</p>
+                              <span
+                                className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold"
+                                style={isToday
+                                  ? { background: 'var(--accent)', color: '#fff' }
+                                  : { color: 'var(--foreground)' }}
+                              >
                                 {day.getDate()}
                               </span>
                             </div>
                             {dayTasks.length > 0 && (
-                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: 'var(--muted-bg)', color: 'var(--muted-fg)' }}>
                                 {openCount}/{dayTasks.length}
                               </span>
                             )}
                           </div>
                           <div className="space-y-1.5">
                             {dayTasks.length === 0 ? (
-                              <p className="text-xs text-slate-400">No tasks</p>
+                              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>No tasks</p>
                             ) : dayTasks.map(task => {
                               const priority = PRIORITY_CONFIG[task.priority];
                               return (
@@ -580,12 +593,12 @@ export default function CalendarPage() {
               </section>
 
               {/* Selected day panel — viewport-fit aside */}
-              <aside className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-                <div className="shrink-0 border-b border-slate-100 dark:border-slate-800">
+              <aside className="flex flex-col overflow-hidden rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+                <div className="shrink-0" style={{ borderBottom: '1px solid var(--card-border)' }}>
                   <div className="flex items-start justify-between gap-3 px-4 py-3">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Selected day</p>
-                      <h3 className="mt-0.5 font-semibold text-slate-900 dark:text-slate-100">{formatDate(selectedDate)}</h3>
+                      <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-fg)' }}>Selected day</p>
+                      <h3 className="mt-0.5 font-semibold" style={{ color: 'var(--foreground)' }}>{formatDate(selectedDate)}</h3>
                     </div>
                     <Button type="button" size="sm" onClick={() => setAddOpen(true)}>
                       <Plus className="h-3.5 w-3.5" />
@@ -593,7 +606,7 @@ export default function CalendarPage() {
                     </Button>
                   </div>
                 </div>
-				<div className="flex-1 min-h-0 overflow-y-auto p-4" style={{ background: 'var(--background)' }}>
+                <div className="flex-1 min-h-0 overflow-y-auto p-4" style={{ background: 'var(--background)' }}>
                   {selectedTasks.length === 0 ? (
                     <EmptyState
                       compact
@@ -613,18 +626,18 @@ export default function CalendarPage() {
                         const priority = PRIORITY_CONFIG[task.priority];
                         const overdue = task.status !== 'done' && isOverdue(task.due_date, task.due_time);
                         return (
-                          <div key={task.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
+                          <div key={task.id} className="rounded-lg border p-3" style={{ borderColor: 'var(--card-border)' }}>
                             <div className="flex items-start gap-2">
                               <div className="min-w-0 flex-1">
-                                <p className={cn('truncate text-sm font-medium text-slate-900 dark:text-slate-100', task.status === 'done' && 'text-slate-400 line-through dark:text-slate-500')}>
+                                <p className={cn('truncate text-sm font-medium', task.status === 'done' && 'line-through opacity-50')} style={{ color: 'var(--foreground)' }}>
                                   {task.title}
                                 </p>
                                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
                                   <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', priority.bg, priority.color)}>{priority.label}</span>
-                                  {task.due_time && <span className="text-[10px] font-medium text-slate-400">{formatDate(task.due_date, task.due_time)}</span>}
+                                  {task.due_time && <span className="text-[10px] font-medium" style={{ color: 'var(--muted-fg)' }}>{formatDate(task.due_date, task.due_time)}</span>}
                                   {overdue && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:bg-red-900/40 dark:text-red-300">Overdue</span>}
                                 </div>
-                                {task.project && <p className="mt-1 truncate text-xs text-slate-400">{task.project.name}</p>}
+                                {task.project && <p className="mt-1 truncate text-xs" style={{ color: 'var(--muted-fg)' }}>{task.project.name}</p>}
                               </div>
                               <TaskActions task={task} buttonClassName="h-7 w-7 rounded-lg" />
                             </div>

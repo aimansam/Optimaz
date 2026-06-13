@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trash2, Target, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { Trash2, Target, CalendarDays, CheckCircle2, Sparkles } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal } from '@/hooks/use-goals';
@@ -108,7 +108,7 @@ export function GoalCard({ goal }: GoalCardProps) {
               border: '1px solid rgba(16,185,129,0.2)',
             }}
           >
-            Goal Achieved! 🎉
+            <Sparkles className="inline h-3.5 w-3.5 mr-1" />Goal Achieved!
           </div>
         )}
       </Link>

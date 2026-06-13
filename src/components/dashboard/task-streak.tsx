@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Flame, Trophy, Zap, Crown, Star, X } from 'lucide-react';
+import { Flame, Crown, X, Zap, Trophy, Star } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 interface TaskStreakProps {
@@ -28,135 +28,333 @@ function calculateStreak(tasks: Task[]): number {
   const completedDates = new Set(
     doneTasks.map(t => getDateKey(t.completed_at ?? t.updated_at))
   );
-
   if (completedDates.size === 0) return 0;
-
   const today = getTodayKey();
   const yesterday = getYesterdayKey();
-
-  const hasRecentActivity = completedDates.has(today) || completedDates.has(yesterday);
-  if (!hasRecentActivity) return 0;
-
+  if (!completedDates.has(today) && !completedDates.has(yesterday)) return 0;
   let streak = 0;
   const cursor = new Date();
-
-  if (!completedDates.has(today)) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  while (true) {
+  if (!completedDates.has(today)) cursor.setDate(cursor.getDate() - 1);
+  while (streak < 365) {
     const key = cursor.toISOString().split('T')[0];
     if (!completedDates.has(key)) break;
     streak++;
     cursor.setDate(cursor.getDate() - 1);
-    if (streak >= 365) break;
   }
-
   return streak;
 }
 
-const MILESTONES = [7, 14, 30, 100, 365];
+// ── Achievement tiers
+const TIERS = [
+  { name: 'Bronze',  emoji: '🥉', days: 7,   color: '#d97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.25)',  glow: '0 0 12px rgba(217,119,6,0.35)' },
+  { name: 'Silver',  emoji: '🥈', days: 14,  color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.25)', glow: '0 0 12px rgba(148,163,184,0.35)' },
+  { name: 'Gold',    emoji: '🏆', days: 30,  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)',   glow: '0 0 14px rgba(245,158,11,0.45)' },
+  { name: 'Diamond', emoji: '💎', days: 100, color: '#818cf8', bg: 'rgba(129,140,248,0.1)',  border: 'rgba(129,140,248,0.3)',  glow: '0 0 16px rgba(129,140,248,0.5)' },
+];
+
+function getCurrentTier(streak: number) {
+  return [...TIERS].reverse().find(t => streak >= t.days) ?? null;
+}
+
+function getNextTier(streak: number) {
+  return TIERS.find(t => t.days > streak) ?? null;
+}
+
+// ── Status label
+function getStatusLabel(streak: number): string {
+  if (streak === 0) return 'Start today';
+  if (streak <= 2) return 'Getting started';
+  if (streak < 7) return 'Building momentum';
+  if (streak < 14) return 'On a roll!';
+  if (streak < 30) return "You're on fire!";
+  if (streak < 100) return 'Legendary!';
+  return 'Hall of fame 💎';
+}
+
+// ── Flame glow filter
+function getFlameFilter(streak: number): string {
+  if (streak === 0) return 'none';
+  if (streak < 7) return 'drop-shadow(0 0 6px rgba(245,158,11,0.5))';
+  if (streak < 30) return 'drop-shadow(0 0 8px rgba(249,115,22,0.65))';
+  return 'drop-shadow(0 0 12px rgba(239,68,68,0.8))';
+}
+
+function getFlameColor(streak: number): string {
+  if (streak === 0) return 'var(--muted-fg)';
+  if (streak < 7) return '#f59e0b';
+  if (streak < 30) return '#f97316';
+  return '#ef4444';
+}
+
+// ── Milestone banner (celebration)
 const MILESTONE_KEY = 'streak_celebrated_milestone';
-
-function getNextMilestone(streak: number) {
-  return MILESTONES.find(m => m > streak) ?? null;
-}
-
-function getPrevMilestone(streak: number) {
-  return [...MILESTONES].reverse().find(m => m <= streak) ?? null;
-}
-
-function getStreakConfig(streak: number) {
-  if (streak === 0) return {
-    gradient: 'bg-slate-50 dark:bg-slate-800/50',
-    border: 'border-slate-200 dark:border-slate-700',
-    numberColor: 'text-slate-400 dark:text-slate-500',
-    flameClass: 'text-slate-300',
-    barColor: 'bg-slate-200 dark:bg-slate-700',
-    labelColor: 'text-slate-400',
-  };
-  if (streak < 7) return {
-    gradient: 'bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-amber-950/50 dark:via-orange-950/40 dark:to-yellow-950/30',
-    border: 'border-amber-200 dark:border-amber-800/60',
-    numberColor: 'text-amber-700 dark:text-amber-300',
-    flameClass: 'text-amber-500',
-    barColor: 'bg-amber-400',
-    labelColor: 'text-amber-600 dark:text-amber-400',
-  };
-  if (streak < 30) return {
-    gradient: 'bg-gradient-to-br from-orange-50 via-red-50 to-rose-50 dark:from-orange-950/50 dark:via-red-950/40 dark:to-rose-950/30',
-    border: 'border-orange-300 dark:border-orange-800/60',
-    numberColor: 'text-orange-600 dark:text-orange-300',
-    flameClass: 'text-orange-500',
-    barColor: 'bg-orange-500',
-    labelColor: 'text-orange-600 dark:text-orange-400',
-  };
-  return {
-    gradient: 'bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 dark:from-red-950/60 dark:via-rose-950/50 dark:to-pink-950/30',
-    border: 'border-red-300 dark:border-red-800/60',
-    numberColor: 'text-red-600 dark:text-red-300',
-    flameClass: 'text-red-500',
-    barColor: 'bg-red-500',
-    labelColor: 'text-red-600 dark:text-red-400',
-  };
-}
-
-function getStreakLabel(streak: number): string {
-  if (streak === 0) return 'Complete a task to start your streak!';
-  if (streak === 1) return 'Great start — come back tomorrow!';
-  if (streak < 5) return 'Building momentum!';
-  if (streak < 10) return "You're on a roll!";
-  if (streak < 30) return 'On fire! Keep going!';
-  if (streak < 100) return 'Legendary consistency!';
-  return 'Hall of fame status!';
-}
+const MILESTONE_MSGS: Record<number, { icon: React.ElementType; text: string }> = {
+  7:   { icon: Flame,  text: "7-day streak! 🥉 Bronze achieved!" },
+  14:  { icon: Zap,    text: '2 weeks! 🥈 Silver tier unlocked!' },
+  30:  { icon: Trophy, text: '30 days! 🏆 Gold tier — legendary!' },
+  100: { icon: Crown,  text: '100 DAYS! 💎 Diamond — elite status!' },
+  365: { icon: Star,   text: 'One full year! 🌟 Hall of fame forever!' },
+};
 
 function MilestoneBanner({ streak, onDismiss }: { streak: number; onDismiss: () => void }) {
-  const milestone = getPrevMilestone(streak);
-  if (!milestone) return null;
-
-  const messages: Record<number, { icon: React.ElementType; text: string }> = {
-    7: { icon: Flame, text: "7-day streak! You're on fire!" },
-    14: { icon: Zap, text: '2 weeks strong! Incredible!' },
-    30: { icon: Trophy, text: "30-day streak! You're a legend!" },
-    100: { icon: Crown, text: '100 DAYS! Absolutely elite!' },
-    365: { icon: Star, text: 'One full year! Hall of fame!' },
-  };
-
-  const msg = messages[milestone];
+  const prevMilestone = [...[7, 14, 30, 100, 365]].reverse().find(m => m <= streak) ?? 0;
+  if (!prevMilestone) return null;
+  const msg = MILESTONE_MSGS[prevMilestone];
   if (!msg) return null;
   const MilestoneIcon = msg.icon;
-
   return (
-    <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-orange-200 dark:bg-slate-900/80 dark:ring-orange-700/50 animate-bounce">
-      <span className="flex items-center gap-1.5 text-sm font-bold text-orange-700 dark:text-orange-300">
+    <div
+      className="mb-3 flex items-center justify-between gap-2 rounded-xl px-3 py-2 animate-bounce"
+      style={{
+        background: 'rgba(249,115,22,0.1)',
+        border: '1px solid rgba(249,115,22,0.28)',
+      }}
+    >
+      <span className="flex items-center gap-1.5 text-sm font-bold" style={{ color: '#ea580c' }}>
         <MilestoneIcon className="h-4 w-4 shrink-0" />
         {msg.text}
       </span>
-      <button onClick={onDismiss} className="flex items-center justify-center text-orange-400 hover:text-orange-600 dark:text-orange-500">
-        <X className="h-3 w-3" />
+      <button
+        onClick={onDismiss}
+        className="flex items-center justify-center transition-opacity hover:opacity-70"
+        style={{ color: '#f97316' }}
+      >
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
   );
 }
 
+// ── Fire burst particles
+function FireBurst({ active }: { active: boolean }) {
+  if (!active) return null;
+  const particles = [
+    { x: -30, y: -72, delay: 0,   rot: -20 },
+    { x: -16, y: -92, delay: 70,  rot:  12 },
+    { x:   0, y: -84, delay: 40,  rot:   0 },
+    { x:  16, y: -92, delay: 110, rot: -12 },
+    { x:  30, y: -72, delay: 200, rot:  22 },
+    { x:  -7, y: -104, delay: 55, rot:  16 },
+    { x:   7, y: -104, delay: 150, rot: -16 },
+    { x: -22, y: -58, delay: 250, rot:  35 },
+    { x:  22, y: -58, delay: 190, rot: -35 },
+  ];
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-visible" style={{ zIndex: 100 }}>
+      {particles.map((p, i) => (
+        <span
+          key={i}
+          className="absolute left-1/2 top-1/2 select-none"
+          style={{
+            fontSize: '14px',
+            lineHeight: 1,
+            marginLeft: '-7px',
+            marginTop: '-7px',
+            ...{
+              '--fx': `${p.x}px`,
+              '--fy': `${p.y}px`,
+              '--fr': `${p.rot}deg`,
+            },
+            animation: 'fire-particle 1.4s ease-out forwards',
+            animationDelay: `${p.delay}ms`,
+          } as React.CSSProperties}
+        >
+          🔥
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ── Shared streak card content (used in both popover and full-card modes)
+function StreakCard({
+  streak,
+  showMilestone,
+  showBurst,
+  onDismissMilestone,
+}: {
+  streak: number;
+  showMilestone: boolean;
+  showBurst: boolean;
+  onDismissMilestone: () => void;
+}) {
+  const currentTier = getCurrentTier(streak);
+  const nextTier = getNextTier(streak);
+  const statusLabel = getStatusLabel(streak);
+
+  // Progress between current and next tier
+  const prevTierDays = currentTier?.days ?? 0;
+  const tierProgressPct = nextTier
+    ? Math.max(Math.round(((streak - prevTierDays) / (nextTier.days - prevTierDays)) * 100), 3)
+    : 100;
+
+  return (
+    <div className="relative">
+      {/* Orange ambient radial light */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-2xl"
+        style={{
+          background: 'radial-gradient(ellipse 90% 55% at 50% 0%, rgba(249,115,22,0.1) 0%, transparent 70%)',
+        }}
+      />
+
+      <div className="relative p-4">
+        {showMilestone && (
+          <MilestoneBanner streak={streak} onDismiss={onDismissMilestone} />
+        )}
+
+        {/* Top row: number + flame icon */}
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span
+                className="text-5xl font-black leading-none tracking-tight"
+                style={streak > 0 ? {
+                  background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                } : { color: 'var(--muted-fg)' }}
+              >
+                {streak}
+              </span>
+              <span className="text-sm font-bold" style={{ color: streak > 0 ? '#f97316' : 'var(--muted-fg)' }}>
+                {streak === 1 ? 'day' : 'days'}
+              </span>
+            </div>
+            <p
+              className="mt-0.5 text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
+            >
+              Task streak
+            </p>
+            <p
+              className="mt-1 text-xs font-semibold"
+              style={{ color: streak > 0 ? '#f97316' : 'var(--muted-fg)' }}
+            >
+              {statusLabel}
+            </p>
+          </div>
+
+          {/* Flame icon with burst */}
+          <div
+            className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
+            style={{
+              background: streak > 0
+                ? 'linear-gradient(135deg, rgba(249,115,22,0.15), rgba(251,191,36,0.08))'
+                : 'var(--muted-bg)',
+              border: '1px solid rgba(249,115,22,0.18)',
+            }}
+          >
+            <FireBurst active={showBurst} />
+            <Flame
+              className={`h-9 w-9 ${streak > 0 ? 'animate-flame' : ''}`}
+              style={{
+                color: getFlameColor(streak),
+                filter: getFlameFilter(streak),
+              }}
+            />
+            {currentTier && (
+              <span
+                className="absolute -bottom-1.5 -right-1.5 select-none bg-white dark:bg-black rounded-full"
+                style={{ fontSize: '14px', lineHeight: 1, padding: '1px' }}
+              >
+                {currentTier.emoji}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Current tier badge */}
+        {currentTier && (
+          <div className="mb-3">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+              style={{
+                background: currentTier.bg,
+                border: `1px solid ${currentTier.border}`,
+                color: currentTier.color,
+                boxShadow: currentTier.glow,
+              }}
+            >
+              {currentTier.emoji} {currentTier.name} Tier
+            </span>
+          </div>
+        )}
+
+        {/* Progress to next tier */}
+        {nextTier && (
+          <div>
+            <div className="mb-1.5 flex items-center justify-between text-[10px]">
+              <span style={{ color: 'var(--muted-fg)' }}>
+                {nextTier.emoji} {nextTier.name} in {nextTier.days - streak} day{(nextTier.days - streak) === 1 ? '' : 's'}
+              </span>
+              <span className="font-semibold" style={{ color: '#f97316' }}>
+                {tierProgressPct}%
+              </span>
+            </div>
+            <div
+              className="h-1.5 w-full overflow-hidden rounded-full"
+              style={{ background: 'rgba(249,115,22,0.1)' }}
+            >
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${tierProgressPct}%`,
+                  background: 'linear-gradient(90deg, #f97316, #fbbf24)',
+                  boxShadow: '0 0 8px rgba(249,115,22,0.5)',
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* No streak */}
+        {streak === 0 && (
+          <p className="text-[11px]" style={{ color: 'var(--muted-fg)' }}>
+            Complete a task today to start your streak!
+          </p>
+        )}
+
+        {/* Diamond achieved — max */}
+        {!nextTier && streak > 0 && (
+          <div
+            className="flex items-center gap-1.5 text-[11px] font-semibold"
+            style={{ color: '#818cf8' }}
+          >
+            <Crown className="h-3.5 w-3.5 shrink-0" />
+            Maximum tier reached — Hall of fame!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Main exported component
 export function TaskStreak({ tasks, inline }: TaskStreakProps) {
   const streak = useMemo(() => calculateStreak(tasks), [tasks]);
-  const label = getStreakLabel(streak);
   const [showMilestone, setShowMilestone] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Detect uncelebrated milestones
+  const currentTier = getCurrentTier(streak);
+  const nextTier = getNextTier(streak);
+  const statusLabel = getStatusLabel(streak);
+
+  // Detect uncelebrated milestones → trigger burst
   useEffect(() => {
     if (typeof window === 'undefined' || streak === 0) return;
     const lastCelebrated = Number(localStorage.getItem(MILESTONE_KEY) ?? '0');
-    const prevMilestone = getPrevMilestone(streak);
-    if (prevMilestone && prevMilestone > lastCelebrated) {
+    const prevMil = [...[7, 14, 30, 100, 365]].reverse().find(m => m <= streak) ?? 0;
+    if (prevMil && prevMil > lastCelebrated) {
       setShowMilestone(true);
-      localStorage.setItem(MILESTONE_KEY, String(prevMilestone));
-      const timer = setTimeout(() => setShowMilestone(false), 5000);
-      return () => clearTimeout(timer);
+      setShowBurst(true);
+      localStorage.setItem(MILESTONE_KEY, String(prevMil));
+      const milTimer = setTimeout(() => setShowMilestone(false), 5000);
+      const burstTimer = setTimeout(() => setShowBurst(false), 2200);
+      return () => { clearTimeout(milTimer); clearTimeout(burstTimer); };
     }
   }, [streak]);
 
@@ -172,160 +370,128 @@ export function TaskStreak({ tasks, inline }: TaskStreakProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, [popoverOpen]);
 
-  const cfg = getStreakConfig(streak);
-  const nextMilestone = getNextMilestone(streak);
-  const prevMilestone = getPrevMilestone(streak) ?? 0;
-  const progressToNext = nextMilestone
-    ? Math.round(((streak - prevMilestone) / (nextMilestone - prevMilestone)) * 100)
-    : 100;
-
-  // Inline mode — clickable pill that opens streak card as popover
+  // ── Inline mode: compact pill + popover
   if (inline) {
     return (
       <div ref={popoverRef} className="relative">
+        {/* Premium streak pill */}
         <button
           type="button"
           onClick={() => setPopoverOpen(v => !v)}
-          className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-600 transition-colors hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50"
+          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-all duration-200 hover:scale-105 active:scale-95"
+          style={{
+            background: streak > 0
+              ? 'linear-gradient(135deg, rgba(249,115,22,0.12), rgba(251,191,36,0.08))'
+              : 'var(--muted-bg)',
+            border: streak > 0
+              ? '1px solid rgba(249,115,22,0.22)'
+              : '1px solid var(--card-border)',
+            backdropFilter: 'blur(8px)',
+          }}
         >
-          <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-slate-400'}`} />
-          {streak} {streak === 1 ? 'day' : 'days'}
+          {/* Animated flame */}
+          <Flame
+            className={`h-3.5 w-3.5 shrink-0 ${streak > 0 ? 'animate-flame' : ''}`}
+            style={{
+              color: getFlameColor(streak),
+              filter: streak > 5 ? getFlameFilter(streak) : 'none',
+            }}
+          />
+
+          {/* Streak count */}
+          <span
+            className="text-xs font-bold whitespace-nowrap"
+            style={{
+              color: streak > 0 ? '#ea580c' : 'var(--muted-fg)',
+            }}
+          >
+            {streak} {streak === 1 ? 'Day' : 'Day'} Streak
+          </span>
+
+          {/* Status — sm+ */}
+          {streak > 0 && (
+            <>
+              <span className="hidden sm:inline text-xs opacity-30" style={{ color: streak > 0 ? '#f97316' : 'var(--muted-fg)' }}>·</span>
+              <span
+                className="hidden sm:inline text-xs font-semibold whitespace-nowrap"
+                style={{ color: '#f97316' }}
+              >
+                {statusLabel}
+              </span>
+            </>
+          )}
+
+          {/* Tier or progress — md+ */}
+          {streak > 0 && (
+            <>
+              {nextTier && (
+                <>
+                  <span className="hidden md:inline text-xs opacity-30" style={{ color: '#f97316' }}>·</span>
+                  <span
+                    className="hidden md:inline text-xs font-semibold whitespace-nowrap"
+                    style={{ color: '#d97706' }}
+                  >
+                    {nextTier.days - streak}d to {nextTier.emoji} {nextTier.name}
+                  </span>
+                </>
+              )}
+              {!nextTier && currentTier && (
+                <>
+                  <span className="hidden md:inline text-xs opacity-30" style={{ color: '#f97316' }}>·</span>
+                  <span
+                    className="hidden md:inline text-xs font-semibold whitespace-nowrap"
+                    style={{ color: currentTier.color }}
+                  >
+                    {currentTier.emoji} {currentTier.name}
+                  </span>
+                </>
+              )}
+            </>
+          )}
         </button>
 
-        {/* Streak card popover */}
+        {/* Premium popover */}
         {popoverOpen && (
-          <div className="absolute left-0 top-full z-50 mt-2 w-64 drop-shadow-xl">
-            <div className={`rounded-xl border p-4 ${cfg.gradient} ${cfg.border}`}>
-              {showMilestone && (
-                <MilestoneBanner streak={streak} onDismiss={() => setShowMilestone(false)} />
-              )}
-
-              <div className="flex items-center justify-between gap-3">
-                {/* Left: number + label */}
-                <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
-                      {streak}
-                    </span>
-                    <span className={`text-sm font-bold ${cfg.labelColor}`}>
-                      {streak === 1 ? 'day' : 'days'}
-                    </span>
-                  </div>
-                  <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
-                    Task streak
-                  </p>
-                </div>
-
-                {/* Right: flame icon */}
-                <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
-                  <Flame
-                    className={`h-8 w-8 ${cfg.flameClass} ${streak > 0 ? 'drop-shadow-sm' : ''}`}
-                    style={streak >= 30 ? { filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' } : streak >= 7 ? { filter: 'drop-shadow(0 0 4px rgba(249,115,22,0.4))' } : undefined}
-                  />
-                  {streak >= 30 && (
-                    <Trophy className="absolute -bottom-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-sm" />
-                  )}
-                </div>
-              </div>
-
-              {/* Motivational label */}
-              <p className={`mt-2 text-xs font-medium ${cfg.labelColor}`}>{label}</p>
-
-              {/* Progress to next milestone */}
-              {nextMilestone && (
-                <div className="mt-3">
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className={`text-[10px] font-semibold ${cfg.labelColor} opacity-80`}>
-                      Next milestone: {nextMilestone} days
-                    </span>
-                    <span className={`text-[10px] font-bold ${cfg.labelColor}`}>
-                      {nextMilestone - streak} to go
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-                    <div
-                      className={`h-full rounded-full transition-all duration-700 ${cfg.barColor}`}
-                      style={{ width: `${Math.max(progressToNext, 4)}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-              {!nextMilestone && streak > 0 && (
-                <p className={`mt-2 flex items-center gap-1 text-[10px] font-semibold ${cfg.labelColor}`}>
-                  <Trophy className="h-3 w-3 shrink-0" />
-                  Maximum milestone reached! You&apos;re a legend.
-                </p>
-              )}
-            </div>
+          <div
+            className="absolute left-0 top-full z-50 mt-2 w-72 rounded-2xl overflow-hidden"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1px solid var(--glass-border)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.18), 0 0 40px rgba(249,115,22,0.1)',
+            }}
+          >
+            <StreakCard
+              streak={streak}
+              showMilestone={showMilestone}
+              showBurst={showBurst}
+              onDismissMilestone={() => setShowMilestone(false)}
+            />
           </div>
         )}
       </div>
     );
   }
 
-  // Full card mode (non-inline) — kept for any standalone use
+  // ── Full card mode (non-inline, e.g. standalone use)
   return (
-    <div className={`rounded-xl border p-4 ${cfg.gradient} ${cfg.border}`}>
-      {showMilestone && (
-        <MilestoneBanner streak={streak} onDismiss={() => setShowMilestone(false)} />
-      )}
-
-      <div className="flex items-center justify-between gap-3">
-        {/* Left: number + label */}
-        <div>
-          <div className="flex items-baseline gap-1.5">
-            <span className={`text-5xl font-black leading-none tracking-tight ${cfg.numberColor}`}>
-              {streak}
-            </span>
-            <span className={`text-sm font-bold ${cfg.labelColor}`}>
-              {streak === 1 ? 'day' : 'days'}
-            </span>
-          </div>
-          <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${cfg.labelColor}`}>
-            Task streak
-          </p>
-        </div>
-
-        {/* Right: flame icon */}
-        <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${streak > 0 ? 'bg-white/60 dark:bg-black/20' : 'bg-slate-100 dark:bg-slate-700/40'} shadow-sm`}>
-          <Flame
-            className={`h-8 w-8 ${cfg.flameClass} ${streak > 0 ? 'drop-shadow-sm' : ''}`}
-            style={streak >= 30 ? { filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' } : streak >= 7 ? { filter: 'drop-shadow(0 0 4px rgba(249,115,22,0.4))' } : undefined}
-          />
-          {streak >= 30 && (
-            <Trophy className="absolute -bottom-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-sm" />
-          )}
-        </div>
-      </div>
-
-      {/* Motivational label */}
-      <p className={`mt-2 text-xs font-medium ${cfg.labelColor}`}>{label}</p>
-
-      {/* Progress to next milestone */}
-      {nextMilestone && (
-        <div className="mt-3">
-          <div className="mb-1 flex items-center justify-between">
-            <span className={`text-[10px] font-semibold ${cfg.labelColor} opacity-80`}>
-              Next milestone: {nextMilestone} days
-            </span>
-            <span className={`text-[10px] font-bold ${cfg.labelColor}`}>
-              {nextMilestone - streak} to go
-            </span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ${cfg.barColor}`}
-              style={{ width: `${Math.max(progressToNext, 4)}%` }}
-            />
-          </div>
-        </div>
-      )}
-      {!nextMilestone && streak > 0 && (
-        <p className={`mt-2 flex items-center gap-1 text-[10px] font-semibold ${cfg.labelColor}`}>
-          <Trophy className="h-3 w-3 shrink-0" />
-          Maximum milestone reached! You&apos;re a legend.
-        </p>
-      )}
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        background: 'var(--card-bg)',
+        border: '1px solid var(--glass-border)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 4px 20px rgba(249,115,22,0.08)',
+      }}
+    >
+      <StreakCard
+        streak={streak}
+        showMilestone={showMilestone}
+        showBurst={showBurst}
+        onDismissMilestone={() => setShowMilestone(false)}
+      />
     </div>
   );
 }

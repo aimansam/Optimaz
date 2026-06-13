@@ -113,23 +113,25 @@ export function DailySummary({ tasks, goals }: DailySummaryProps) {
 
   const todayStr = new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
 
-  // Done today = tasks completed on today's LOCAL date
-  const doneToday = tasks.filter(t => {
-    if (t.status !== 'done') return false;
+  // All tasks completed today (any due date — captures overdue tasks completed today too)
+  const completedTodayTasks = tasks.filter(t => {
+    if (t.status !== 'done' || t.archived_at) return false;
     const rawTs = t.completed_at ?? t.updated_at;
     if (!rawTs) return false;
-    const localDate = new Date(rawTs).toLocaleDateString('en-CA');
-    return localDate === todayStr;
-  }).length;
+    return new Date(rawTs).toLocaleDateString('en-CA') === todayStr;
+  });
+  const doneToday = completedTodayTasks.length;
 
-  // Compute today counts entirely from allTasks (single source of truth)
-  const allTodayTasks = tasks.filter(t => t.due_date === todayStr && !t.archived_at);
-  const totalDueToday = allTodayTasks.length;
-  const remainingToday = allTodayTasks.filter(t => t.status !== 'done').length;
+  // Tasks due today that are still pending
+  const todayDuePending = tasks.filter(t => t.due_date === todayStr && t.status !== 'done' && !t.archived_at);
 
-  const progressPct = totalDueToday > 0
-    ? Math.round(((totalDueToday - remainingToday) / totalDueToday) * 100)
-    : doneToday > 0 ? 100 : 0;
+  // Total = completed today + still pending today (gives meaningful denominator)
+  const totalForProgress = doneToday + todayDuePending.length;
+  const progressPct = totalForProgress > 0 ? Math.round((doneToday / totalForProgress) * 100) : 0;
+
+  // For the "Done today" stat row display
+  const totalDueToday = totalForProgress;
+  const remainingToday = todayDuePending.length;
 
   const overdueCount = tasks.filter(
     t => t.status !== 'done' && !t.archived_at && t.due_date && t.due_date < todayStr

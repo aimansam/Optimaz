@@ -40,19 +40,38 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
         className={cn(
-          'relative flex w-full flex-col rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-black/20 dark:border-slate-700/60 dark:bg-slate-900 dark:shadow-black/60',
+          'relative flex w-full flex-col rounded-2xl',
           'max-h-[90dvh] sm:max-w-3xl',
           className
         )}
+        style={{
+          background: 'var(--card-bg)',
+          border: '1px solid var(--glass-border)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.2), 0 0 0 1px var(--glass-border), 0 0 40px var(--glow)',
+        }}
       >
-        {/* Header — always visible at top */}
-        <div className="flex shrink-0 items-center justify-between rounded-t-2xl border-b border-slate-100 bg-slate-50/80 px-4 py-3 dark:border-slate-800 dark:bg-slate-800/40 sm:px-6 sm:py-4">
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+        {/* Header */}
+        <div
+          className="flex shrink-0 items-center justify-between rounded-t-2xl px-4 py-3 sm:px-6 sm:py-4"
+          style={{
+            background: 'var(--muted-bg)',
+            borderBottom: '1px solid var(--card-border)',
+          }}
+        >
+          <h2
+            className="text-base font-semibold"
+            style={{ color: 'var(--foreground)' }}
+          >
+            {title}
+          </h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 rounded-lg">
             <X className="h-4 w-4" />
           </Button>

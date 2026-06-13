@@ -24,15 +24,14 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // Don't render anything when closed — prevents shadow-2xl from bleeding
-  // into the visible viewport from off-screen translated panels
   if (!open) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]"
+        className="fixed inset-0 z-40"
+        style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(3px)' }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -43,17 +42,23 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'fixed right-0 top-0 z-50 flex h-full w-full flex-col shadow-2xl',
+          'fixed right-0 top-0 z-50 flex h-full w-full flex-col',
           width,
-          'bg-white dark:bg-slate-900',
           className
         )}
+        style={{
+          background: 'var(--card-bg)',
+          borderLeft: '1px solid var(--glass-border)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: '-8px 0 32px rgba(0,0,0,0.15), 0 0 60px var(--glow)',
+        }}
       >
         {/* Header */}
         {title && (
           <div
             className="flex shrink-0 items-center justify-between px-5 py-4"
-            style={{ borderBottom: '1px solid var(--card-border, #e2e8f0)' }}
+            style={{ borderBottom: '1px solid var(--card-border)' }}
           >
             <h2
               className="text-base font-semibold"
@@ -63,7 +68,16 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
             </h2>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-150"
+              style={{ color: 'var(--muted-fg)' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.1)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--accent))';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = '';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-fg)';
+              }}
               aria-label="Close drawer"
             >
               <X className="h-4 w-4" />

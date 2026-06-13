@@ -57,7 +57,14 @@ export function QuickAddFAB() {
               style={{ transitionDelay: open ? `${index * 50}ms` : '0ms' }}
             >
               <span
-                className="rounded-lg bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-md ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700"
+                className="rounded-lg px-2.5 py-1 text-xs font-semibold"
+                style={{
+                  background: 'var(--card-bg)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--glass-border)',
+                  backdropFilter: 'blur(12px)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                }}
               >
                 {action.label}
               </span>
@@ -79,18 +86,23 @@ export function QuickAddFAB() {
         <button
           onClick={() => setOpen(v => !v)}
           className={cn(
-            'flex h-14 w-14 items-center justify-center rounded-full shadow-xl ring-2 ring-white transition-all duration-300 hover:scale-110 active:scale-95 dark:ring-slate-900',
-            open
-              ? 'bg-slate-800 dark:bg-slate-200 rotate-45'
-              : 'rotate-0',
-            !open && 'bg-slate-900 dark:bg-white'
+            'flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95',
+            open ? 'rotate-45' : 'rotate-0',
           )}
-          style={!open ? { background: 'rgb(var(--accent))' } : undefined}
+          style={{
+            background: open
+              ? 'var(--muted-bg)'
+              : 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.82))',
+            boxShadow: open
+              ? '0 4px 16px rgba(0,0,0,0.15)'
+              : '0 4px 20px var(--glow), 0 8px 32px rgba(0,0,0,0.2)',
+            border: '2px solid var(--glass-border)',
+          }}
           aria-label={open ? 'Close quick add menu' : 'Quick add'}
           aria-expanded={open}
         >
           {open
-            ? <X className="h-6 w-6 text-white dark:text-slate-900" />
+            ? <X className="h-6 w-6" style={{ color: 'var(--foreground)' }} />
             : <Plus className="h-6 w-6 text-white" />
           }
         </button>

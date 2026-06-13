@@ -8,23 +8,44 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', style: propStyle, ...props }, ref) => {
-    // Primary variant uses the theme accent CSS variable so it respects all 7 themes
-    const accentStyle = variant === 'primary'
-      ? { background: 'rgb(var(--accent))', ...propStyle }
-      : propStyle;
+    // Build inline style based on variant — uses CSS vars for full theme support
+    const variantStyle: React.CSSProperties = (() => {
+      if (variant === 'primary') return {
+        background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.85))',
+        color: '#ffffff',
+        boxShadow: '0 2px 8px var(--glow)',
+        ...propStyle,
+      };
+      if (variant === 'secondary') return {
+        background: 'var(--muted-bg)',
+        color: 'var(--foreground)',
+        border: '1px solid var(--card-border)',
+        ...propStyle,
+      };
+      if (variant === 'ghost') return {
+        background: 'transparent',
+        color: 'var(--muted-fg)',
+        ...propStyle,
+      };
+      if (variant === 'danger') return {
+        background: '#ef4444',
+        color: '#ffffff',
+        boxShadow: '0 2px 6px rgba(239,68,68,0.3)',
+        ...propStyle,
+      };
+      return propStyle ?? {};
+    })();
 
     return (
       <button
         ref={ref}
-        style={accentStyle}
+        style={variantStyle}
         className={cn(
-          'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-          {
-            'text-white shadow-sm hover:opacity-90 active:scale-[0.98] focus-visible:ring-slate-400': variant === 'primary',
-            'bg-slate-100 text-slate-700 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:active:bg-slate-600 focus-visible:ring-slate-900': variant === 'secondary',
-            'text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 focus-visible:ring-slate-900': variant === 'ghost',
-            'bg-red-500 text-white shadow-sm shadow-red-500/25 hover:bg-red-600 active:scale-[0.98] focus-visible:ring-red-500': variant === 'danger',
-          },
+          'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50',
+          variant === 'primary' && 'hover:opacity-90 active:scale-[0.98]',
+          variant === 'secondary' && 'hover:opacity-80 active:opacity-70',
+          variant === 'ghost' && 'hover:opacity-80',
+          variant === 'danger' && 'hover:opacity-90 active:scale-[0.97]',
           {
             'h-7 px-3 text-xs gap-1.5': size === 'sm',
             'h-9 px-4 text-sm gap-2': size === 'md',

@@ -246,3 +246,10 @@ body {
 .glow-sm {
   box-shadow: 0 0 10px var(--glow);
 }
+
+/* Themed input/select focus — accent ring across all themes */
+.input-themed:focus {
+  outline: none;
+  border-color: rgb(var(--accent) / 0.55) !important;
+  box-shadow: 0 0 0 2px rgb(var(--accent) / 0.12);
+}

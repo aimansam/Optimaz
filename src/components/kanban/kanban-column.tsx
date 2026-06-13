@@ -38,23 +38,45 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
     <>
       <div
         className={cn(
-          'flex flex-col rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 transition-all duration-200',
-          isOver && 'ring-2 ring-slate-400 border-transparent',
+          'flex flex-col rounded-2xl transition-all duration-200',
+          isOver && 'ring-2 ring-[rgb(var(--accent)/0.4)]',
           'w-full md:w-[320px] min-w-0 md:min-w-[320px] h-full max-h-full'
         )}
+        style={{
+          background: 'var(--muted-bg)',
+          border: isOver ? '1px solid rgb(var(--accent) / 0.35)' : '1px solid var(--card-border)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
       >
         {/* Column header */}
         <div className="flex items-center justify-between px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-3.5">
           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
             <span className={cn('h-2 w-2 rounded-full', COLUMN_DOT[id])} />
-            <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</span>
-            <span className={cn('rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold tabular-nums', COLUMN_COUNT_STYLE[id])}>
+            <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--foreground)' }}>{label}</span>
+            <span
+              className="rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold tabular-nums"
+              style={{
+                background: 'var(--card-bg)',
+                color: 'var(--muted-fg)',
+                border: '1px solid var(--card-border)',
+              }}
+            >
               {tasks.length}
             </span>
           </div>
           <button
             onClick={() => setAddOpen(true)}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/80 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
+            className="rounded-lg p-1 transition-all duration-150"
+            style={{ color: 'var(--muted-fg)' }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.1)';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgb(var(--accent))';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = '';
+              (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-fg)';
+            }}
           >
             <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </button>

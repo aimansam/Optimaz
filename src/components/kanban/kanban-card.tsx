@@ -15,17 +15,11 @@ import { TaskForm } from '@/components/tasks/task-form';
 import { SubtaskList } from '@/components/tasks/subtask-list';
 import { useUpdateTask } from '@/hooks/use-tasks';
 
-const PRIORITY_BORDER: Record<string, string> = {
-  low: 'border-l-blue-400',
-  medium: 'border-l-amber-400',
-  high: 'border-l-orange-400',
-  urgent: 'border-l-red-500',
-};
-
-const STATUS_BG: Record<string, string> = {
-  todo: 'bg-red-50 dark:bg-red-950/20',
-  in_progress: 'bg-amber-50 dark:bg-amber-950/20',
-  done: 'bg-emerald-50 dark:bg-emerald-950/20',
+const PRIORITY_LEFT_COLOR: Record<string, string> = {
+  low: '#3b82f6',
+  medium: '#f59e0b',
+  high: '#f97316',
+  urgent: '#ef4444',
 };
 
 const STATUS_ORDER: TaskStatus[] = ['todo', 'in_progress', 'done'];
@@ -85,12 +79,20 @@ export function KanbanCard({ task }: { task: Task }) {
     <>
       <div
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          background: 'var(--card-bg)',
+          border: '1px solid var(--card-border)',
+          borderLeft: `2px solid ${overdue ? '#ef4444' : PRIORITY_LEFT_COLOR[task.priority]}`,
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: isDragging ? '0 16px 40px rgba(0,0,0,0.2)' : '0 1px 3px rgba(0,0,0,0.06)',
+          transform: isDragging ? `${style.transform ?? ''} scale(0.98)` : style.transform ?? '',
+          opacity: isDragging ? 0.7 : 1,
+        }}
         className={cn(
-          'group relative rounded-xl border-l-[3px] ring-1 ring-slate-900/5 shadow-sm dark:ring-slate-800 transition-all duration-150',
-          STATUS_BG[task.status],
-          isDragging ? 'opacity-40 shadow-xl scale-[0.98]' : 'hover:shadow-md',
-          overdue ? 'border-l-red-500!' : PRIORITY_BORDER[task.priority]
+          'group relative rounded-xl transition-all duration-150',
+          !isDragging && 'hover:shadow-md',
         )}
         tabIndex={0}
         aria-label={`Task ${task.title}`}
@@ -100,7 +102,14 @@ export function KanbanCard({ task }: { task: Task }) {
           <button
             ref={setActivatorNodeRef}
             type="button"
-            className="mt-0.5 shrink-0 rounded p-0.5 text-slate-300 opacity-0 transition-opacity hover:bg-slate-100 hover:text-slate-500 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-slate-300 group-hover:opacity-100 dark:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+            className="mt-0.5 shrink-0 rounded p-0.5 opacity-0 transition-all duration-150 focus:opacity-100 focus:outline-none group-hover:opacity-100"
+            style={{ color: 'var(--muted-fg)' }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--muted-bg)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = '';
+            }}
             aria-label={`Drag task ${task.title}`}
             {...attributes}
             {...listeners}
@@ -109,18 +118,18 @@ export function KanbanCard({ task }: { task: Task }) {
           </button>
           <div className="min-w-0 flex-1 relative">
             <div className="flex items-start justify-between gap-2">
-              <p className="min-w-0 truncate text-sm font-medium leading-snug text-slate-800 dark:text-slate-100">{task.title}</p>
+              <p className="min-w-0 truncate text-sm font-medium leading-snug" style={{ color: 'var(--foreground)' }}>{task.title}</p>
               <TaskActions task={task} showComplete={false} showDelete={false} onEdit={() => setEditOpen(true)} className="shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100" />
             </div>
             {task.notes && (
-              <p className="mt-0.5 text-xs text-slate-400 line-clamp-2 leading-relaxed">{task.notes}</p>
+              <p className="mt-0.5 text-xs line-clamp-2 leading-relaxed" style={{ color: 'var(--muted-fg)' }}>{task.notes}</p>
             )}
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <Badge className={cn('text-[10px] font-semibold tracking-wide', priority.bg, priority.color)}>
                 {priority.label}
               </Badge>
               {task.project && (
-                <Badge className="bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 text-[10px]">
+                <Badge className="text-[10px]" style={{ background: 'var(--muted-bg)', color: 'var(--muted-fg)' } as React.CSSProperties}>
                   <span
                     className="mr-1 inline-block h-1.5 w-1.5 rounded-full"
                     style={{ backgroundColor: task.project.color }}
@@ -129,7 +138,7 @@ export function KanbanCard({ task }: { task: Task }) {
                 </Badge>
               )}
               {task.due_date && (
-                <span className={cn('flex items-center gap-0.5 text-[10px] font-medium', overdue ? 'text-red-500' : 'text-slate-400')}>
+                <span className={cn('flex items-center gap-0.5 text-[10px] font-medium')} style={{ color: overdue ? '#ef4444' : 'var(--muted-fg)' }}>
                   <CalendarDays className="h-3 w-3" />
                   {formatDate(task.due_date, task.due_time)}
                 </span>
@@ -143,17 +152,20 @@ export function KanbanCard({ task }: { task: Task }) {
               {totalSubtasks > 0 && (
                 <div className="flex flex-col gap-0.5 min-w-20">
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-slate-400">
+                    <span className="text-[10px] font-medium" style={{ color: 'var(--muted-fg)' }}>
                       {completedSubtasks}/{totalSubtasks} subtasks
                     </span>
                     <span className="text-[10px] font-semibold text-emerald-500 ml-1">
                       {percentComplete}%
                     </span>
                   </div>
-                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: 'var(--muted-bg)' }}>
                     <div
-                      className="h-1 bg-emerald-500 transition-all duration-200"
-                      style={{ width: `${percentComplete}%` }}
+                      className="h-1 rounded-full transition-all duration-200"
+                      style={{
+                        width: `${percentComplete}%`,
+                        background: 'linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent) / 0.7))',
+                      }}
                     />
                   </div>
                 </div>
@@ -164,7 +176,7 @@ export function KanbanCard({ task }: { task: Task }) {
               <SubtaskList task={task} />
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 dark:border-slate-800">
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-2" style={{ borderTop: '1px solid var(--card-border)' }}>
               {previousStatus && (
                 <Button
                   type="button"

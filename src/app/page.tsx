@@ -150,67 +150,112 @@ export default async function LandingPage() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
+      <section className="relative overflow-hidden">
+        {/* Subtle radial glow behind hero */}
         <div
-          className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
+          className="pointer-events-none absolute inset-0"
           style={{
-            background: 'rgb(var(--accent) / 0.1)',
-            border: '1px solid rgb(var(--accent) / 0.2)',
-            color: 'rgb(var(--accent))',
+            background: 'radial-gradient(ellipse 70% 60% at 65% 50%, rgb(var(--accent) / 0.07) 0%, transparent 70%)',
           }}
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Now in beta — free Pro month for early users
+        />
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-0 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:py-24">
+
+          {/* ── Left column ── */}
+          <div className="flex flex-col items-start">
+            {/* Badge */}
+            <div
+              className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
+              style={{
+                background: 'rgb(var(--accent) / 0.1)',
+                border: '1px solid rgb(var(--accent) / 0.2)',
+                color: 'rgb(var(--accent))',
+              }}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              Now in beta — free Pro month for early users
+            </div>
+
+            {/* Billboard heading */}
+            <h1
+              className="text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl"
+              style={{ color: 'var(--foreground)' }}
+            >
+              RECLAIM YOUR<br />
+              FOCUS. OPTIMIZE<br />
+              YOUR DAY.
+            </h1>
+
+            {/* Sub-headline */}
+            <p className="mt-7 max-w-md text-base leading-7 sm:text-lg" style={{ color: 'var(--muted-fg)' }}>
+              The single source of truth for your tasks, goals, and project progress. Beautifully organized.
+            </p>
+
+            {/* CTA */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all hover:opacity-90 active:scale-95"
+                style={{
+                  background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.8))',
+                  boxShadow: '0 6px 28px var(--glow)',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Get started free
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>
+                No credit card required. Free 14-day trial.
+              </p>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-10 flex items-center gap-3">
+              {/* Avatar cluster */}
+              <div className="flex -space-x-2">
+                {['#7C3AED','#ec4899','#0ea5e9','#10b981'].map((color, i) => (
+                  <div
+                    key={i}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-bold text-white"
+                    style={{ background: color, borderColor: 'var(--background)' }}
+                  >
+                    {['A','B','C','D'][i]}
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs font-medium" style={{ color: 'var(--muted-fg)' }}>
+                Used by <span style={{ color: 'var(--foreground)', fontWeight: 700 }}>10,000+</span> high-performers
+              </p>
+            </div>
+          </div>
+
+          {/* ── Right column — device mockup ── */}
+          <div className="relative mt-12 flex items-center justify-center lg:mt-0 lg:justify-end">
+            <div
+              className="relative w-full max-w-xl overflow-hidden rounded-3xl"
+              style={{
+                boxShadow: '0 32px 80px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.1)',
+                transform: 'perspective(1200px) rotateY(-4deg) rotateX(2deg)',
+              }}
+            >
+              <img
+                src="/hero-background.png"
+                alt="Optimaz app preview"
+                className="w-full"
+                style={{ display: 'block' }}
+              />
+            </div>
+            {/* Glow behind image */}
+            <div
+              className="pointer-events-none absolute inset-0 -z-10"
+              style={{
+                background: 'radial-gradient(ellipse 80% 60% at 60% 50%, rgb(var(--accent) / 0.15) 0%, transparent 70%)',
+                filter: 'blur(40px)',
+              }}
+            />
+          </div>
+
         </div>
-
-        <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl" style={{ color: 'var(--foreground)' }}>
-          Tasks, goals, routines, and projects —{' '}
-          <span
-            className="bg-clip-text"
-            style={{
-              background: 'linear-gradient(135deg, rgb(var(--accent)), #ec4899)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            organized in one place
-          </span>{' '}
-          so you can focus on execution.
-        </h1>
-
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 sm:text-lg" style={{ color: 'var(--muted-fg)' }}>
-          Built for people who want to get things done, not manage software. Trusted by students, freelancers, and founders organizing thousands of tasks during beta.
-        </p>
-
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/auth/login"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 sm:w-auto"
-            style={{
-              background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent) / 0.85))',
-              boxShadow: '0 4px 20px var(--glow)',
-            }}
-          >
-            <Zap className="h-4 w-4" />
-            Start free — 1 month Pro included
-          </Link>
-          <Link
-            href="#compare"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium transition-all hover:opacity-80 sm:w-auto"
-            style={{
-              background: 'var(--card-bg)',
-              border: '1px solid var(--card-border)',
-              color: 'var(--foreground)',
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            See how it compares →
-          </Link>
-        </div>
-
-        <p className="mt-4 text-xs" style={{ color: 'var(--muted-fg)' }}>
-          No credit card needed. Beta pricing locks in at RM15/mo — rising to RM29/mo after launch.
-        </p>
       </section>
 
       {/* ── Connected strip ── */}

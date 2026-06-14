@@ -47,15 +47,11 @@ export function QuickAddFAB() {
         />
       )}
 
-      {/* FAB cluster — edge-peek when closed, slides in on open */}
+      {/* FAB cluster — bottom-right, options expand upward on open */}
       <div
         className={cn(
-          'fixed right-0 z-50 flex flex-col-reverse items-end gap-2.5 transition-all duration-300 ease-out',
-          isFabHidden
-            ? 'translate-x-full pointer-events-none opacity-0'
-            : open
-              ? 'translate-x-0 pr-5'
-              : 'translate-x-10'
+          'fixed right-5 z-50 flex flex-col-reverse items-end gap-2.5 transition-all duration-200',
+          isFabHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'
         )}
         style={{ bottom: 'max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem))' }}
       >

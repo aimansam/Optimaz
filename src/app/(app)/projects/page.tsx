@@ -298,7 +298,7 @@ export default function ProjectsPage() {
                 <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   {search.trim() ? `Projects (${filteredProjects.length})` : `Projects (${parentProjects.length})`}
                 </h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="list-animated grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {(search.trim() ? filteredProjects : parentProjects).map((project) => {
                     const subprojects = subprojectsByParent.get(project.id) ?? [];
                     return (

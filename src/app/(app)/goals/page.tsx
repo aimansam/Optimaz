@@ -169,7 +169,7 @@ export default function GoalsPage() {
                 <h2 className="gradient-text mb-3 text-sm font-semibold uppercase tracking-wider">
                   In Progress ({active?.length})
                 </h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="list-animated grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {active?.map((goal) => (
                     <GoalCard key={goal.id} goal={goal} />
                   ))}

@@ -523,7 +523,7 @@ export default function CalendarPage() {
                             {dayTasks.length > 0 && <span className="text-[9px] font-semibold sm:text-[10px]" style={{ color: 'var(--muted-fg)' }}>{dayTasks.length}</span>}
                           </div>
                           <div className="space-y-0.5">
-                            {dayTasks.slice(0, 2).map(task => {
+                            {dayTasks.slice(0, 1).map(task => {
                               const priority = PRIORITY_CONFIG[task.priority];
                               const isRecurring = !!task.is_recurring;
                               return (
@@ -546,7 +546,14 @@ export default function CalendarPage() {
                                 </div>
                               );
                             })}
-                            {dayTasks.length > 2 && <div className="text-[9px] font-medium" style={{ color: 'var(--muted-fg)' }}>+{dayTasks.length - 2} more</div>}
+                            {dayTasks.length > 1 && (
+                              <div
+                                className="rounded px-1 py-0.5 text-[9px] font-semibold tabular-nums sm:text-[10px]"
+                                style={{ background: 'rgb(var(--accent) / 0.1)', color: 'rgb(var(--accent))' }}
+                              >
+                                +{dayTasks.length - 1}
+                              </div>
+                            )}
                             {openCount > 0 && doneCount > 0 && <div className="hidden text-[9px] sm:block" style={{ color: 'var(--muted-fg)' }}>{openCount} open, {doneCount} done</div>}
                           </div>
                         </button>

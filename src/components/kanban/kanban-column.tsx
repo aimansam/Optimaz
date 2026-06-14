@@ -24,15 +24,23 @@ const COLUMN_COUNT_STYLE: Record<TaskStatus, string> = {
   done: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
 };
 
+const COLUMN_BAR_COLOR: Record<TaskStatus, string> = {
+  todo: '#ef4444',
+  in_progress: '#f59e0b',
+  done: '#10b981',
+};
+
 interface KanbanColumnProps {
   id: TaskStatus;
   label: string;
   tasks: Task[];
+  totalTasks: number;
 }
 
-export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
+export function KanbanColumn({ id, label, tasks, totalTasks }: KanbanColumnProps) {
   const [addOpen, setAddOpen] = useState(false);
   const { setNodeRef, isOver } = useDroppable({ id });
+  const proportion = totalTasks > 0 ? Math.round((tasks.length / totalTasks) * 100) : 0;
 
   return (
     <>
@@ -80,6 +88,18 @@ export function KanbanColumn({ id, label, tasks }: KanbanColumnProps) {
           >
             <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </button>
+        </div>
+
+        {/* Proportion bar */}
+        <div className="mx-2 sm:mx-3 md:mx-4 mb-2 h-1 rounded-full overflow-hidden" style={{ background: 'var(--card-border)' }}>
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${proportion}%`,
+              background: COLUMN_BAR_COLOR[id],
+              opacity: 0.7,
+            }}
+          />
         </div>
 
         {/* Tasks */}

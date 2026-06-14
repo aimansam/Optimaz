@@ -12,7 +12,6 @@ import type { Task, TaskStatus } from '@/lib/types';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskForm } from '@/components/tasks/task-form';
-import { SubtaskList } from '@/components/tasks/subtask-list';
 import { useUpdateTask } from '@/hooks/use-tasks';
 
 const PRIORITY_LEFT_COLOR: Record<string, string> = {
@@ -122,7 +121,7 @@ export function KanbanCard({ task }: { task: Task }) {
               <TaskActions task={task} showComplete={false} showDelete={false} onEdit={() => setEditOpen(true)} className="shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100" />
             </div>
             {task.notes && (
-              <p className="mt-0.5 text-xs line-clamp-2 leading-relaxed" style={{ color: 'var(--muted-fg)' }}>{task.notes}</p>
+              <p className="mt-0.5 text-xs line-clamp-1 leading-relaxed" style={{ color: 'var(--muted-fg)' }}>{task.notes}</p>
             )}
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <Badge className={cn('text-[10px] font-semibold tracking-wide', priority.bg, priority.color)}>
@@ -171,12 +170,7 @@ export function KanbanCard({ task }: { task: Task }) {
                 </div>
               )}
             </div>
-            {/* Show interactive subtasks or add button always */}
-            <div className="mt-2">
-              <SubtaskList task={task} />
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-2" style={{ borderTop: '1px solid var(--card-border)' }}>
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-2 md:hidden md:group-hover:flex" style={{ borderTop: '1px solid var(--card-border)' }}>
               {previousStatus && (
                 <Button
                   type="button"

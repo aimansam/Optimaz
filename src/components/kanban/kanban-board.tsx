@@ -94,7 +94,7 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
         className="flex flex-col md:flex-row md:items-start md:min-w-max h-full gap-2 sm:gap-3 md:gap-4"
       >
         {COLUMNS.map(({ id, label }) => (
-          <KanbanColumn key={id} id={id} label={label} tasks={getTasksByStatus(id)} />
+          <KanbanColumn key={id} id={id} label={label} tasks={getTasksByStatus(id)} totalTasks={tasks.length} />
         ))}
       </div>
       <DragOverlay>

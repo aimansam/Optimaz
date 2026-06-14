@@ -103,9 +103,9 @@ export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
       <div
         ref={isOverlay ? undefined : setNodeRef}
         style={{
-          // Overlay: apply lifted/rotated look. Non-overlay: use dnd-kit's transform/transition.
+          // Overlay: elevated lifted look. Non-overlay: use dnd-kit's transform/transition.
           ...(isOverlay
-            ? { transform: 'rotate(2.5deg)', cursor: 'grabbing', pointerEvents: 'none' }
+            ? { cursor: 'grabbing', pointerEvents: 'none' }
             : style),
           background: 'var(--card-bg)',
           border: '1px solid var(--card-border)',

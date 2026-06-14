@@ -12,6 +12,7 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useState } from 'react';
 import { KanbanColumn } from './kanban-column';
@@ -141,8 +142,9 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
         ))}
       </div>
 
-      {/* Floating card — rotation/shadow applied inside the card itself (no wrapper offset) */}
+      {/* Floating card — snapped to cursor center via modifier, shadow via isOverlay card style */}
       <DragOverlay
+        modifiers={[snapCenterToCursor]}
         dropAnimation={{ duration: 160, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}
       >
         {activeTask && <KanbanCard task={activeTask} isOverlay />}

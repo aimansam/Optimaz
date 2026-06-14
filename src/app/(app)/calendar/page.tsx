@@ -189,38 +189,40 @@ export default function CalendarPage() {
   );
 
   const statsRow = (
-    <div className="shrink-0 grid grid-cols-2 gap-2 px-4 pb-3 lg:grid-cols-4 sm:px-6">
-      <div className="rounded-xl px-3 py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--foreground)' }}>
-          <CalendarDays className="h-3.5 w-3.5" style={{ color: 'var(--muted-fg)' }} />
-          This month
+    <div className="shrink-0 grid grid-cols-4 gap-1.5 px-4 pb-3 sm:gap-2 sm:px-6">
+      <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-1.5 sm:text-xs" style={{ color: 'var(--foreground)' }}>
+          <CalendarDays className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" style={{ color: 'var(--muted-fg)' }} />
+          <span className="truncate hidden sm:inline">This month</span>
+          <span className="truncate sm:hidden">Month</span>
         </div>
-        <p className="mt-1 text-lg font-bold" style={{ color: 'var(--foreground)' }}>{monthTaskCount}</p>
-        <p className="text-[11px]" style={{ color: 'var(--muted-fg)' }}>Scheduled tasks</p>
+        <p className="mt-0.5 text-sm font-bold sm:mt-1 sm:text-lg" style={{ color: 'var(--foreground)' }}>{monthTaskCount}</p>
+        <p className="hidden text-[11px] sm:block" style={{ color: 'var(--muted-fg)' }}>Scheduled tasks</p>
       </div>
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-          <CheckCircle2 className="h-3.5 w-3.5" />
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-2 dark:border-emerald-900/50 dark:bg-emerald-950/20 sm:px-3 sm:py-2.5">
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 sm:gap-1.5 sm:text-xs">
+          <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           Today
         </div>
-        <p className="mt-1 text-lg font-bold text-emerald-700 dark:text-emerald-300">{dueTodayCount}</p>
-        <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80">Open tasks due today</p>
+        <p className="mt-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300 sm:mt-1 sm:text-lg">{dueTodayCount}</p>
+        <p className="hidden text-[11px] text-emerald-700/80 dark:text-emerald-300/80 sm:block">Open tasks due today</p>
       </div>
-      <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-red-700 dark:text-red-300">
-          <Clock className="h-3.5 w-3.5" />
+      <div className="rounded-xl border border-red-200 bg-red-50 p-2 dark:border-red-900/50 dark:bg-red-950/20 sm:px-3 sm:py-2.5">
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-red-700 dark:text-red-300 sm:gap-1.5 sm:text-xs">
+          <Clock className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           Overdue
         </div>
-        <p className="mt-1 text-lg font-bold text-red-700 dark:text-red-300">{overdueCount}</p>
-        <p className="text-[11px] text-red-700/80 dark:text-red-300/80">Past due and open</p>
+        <p className="mt-0.5 text-sm font-bold text-red-700 dark:text-red-300 sm:mt-1 sm:text-lg">{overdueCount}</p>
+        <p className="hidden text-[11px] text-red-700/80 dark:text-red-300/80 sm:block">Past due and open</p>
       </div>
-      <div className="rounded-xl px-3 py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--foreground)' }}>
-          <CheckCircle2 className="h-3.5 w-3.5" style={{ color: 'var(--muted-fg)' }} />
-          Completed
+      <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-1.5 sm:text-xs" style={{ color: 'var(--foreground)' }}>
+          <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" style={{ color: 'var(--muted-fg)' }} />
+          <span className="truncate hidden sm:inline">Completed</span>
+          <span className="truncate sm:hidden">Done</span>
         </div>
-        <p className="mt-1 text-lg font-bold" style={{ color: 'var(--foreground)' }}>{completedThisMonth}</p>
-        <p className="text-[11px]" style={{ color: 'var(--muted-fg)' }}>Completed this month</p>
+        <p className="mt-0.5 text-sm font-bold sm:mt-1 sm:text-lg" style={{ color: 'var(--foreground)' }}>{completedThisMonth}</p>
+        <p className="hidden text-[11px] sm:block" style={{ color: 'var(--muted-fg)' }}>Completed this month</p>
       </div>
     </div>
   );

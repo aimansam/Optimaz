@@ -87,38 +87,41 @@ export default function RoutinesPage() {
             </Button>
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-                <Repeat2 className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
-                Total routines
+          <div className="mb-5 grid grid-cols-4 gap-1.5 sm:gap-3">
+            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                <Repeat2 className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" style={{ color: 'var(--muted-fg)' }} />
+                <span className="hidden sm:inline">Total routines</span>
+                <span className="sm:hidden">Total</span>
               </div>
-              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.all}</p>
-              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>All active cadences</p>
+              <p className="mt-0.5 text-sm font-bold sm:mt-2 sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.all}</p>
+              <p className="hidden text-xs sm:block" style={{ color: 'var(--muted-fg)' }}>All active cadences</p>
             </div>
-            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
-              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-4 w-4" />
-                Due today
+            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+              <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 sm:gap-2 sm:text-sm">
+                <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Due today</span>
+                <span className="sm:hidden">Today</span>
               </div>
-              <p className="mt-2 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.dueToday}</p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Scheduled for today</p>
+              <p className="mt-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300 sm:mt-2 sm:text-2xl">{stats.dueToday}</p>
+              <p className="hidden text-xs text-emerald-700/80 dark:text-emerald-300/80 sm:block">Scheduled for today</p>
             </div>
-            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-                <CalendarClock className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
+            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                <CalendarClock className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" style={{ color: 'var(--muted-fg)' }} />
                 Overdue
               </div>
-              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.overdue}</p>
-              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>Needs attention</p>
+              <p className="mt-0.5 text-sm font-bold sm:mt-2 sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.overdue}</p>
+              <p className="hidden text-xs sm:block" style={{ color: 'var(--muted-fg)' }}>Needs attention</p>
             </div>
-            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-                <CalendarClock className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
-                With checklist
+            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                <CalendarClock className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" style={{ color: 'var(--muted-fg)' }} />
+                <span className="hidden sm:inline">With checklist</span>
+                <span className="sm:hidden">Lists</span>
               </div>
-              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.withChecklist}</p>
-              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>Routines with steps</p>
+              <p className="mt-0.5 text-sm font-bold sm:mt-2 sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.withChecklist}</p>
+              <p className="hidden text-xs sm:block" style={{ color: 'var(--muted-fg)' }}>Routines with steps</p>
             </div>
           </div>
 

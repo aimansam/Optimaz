@@ -90,26 +90,30 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       recurrence_weekdays: recurrenceWeekdays,
     };
 
-    if (isEdit) {
-      await updateTask.mutateAsync({
-        id: task.id,
-        title: values.title,
-        notes: values.notes || null,
-        priority: values.priority,
-        status: values.status,
-        due_date: values.due_date || null,
-        due_time: values.due_date && values.due_time ? values.due_time : null,
-        due_timezone: values.due_date && values.due_time ? Intl.DateTimeFormat().resolvedOptions().timeZone : null,
-        project_id: values.project_id || null,
-        goal_id: values.goal_id || null,
-        is_recurring: values.is_recurring,
-        recurrence_rule: recurrenceRule ?? null,
-        recurrence_weekdays: recurrenceWeekdays,
-      });
-    } else {
-      await createTask.mutateAsync(createPayload);
+    try {
+      if (isEdit) {
+        await updateTask.mutateAsync({
+          id: task.id,
+          title: values.title,
+          notes: values.notes || null,
+          priority: values.priority,
+          status: values.status,
+          due_date: values.due_date || null,
+          due_time: values.due_date && values.due_time ? values.due_time : null,
+          due_timezone: values.due_date && values.due_time ? Intl.DateTimeFormat().resolvedOptions().timeZone : null,
+          project_id: values.project_id || null,
+          goal_id: values.goal_id || null,
+          is_recurring: values.is_recurring,
+          recurrence_rule: recurrenceRule ?? null,
+          recurrence_weekdays: recurrenceWeekdays,
+        });
+      } else {
+        await createTask.mutateAsync(createPayload);
+      }
+      onClose();
+    } catch {
+      // Error is already surfaced via toast.error in the mutation's onError callback
     }
-    onClose();
   };
 
   return (

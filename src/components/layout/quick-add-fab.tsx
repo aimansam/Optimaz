@@ -19,7 +19,7 @@ const ACTIONS = [
 
 // Pages that have their own dedicated add buttons — FAB would overlap content
 // Supports exact match or startsWith prefix matching for nested routes
-const FAB_HIDDEN_PREFIXES = ['/dashboard', '/tasks', '/calendar', '/kanban', '/routines', '/projects', '/goals'];
+const FAB_HIDDEN_PREFIXES = ['/tasks', '/calendar', '/kanban', '/routines', '/projects', '/goals'];
 
 export function QuickAddFAB() {
   const pathname = usePathname();

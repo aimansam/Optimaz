@@ -103,7 +103,7 @@ export function KanbanColumn({ id, label, tasks, totalTasks }: KanbanColumnProps
         </div>
 
         {/* Tasks */}
-        <div ref={setNodeRef} className="flex flex-1 flex-col gap-1.5 sm:gap-2 md:gap-2.5 overflow-y-auto px-2 sm:px-3 pb-2 sm:pb-3" style={{ minHeight: 100 }}>
+        <div ref={setNodeRef} className="list-animated flex flex-1 flex-col gap-1.5 sm:gap-2 md:gap-2.5 overflow-y-auto px-2 sm:px-3 pb-2 sm:pb-3" style={{ minHeight: 100 }}>
           <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map((task) => (
               <KanbanCard key={task.id} task={task} />

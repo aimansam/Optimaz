@@ -4,7 +4,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { AlertTriangle, Archive, CheckCircle2, Edit2, FolderOpen, Layers, Star, Trash2 } from 'lucide-react';
+import { AlertTriangle, Archive, CheckCircle2, Edit2, FolderOpen, Layers, ListChecks, Star, Trash2 } from 'lucide-react';
 
 type Project = {
   id: string;
@@ -23,6 +23,7 @@ type Task = {
   status: string;
   due_date?: string | null;
   updated_at: string;
+  subtasks?: { completed: boolean }[];
 };
 
 type ProjectCardProps = {
@@ -49,6 +50,8 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
   const completed = projectTasks.filter((t) => t.status === 'done').length;
   const overdue = projectTasks.filter((t) => t.due_date && t.status !== 'done' && new Date(t.due_date) < new Date()).length;
   const percent = projectTasks.length > 0 ? Math.round((completed / projectTasks.length) * 100) : 0;
+  const totalSubtasks = projectTasks.reduce((sum, t) => sum + (t.subtasks?.length ?? 0), 0);
+  const completedSubtasks = projectTasks.reduce((sum, t) => sum + (t.subtasks?.filter(s => s.completed).length ?? 0), 0);
 
   return (
     <div
@@ -144,9 +147,16 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
         </div>
 
         <div className="flex items-center justify-between gap-3 text-xs" style={{ color: 'var(--muted-fg)' }}>
-          <span className="flex items-center gap-1">
+          <span className="flex flex-wrap items-center gap-1">
             <CheckCircle2 className="h-3.5 w-3.5" />
             {completed}/{projectTasks.length} tasks
+            {totalSubtasks > 0 && (
+              <>
+                <span className="opacity-30">·</span>
+                <ListChecks className="h-3 w-3" />
+                {completedSubtasks}/{totalSubtasks} subtasks
+              </>
+            )}
           </span>
           {overdue > 0 && (
             <span className="flex items-center gap-1 text-red-500">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,9 +25,11 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
 
-  return (
+  // Portal renders at document.body — escapes any CSS transform/will-change
+  // containing blocks created by animated ancestor elements (e.g. list-animated cards)
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -90,6 +93,7 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
           {children}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

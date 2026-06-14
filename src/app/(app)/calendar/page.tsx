@@ -497,8 +497,16 @@ export default function CalendarPage() {
                           onClick={() => setSelectedDate(dayKey)}
                           className="overflow-hidden rounded-lg border p-1.5 text-left transition-colors sm:p-2 hover:bg-[var(--muted-bg)]"
                           style={{
-                            borderColor: isSelected ? 'var(--accent)' : 'var(--card-border)',
-                            background: isSelected ? 'rgba(var(--accent-rgb,99,102,241),0.08)' : undefined,
+                            borderColor: isSelected ? 'var(--accent)' : isToday ? 'rgb(var(--accent) / 0.35)' : 'var(--card-border)',
+                            background: isSelected
+                              ? 'rgba(var(--accent-rgb,99,102,241),0.08)'
+                              : isToday
+                                ? 'rgba(var(--accent-rgb,99,102,241),0.05)'
+                                : dayTasks.length > 3
+                                  ? 'rgba(var(--accent-rgb,99,102,241),0.04)'
+                                  : dayTasks.length > 0
+                                    ? 'rgba(var(--accent-rgb,99,102,241),0.02)'
+                                    : undefined,
                             opacity: !isCurrentMonth ? 0.45 : undefined,
                           }}
                           aria-pressed={isSelected}
@@ -517,13 +525,24 @@ export default function CalendarPage() {
                           <div className="space-y-0.5">
                             {dayTasks.slice(0, 2).map(task => {
                               const priority = PRIORITY_CONFIG[task.priority];
+                              const isRecurring = !!task.is_recurring;
                               return (
-                                <div key={task.id} className={cn(
-                                  'truncate rounded px-1 py-0.5 text-[9px] font-medium sm:px-1.5 sm:text-[10px]',
-                                  priority.bg, priority.color,
-                                  task.status === 'done' && 'opacity-60 line-through'
-                                )}>
-                                  {task.title}
+                                <div
+                                  key={task.id}
+                                  title={task.title}
+                                  className={cn(
+                                    'truncate rounded px-1 py-0.5 text-[9px] font-medium sm:px-1.5 sm:text-[10px]',
+                                    priority.color,
+                                    !isRecurring && priority.bg,
+                                    task.status === 'done' && 'opacity-60 line-through',
+                                  )}
+                                  style={isRecurring ? {
+                                    background: 'var(--muted-bg)',
+                                    border: '1px solid var(--card-border)',
+                                    opacity: task.status === 'done' ? 0.5 : 0.8,
+                                  } : undefined}
+                                >
+                                  {isRecurring ? '↻ ' : ''}{task.title}
                                 </div>
                               );
                             })}

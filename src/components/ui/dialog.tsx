@@ -40,13 +40,13 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center sm:p-4"
+      className="dialog-overlay fixed inset-0 z-[9999] flex items-end justify-center sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
         className={cn(
-          'relative flex w-full flex-col',
+          'dialog-panel relative flex w-full flex-col',
           // Mobile: bottom-sheet — full width, rounded top corners, slides from bottom
           'rounded-t-2xl sm:rounded-2xl',
           // Mobile: up to 92dvh; desktop: centered with max-w

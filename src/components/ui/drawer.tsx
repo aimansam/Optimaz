@@ -30,7 +30,7 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50"
+        className="dialog-overlay fixed inset-0 z-50"
         style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(3px)' }}
         onClick={onClose}
         aria-hidden="true"
@@ -42,7 +42,7 @@ export function Drawer({ open, onClose, title, children, className, width = 'max
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'fixed right-0 top-0 z-[60] flex h-full w-full flex-col',
+          'drawer-panel fixed right-0 top-0 z-[60] flex h-full w-full flex-col',
           width,
           className
         )}

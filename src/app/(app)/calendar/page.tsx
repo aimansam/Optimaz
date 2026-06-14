@@ -547,10 +547,7 @@ export default function CalendarPage() {
                               );
                             })}
                             {dayTasks.length > 1 && (
-                              <div
-                                className="rounded px-1 py-0.5 text-[9px] font-semibold tabular-nums sm:text-[10px]"
-                                style={{ background: 'rgb(var(--accent) / 0.1)', color: 'rgb(var(--accent))' }}
-                              >
+                              <div className="px-0.5 text-[9px] font-medium tabular-nums sm:text-[10px]" style={{ color: 'var(--muted-fg)' }}>
                                 +{dayTasks.length - 1}
                               </div>
                             )}

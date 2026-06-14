@@ -41,7 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
+    <div className="flex h-dvh overflow-hidden" style={{ background: 'var(--background)' }}>
       <Sidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}

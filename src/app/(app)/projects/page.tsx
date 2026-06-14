@@ -180,7 +180,7 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-6" style={{ background: 'var(--background)' }}>
+      <div className="flex-1 overflow-y-auto overscroll-y-contain p-4 sm:p-6" style={{ background: 'var(--background)', paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         {/* Toolbar */}
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">

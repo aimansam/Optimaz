@@ -264,7 +264,7 @@ export default function TasksPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-24 sm:px-6" style={{ background: 'var(--background)' }}>
+      <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-4 sm:px-6" style={{ background: 'var(--background)', paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(5)].map((_, i) => (

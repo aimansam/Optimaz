@@ -354,8 +354,8 @@ export default function DashboardPage() {
 				{/* ═══════════════════════════════════════════════════════
 				    MOBILE layout (< lg): single natural scroll column
 				    ═══════════════════════════════════════════════════════ */}
-				<div className="flex-1 overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
-					<div className="px-4 py-4 pb-24 space-y-4 sm:px-6">
+			<div className="flex-1 overflow-y-auto overscroll-y-contain lg:hidden" style={{ background: 'var(--background)' }}>
+				<div className="px-4 py-4 space-y-4 sm:px-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
 					{/* Stats + chart */}
 					<DashboardStatsStrip compact />
 					<DashboardAnalytics />
@@ -393,7 +393,7 @@ export default function DashboardPage() {
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
 				<aside
-				className="shrink-0 w-64 xl:w-72 flex flex-col overflow-y-auto px-4 py-4"
+				className="shrink-0 w-64 xl:w-72 flex flex-col overflow-y-auto overscroll-y-contain px-4 py-4"
 				style={{
 					background: 'var(--sidebar-bg)',
 					borderRight: '1px solid var(--card-border)',
@@ -427,7 +427,7 @@ export default function DashboardPage() {
 								<TaskFilterBar filters={filters} onChange={setFilters} />
 							</div>
 						)}
-						<div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 pb-24 sm:px-6" style={{ background: 'var(--background)' }}>
+						<div className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6" style={{ background: 'var(--background)', paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
 							{taskFeeds}
 						</div>
 					</div>

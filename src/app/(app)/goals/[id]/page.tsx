@@ -34,7 +34,7 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
     <>
 
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto overscroll-y-contain p-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         {goalLoading ? (
           <div className="h-32 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse mb-6" />
         ) : goalError ? (

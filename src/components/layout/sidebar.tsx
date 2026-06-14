@@ -94,7 +94,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
         </div>
 
         {/* Nav */}
-        <nav className={cn('flex-1 space-y-0.5 overflow-y-auto pb-4', collapsed ? 'md:px-2' : 'px-2 md:px-3')}>
+          <nav className={cn('flex-1 space-y-0.5 overflow-y-auto overscroll-y-contain pb-4', collapsed ? 'md:px-2' : 'px-2 md:px-3')}>
           {NAV_ITEMS.map(({ href, label, icon: Icon, description }) => {
             const active = pathname === href;
             return (

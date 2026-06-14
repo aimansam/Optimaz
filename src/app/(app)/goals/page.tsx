@@ -83,7 +83,7 @@ export default function GoalsPage() {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-6" style={{ background: 'var(--background)' }}>
+      <div className="flex-1 overflow-y-auto overscroll-y-contain p-4 sm:p-6" style={{ background: 'var(--background)', paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         {/* Toolbar */}
         <div className="mb-5 flex items-center justify-end gap-2">
           {/* Grid / List toggle */}

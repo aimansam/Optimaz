@@ -581,7 +581,7 @@ export default function SettingsPage() {
   return (
     <>
 
-      <div className="flex-1 overflow-y-auto p-6 pb-24" style={{ background: 'var(--background)' }}>
+      <div className="flex-1 overflow-y-auto overscroll-y-contain p-6" style={{ background: 'var(--background)', paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         <div className="max-w-2xl space-y-6">
           {/* Account settings */}
           <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">

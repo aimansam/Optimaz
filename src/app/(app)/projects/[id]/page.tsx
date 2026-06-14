@@ -82,7 +82,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   return (
     <>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto overscroll-y-contain p-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
         {projectsError ? (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
             <p className="font-semibold">Failed to load project</p>

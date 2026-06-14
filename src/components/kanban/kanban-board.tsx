@@ -5,7 +5,7 @@ import {
   DragOverlay,
   MouseSensor,
   TouchSensor,
-  rectIntersection,
+  pointerWithin,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -123,7 +123,7 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={rectIntersection}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

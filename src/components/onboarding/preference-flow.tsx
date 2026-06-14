@@ -168,6 +168,14 @@ export function PreferenceFlow({ onComplete, onSkip }: PreferenceFlowProps) {
         })}
       </div>
 
+      {/* Compliance notice */}
+      <p className="text-[11px] leading-relaxed" style={{ color: 'var(--muted-fg)', opacity: 0.65 }}>
+        Your answers are saved to personalise your experience and can be updated anytime in Settings.{' '}
+        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">
+          Privacy Policy
+        </a>
+      </p>
+
       {/* Footer actions */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">

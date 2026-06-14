@@ -21,6 +21,7 @@ const sections: Section[] = [
       'Usage data — product events such as task creation and feature usage to understand how the app is used',
       'Feedback — messages, category, and page path when you submit feedback',
       'Waitlist data — email address and optional feature preferences you submit on the pricing page',
+      'Preference data — your self-described role, focus area, and planning style collected during onboarding to personalise your experience',
       'Device data — browser push notification endpoint when you enable push notifications',
       'Error data — technical error details used to diagnose and fix bugs',
     ],
@@ -30,6 +31,7 @@ const sections: Section[] = [
     body: 'We use your data to:',
     items: [
       'Provide and maintain your workspace across devices',
+      'Personalise your onboarding experience and surface relevant features based on your stated preferences',
       'Send reminders and push notifications you have enabled',
       'Improve the product based on aggregated usage patterns',
       'Respond to feedback and support requests',

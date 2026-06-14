@@ -220,40 +220,43 @@ function StatCard({
   );
 }
 
-export function DashboardStatsStrip({ compact }: { compact?: boolean }) {
+export function DashboardStatsStrip({ compact, inline }: { compact?: boolean; inline?: boolean }) {
   const { data, isLoading } = useTaskStats();
 
   const stats = [
-    {
-      icon: CheckCircle2,
-      value: data?.completed ?? 0,
-      label: compact ? 'Done' : 'Done this week',
-      color: '#10b981',
-      glowColor: '#10b981',
-    },
-    {
-      icon: AlertCircle,
-      value: data?.overdue ?? 0,
-      label: 'Overdue',
-      color: '#ef4444',
-      glowColor: '#ef4444',
-    },
-    {
-      icon: Clock,
-      value: data?.upcoming ?? 0,
-      label: compact ? 'Soon' : 'Upcoming',
-      color: '#f59e0b',
-      glowColor: '#f59e0b',
-    },
+    { icon: CheckCircle2, value: data?.completed ?? 0, label: 'Done',     color: '#10b981', glowColor: '#10b981' },
+    { icon: AlertCircle,  value: data?.overdue ?? 0,   label: 'Overdue',  color: '#ef4444', glowColor: '#ef4444' },
+    { icon: Clock,        value: data?.upcoming ?? 0,  label: 'Soon',     color: '#f59e0b', glowColor: '#f59e0b' },
   ];
+
+  // Inline mode — single horizontal pill row for mobile dashboard header
+  if (inline) {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="text-[10px] font-semibold uppercase tracking-widest shrink-0" style={{ color: 'var(--muted-fg)', opacity: 0.6 }}>
+          Week
+        </span>
+        {stats.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <span key={s.label} className="flex items-center gap-1">
+              {i > 0 && <span className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.3 }}>·</span>}
+              <Icon className="h-3 w-3 shrink-0" style={{ color: s.color }} />
+              <span className="text-xs font-bold tabular-nums" style={{ color: 'var(--foreground)' }}>
+                {isLoading ? '…' : s.value}
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--muted-fg)' }}>{s.label}</span>
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (compact) {
     return (
       <div className="mb-3 space-y-1.5">
-        <p
-          className="text-[10px] font-semibold uppercase tracking-widest"
-          style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
-        >
+        <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-fg)', opacity: 0.7 }}>
           This week
         </p>
         <div className="grid grid-cols-3 gap-1.5">

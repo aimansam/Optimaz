@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useSyncExternalStore } from 'react';
 const InstallPWAButton = dynamic(() => import('@/components/InstallPWAButton'), { ssr: false });
 
-import { AlertTriangle, BarChart3, Plus, Target } from 'lucide-react';
+import { AlertTriangle, BarChart3, ChevronDown, Plus, Target } from 'lucide-react';
 import { DashboardAnalytics, DashboardStatsStrip } from '@/components/dashboard/dashboard-analytics';
 import { DashboardWidget } from '@/components/dashboard/dashboard-widgets';
 import { MotivationQuote } from '@/components/dashboard/motivation-quote';
@@ -60,6 +60,7 @@ export default function DashboardPage() {
 	const [addOpen, setAddOpen] = useState(false);
 	const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
 	const [showAnalytics, setShowAnalytics] = useState(false);
+	const [showInsights, setShowInsights] = useState(false);
 	const currentDate = useSyncExternalStore(subscribeToDate, getHydratedDate, getServerDateSnapshot);
 	const currentTime = currentDate?.getTime() ?? 0;
 
@@ -357,16 +358,44 @@ export default function DashboardPage() {
 				    MOBILE layout (< lg): single natural scroll column
 				    ═══════════════════════════════════════════════════════ */}
 			<div className="flex-1 overflow-y-auto overscroll-y-contain lg:hidden" style={{ background: 'var(--background)' }}>
-				<div className="px-4 py-4 space-y-4 sm:px-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
-					{/* Stats + chart */}
-					<DashboardStatsStrip compact />
-					<DashboardAnalytics />
+				<div className="px-4 py-3 sm:px-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
 
-					{/* Goal focus — compact 3-col grid */}
-					{goalFocusPanel}
+					{/* ── Inline stats row + Insights toggle ── */}
+					<div className="mb-3 flex items-center justify-between gap-2">
+						<DashboardStatsStrip inline />
+						<button
+							type="button"
+							onClick={() => setShowInsights(v => !v)}
+							className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium transition-colors"
+							style={showInsights ? {
+								background: 'rgb(var(--accent) / 0.12)',
+								color: 'rgb(var(--accent))',
+								border: '1px solid rgb(var(--accent) / 0.2)',
+							} : {
+								background: 'var(--card-bg)',
+								color: 'var(--muted-fg)',
+								border: '1px solid var(--card-border)',
+							}}
+							aria-expanded={showInsights}
+							aria-label={showInsights ? 'Hide insights' : 'Show insights'}
+						>
+							<BarChart3 className="h-3.5 w-3.5" />
+							Insights
+							<ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showInsights ? 'rotate-180' : ''}`} />
+						</button>
+					</div>
 
-						{/* Onboarding */}
-						{showOnboarding && (
+					{/* ── Collapsible insights panel (chart + goal focus) ── */}
+					{showInsights && (
+						<div className="mb-3 space-y-3">
+							<DashboardAnalytics />
+							{goalFocusPanel}
+						</div>
+					)}
+
+					{/* ── Onboarding ── */}
+					{showOnboarding && (
+						<div className="mb-3">
 							<OnboardingPanel
 								taskCount={allTasks?.length ?? 0}
 								projectCount={projects?.length ?? 0}
@@ -376,17 +405,22 @@ export default function DashboardPage() {
 								onComplete={dismissOnboarding}
 								completing={updateOnboarding.isPending}
 							/>
-						)}
+						</div>
+					)}
 
-						{/* Filter bar */}
-						{showAnalytics && (
+					{/* ── Filter bar ── */}
+					{showAnalytics && (
+						<div className="mb-3">
 							<TaskFilterBar filters={filters} onChange={setFilters} />
-						)}
+						</div>
+					)}
 
-						{/* Task feeds */}
+					{/* ── Task feeds ── */}
+					<div className="space-y-4">
 						{taskFeeds}
 					</div>
 				</div>
+			</div>
 
 				{/* ═══════════════════════════════════════════════════════
 				    DESKTOP layout (≥ lg): 2-col viewport-fit

@@ -178,8 +178,8 @@ export default async function LandingPage() {
                 backgroundClip: 'text',
               }}
             >
-              RECLAIM YOUR<br />
-              FOCUS. OPTIMIZE<br />
+              RECLAIM <br />
+              YOUR FOCUS. OPTIMIZE<br />
               YOUR DAY.
             </h1>
 
@@ -298,7 +298,7 @@ export default async function LandingPage() {
       <section id="pricing" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Simple, honest pricing</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Premium experience, Affordable price</h2>
             <p className="mt-3" style={{ color: C.muted }}>Start free. Upgrade when you&apos;re ready. Cancel any time.</p>
           </div>
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">

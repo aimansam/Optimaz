@@ -18,7 +18,7 @@ const ACTIONS = [
 ];
 
 // Pages that have their own dedicated add buttons — FAB would overlap content
-const FAB_HIDDEN_PATHS = ['/calendar', '/kanban'];
+const FAB_HIDDEN_PATHS = ['/dashboard', '/calendar', '/kanban'];
 
 export function QuickAddFAB() {
   const pathname = usePathname();

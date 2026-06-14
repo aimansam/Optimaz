@@ -140,7 +140,7 @@ function BarChart({ data }: { data: { day: string; label: string; count: number 
   );
 }
 
-// Stat card for the compact 3-col layout
+// Stat card — slim horizontal strip on mobile, tall centered card on desktop
 function StatCard({
   icon: Icon,
   value,
@@ -148,6 +148,7 @@ function StatCard({
   color,
   glowColor,
   isLoading,
+  compact,
 }: {
   icon: React.ElementType;
   value: number;
@@ -155,7 +156,35 @@ function StatCard({
   color: string;
   glowColor: string;
   isLoading: boolean;
+  compact?: boolean;
 }) {
+  if (compact) {
+    // Mobile-first slim variant: icon + number inline, label below
+    return (
+      <div
+        className="rounded-xl p-2 flex flex-col items-center text-center transition-all duration-200"
+        style={{
+          background: 'var(--card-bg)',
+          border: '1px solid var(--card-border)',
+        }}
+      >
+        <Icon className="h-4 w-4 mb-1" style={{ color }} />
+        <div
+          className="text-base font-bold leading-none tabular-nums"
+          style={{ color: 'var(--foreground)' }}
+        >
+          {isLoading ? '…' : value}
+        </div>
+        <div
+          className="mt-0.5 text-[9px] font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--muted-fg)' }}
+        >
+          {label}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="rounded-xl p-3 flex flex-col items-center text-center transition-all duration-200"
@@ -220,16 +249,16 @@ export function DashboardStatsStrip({ compact }: { compact?: boolean }) {
 
   if (compact) {
     return (
-      <div className="mb-4 space-y-2">
+      <div className="mb-3 space-y-1.5">
         <p
           className="text-[10px] font-semibold uppercase tracking-widest"
           style={{ color: 'var(--muted-fg)', opacity: 0.7 }}
         >
           This week
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-1.5">
           {stats.map((s) => (
-            <StatCard key={s.label} {...s} isLoading={isLoading} />
+            <StatCard key={s.label} {...s} isLoading={isLoading} compact />
           ))}
         </div>
       </div>
@@ -250,7 +279,7 @@ export function DashboardAnalytics() {
 
   return (
     <div
-      className="rounded-xl p-4"
+      className="rounded-xl p-3 sm:p-4"
       style={{
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',

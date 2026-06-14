@@ -35,11 +35,14 @@ interface KanbanColumnProps {
   label: string;
   tasks: Task[];
   totalTasks: number;
+  /** Passed from the board — true when any dragged card is hovering over this column */
+  isDragOver?: boolean;
 }
 
-export function KanbanColumn({ id, label, tasks, totalTasks }: KanbanColumnProps) {
+export function KanbanColumn({ id, label, tasks, totalTasks, isDragOver = false }: KanbanColumnProps) {
   const [addOpen, setAddOpen] = useState(false);
   const { setNodeRef, isOver } = useDroppable({ id });
+  const accepting = isOver || isDragOver;
   const proportion = totalTasks > 0 ? Math.round((tasks.length / totalTasks) * 100) : 0;
 
   return (
@@ -47,12 +50,12 @@ export function KanbanColumn({ id, label, tasks, totalTasks }: KanbanColumnProps
       <div
         className={cn(
           'flex flex-col rounded-2xl transition-all duration-200',
-          isOver && 'ring-2 ring-[rgb(var(--accent)/0.4)]',
+          accepting && 'ring-2 ring-[rgb(var(--accent)/0.4)] scale-[1.01]',
           'w-full md:w-[320px] min-w-0 md:min-w-[320px] h-full max-h-full'
         )}
         style={{
-          background: 'var(--muted-bg)',
-          border: isOver ? '1px solid rgb(var(--accent) / 0.35)' : '1px solid var(--card-border)',
+          background: accepting ? 'rgb(var(--accent) / 0.04)' : 'var(--muted-bg)',
+          border: accepting ? '1px solid rgb(var(--accent) / 0.35)' : '1px solid var(--card-border)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
         }}

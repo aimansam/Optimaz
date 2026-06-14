@@ -5,7 +5,7 @@ import {
   DragOverlay,
   MouseSensor,
   TouchSensor,
-  closestCorners,
+  rectIntersection,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -13,7 +13,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { KanbanColumn } from './kanban-column';
 import { KanbanCard } from './kanban-card';
 import { useUpdateTask } from '@/hooks/use-tasks';
@@ -31,14 +31,9 @@ interface KanbanBoardProps {
 
 export function KanbanBoard({ tasks }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  // Local optimistic task list — mutated on drag-over for live cross-column preview
-  const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
+  // Track which column is currently being hovered (for visual highlight only — no task mutation)
+  const [overColumnId, setOverColumnId] = useState<TaskStatus | null>(null);
   const updateTask = useUpdateTask();
-
-  // Sync with server state whenever tasks prop changes (but not mid-drag)
-  useEffect(() => {
-    if (!activeTask) setLocalTasks(tasks);
-  }, [tasks, activeTask]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -46,71 +41,56 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
   );
 
   const getTasksByStatus = (status: TaskStatus) =>
-    localTasks.filter((t) => t.status === status).sort((a, b) => a.position - b.position);
+    tasks.filter((t) => t.status === status).sort((a, b) => a.position - b.position);
 
   function handleDragStart(event: DragStartEvent) {
-    const task = localTasks.find((t) => t.id === event.active.id);
+    const task = tasks.find((t) => t.id === event.active.id);
     if (task) setActiveTask(task);
   }
 
+  // Only track which column is over — do NOT mutate task list mid-drag
+  // (Mutating SortableContext items during drag confuses @dnd-kit's collision tracking)
   function handleDragOver(event: DragOverEvent) {
-    const { active, over } = event;
-    if (!over) return;
+    const { over } = event;
+    if (!over) { setOverColumnId(null); return; }
 
-    const activeId = active.id as string;
     const overId = over.id as string;
-    if (activeId === overId) return;
+    const column = COLUMNS.find((c) => c.id === overId);
+    if (column) { setOverColumnId(column.id); return; }
 
-    // Determine target column (over a column header or over a task inside a column)
-    const overColumn = COLUMNS.find((c) => c.id === overId);
-    const overTask = localTasks.find((t) => t.id === overId);
-    const targetStatus: TaskStatus | undefined = overColumn?.id ?? overTask?.status;
-
-    if (!targetStatus) return;
-
-    const dragged = localTasks.find((t) => t.id === activeId);
-    if (!dragged || dragged.status === targetStatus) return;
-
-    // Optimistically move the card to the target column (insert at end)
-    const targetCount = localTasks.filter((t) => t.status === targetStatus && t.id !== activeId).length;
-    setLocalTasks((prev) =>
-      prev.map((t) => (t.id === activeId ? { ...t, status: targetStatus, position: targetCount } : t))
-    );
+    // Over a task card — derive its column
+    const overTask = tasks.find((t) => t.id === overId);
+    if (overTask) setOverColumnId(overTask.status);
+    else setOverColumnId(null);
   }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    const dragged = localTasks.find((t) => t.id === active.id);
     setActiveTask(null);
-
-    if (!over || !dragged) {
-      // Drag cancelled / dropped nowhere — revert to server state
-      setLocalTasks(tasks);
-      return;
-    }
+    setOverColumnId(null);
+    if (!over) return;
 
     const activeId = active.id as string;
     const overId = over.id as string;
-    const originalTask = tasks.find((t) => t.id === activeId);
-    if (!originalTask) return;
+    const task = tasks.find((t) => t.id === activeId);
+    if (!task) return;
 
-    const overColumn = COLUMNS.find((c) => c.id === overId);
-
-    // ── Dropped onto a column header ──────────────────────────────────
-    if (overColumn) {
-      if (originalTask.status !== overColumn.id) {
-        const targetCount = tasks.filter((t) => t.status === overColumn.id).length;
-        updateTask.mutate({ id: activeId, status: overColumn.id, position: targetCount });
+    // ── Dropped directly onto a column droppable ──────────────────────
+    const targetColumn = COLUMNS.find((c) => c.id === overId);
+    if (targetColumn) {
+      if (task.status !== targetColumn.id) {
+        const newPos = tasks.filter((t) => t.status === targetColumn.id).length;
+        updateTask.mutate({ id: activeId, status: targetColumn.id, position: newPos });
       }
       return;
     }
 
-    // ── Dropped onto another task ─────────────────────────────────────
+    // ── Dropped onto another card ─────────────────────────────────────
     const overTask = tasks.find((t) => t.id === overId);
     if (!overTask) return;
 
-    if (originalTask.status !== overTask.status) {
-      // Cross-column drop: place after overTask in the target column
+    if (task.status !== overTask.status) {
+      // Cross-column: insert at the overTask's position in the new column
       updateTask.mutate({
         id: activeId,
         status: overTask.status,
@@ -118,23 +98,15 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
       });
     } else {
       // Within-column reorder
-      const columnTasks = localTasks
-        .filter((t) => t.status === dragged.status)
+      const columnTasks = tasks
+        .filter((t) => t.status === task.status)
         .sort((a, b) => a.position - b.position);
       const oldIndex = columnTasks.findIndex((t) => t.id === activeId);
       const newIndex = columnTasks.findIndex((t) => t.id === overId);
-
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-        // Update local state immediately for snappy feel
-        setLocalTasks((prev) => {
-          const others = prev.filter((t) => t.status !== dragged.status);
-          return [...others, ...reordered.map((t, i) => ({ ...t, position: i }))];
-        });
-        // Persist only changed positions
         reordered.forEach((t, i) => {
-          const original = tasks.find((o) => o.id === t.id);
-          if (original && original.position !== i) {
+          if (t.position !== i) {
             updateTask.mutate({ id: t.id, position: i });
           }
         });
@@ -144,13 +116,13 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
 
   function handleDragCancel() {
     setActiveTask(null);
-    setLocalTasks(tasks); // Revert all optimistic changes
+    setOverColumnId(null);
   }
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={rectIntersection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -163,17 +135,15 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
             id={id}
             label={label}
             tasks={getTasksByStatus(id)}
-            totalTasks={localTasks.length}
+            totalTasks={tasks.length}
+            isDragOver={overColumnId === id}
           />
         ))}
       </div>
 
       {/* Floating card that follows the cursor — lifted + rotated */}
       <DragOverlay
-        dropAnimation={{
-          duration: 160,
-          easing: 'cubic-bezier(0.2, 0, 0, 1)',
-        }}
+        dropAnimation={{ duration: 160, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}
       >
         {activeTask && (
           <div

@@ -108,12 +108,12 @@ export default function RoutinesPage() {
               <p className="hidden text-xs text-amber-600/70 dark:text-amber-400/70 sm:block">Scheduled for today</p>
             </div>
             <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-              <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>
-                <CalendarClock className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" style={{ color: 'var(--muted-fg)' }} />
+              <div className="flex items-center gap-1 text-[10px] font-semibold text-red-500 dark:text-red-400 sm:gap-2 sm:text-sm">
+                <CalendarClock className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />
                 Overdue
               </div>
-              <p className="mt-0.5 text-sm font-bold sm:mt-2 sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.overdue}</p>
-              <p className="hidden text-xs sm:block" style={{ color: 'var(--muted-fg)' }}>Needs attention</p>
+              <p className="mt-0.5 text-sm font-bold text-red-500 dark:text-red-400 sm:mt-2 sm:text-2xl">{stats.overdue}</p>
+              <p className="hidden text-xs text-red-500/70 dark:text-red-400/70 sm:block">Needs attention</p>
             </div>
             <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
               <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>

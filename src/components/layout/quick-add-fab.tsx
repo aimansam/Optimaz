@@ -18,12 +18,14 @@ const ACTIONS = [
 ];
 
 // Pages that have their own dedicated add buttons — FAB would overlap content
-const FAB_HIDDEN_PATHS = ['/dashboard', '/calendar', '/kanban', '/routines'];
+// Supports exact match or startsWith prefix matching for nested routes
+const FAB_HIDDEN_PREFIXES = ['/dashboard', '/calendar', '/kanban', '/routines', '/projects', '/goals'];
 
 export function QuickAddFAB() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [activeForm, setActiveForm] = useState<ActiveForm>(null);
+  const isFabHidden = FAB_HIDDEN_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'));
 
   function handleAction(id: ActiveForm) {
     setOpen(false);
@@ -49,7 +51,7 @@ export function QuickAddFAB() {
       <div
         className={cn(
           'fixed right-5 z-50 flex flex-col-reverse items-end gap-2.5 transition-all duration-200',
-          FAB_HIDDEN_PATHS.includes(pathname) ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          isFabHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'
         )}
         style={{ bottom: 'max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem))' }}
       >

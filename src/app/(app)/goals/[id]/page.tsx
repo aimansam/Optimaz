@@ -10,7 +10,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDeleteGoal, useGoal } from '@/hooks/use-goals';
 import { useGoalTasks } from '@/hooks/use-tasks';
 import { useRouter } from 'next/navigation';
-import { CalendarDays, Edit2, CheckCircle2, Plus, Target, Trash2 } from 'lucide-react';
+import { CalendarDays, Edit2, CheckCircle2, ListChecks, Plus, Target, Trash2 } from 'lucide-react';
 import { cn, formatDate, isOverdue } from '@/lib/utils';
 
 export default function GoalDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -29,6 +29,8 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
   const todo = tasks?.filter((t) => t.status === 'todo').length ?? 0;
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
   const overdue = goal ? isOverdue(goal.due_date) : false;
+  const totalSubtasks = (tasks ?? []).reduce((sum, t) => sum + (t.subtasks?.length ?? 0), 0);
+  const completedSubtasks = (tasks ?? []).reduce((sum, t) => sum + (t.subtasks?.filter(s => s.completed).length ?? 0), 0);
 
   return (
     <>
@@ -68,9 +70,16 @@ export default function GoalDetailPage({ params }: { params: Promise<{ id: strin
               </div>
               <div className="text-right shrink-0">
                 <p className="text-3xl font-bold" style={{ color: goal.color }}>{percent}%</p>
-                <p className="text-xs text-slate-400 flex items-center gap-1 justify-end">
+                <p className="text-xs text-slate-400 flex flex-wrap items-center gap-1 justify-end">
                   <CheckCircle2 className="h-3 w-3" />
                   {completed}/{total} tasks
+                  {totalSubtasks > 0 && (
+                    <>
+                      <span className="opacity-30">·</span>
+                      <ListChecks className="h-3 w-3" />
+                      {completedSubtasks}/{totalSubtasks} subtasks
+                    </>
+                  )}
                 </p>
                 <div className="mt-3 flex justify-end gap-2">
                   <Button

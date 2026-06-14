@@ -15,7 +15,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Archive, CheckCircle2, ChevronRight, Edit2, FolderOpen, Plus, Star, Trash2 } from 'lucide-react';
+import { Archive, CheckCircle2, ChevronRight, Edit2, FolderOpen, ListChecks, Plus, Star, Trash2 } from 'lucide-react';
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -48,6 +48,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const inProgress = rollupTasks.filter((task) => task.status === 'in_progress').length;
   const todo = rollupTasks.filter((task) => task.status === 'todo').length;
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const totalSubtasks = rollupTasks.reduce((sum, t) => sum + (t.subtasks?.length ?? 0), 0);
+  const completedSubtasks = rollupTasks.reduce((sum, t) => sum + (t.subtasks?.filter(s => s.completed).length ?? 0), 0);
 
   function openEdit() {
     if (!project) return;
@@ -143,9 +145,16 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
               <div className="shrink-0 text-left md:text-right">
                 <p className="text-3xl font-bold" style={{ color: project.color }}>{percent}%</p>
-                <p className="flex items-center gap-1 text-xs text-slate-400 md:justify-end">
+                <p className="flex items-center gap-1 text-xs text-slate-400 md:justify-end flex-wrap">
                   <CheckCircle2 className="h-3 w-3" />
                   {completed}/{total} tasks
+                  {totalSubtasks > 0 && (
+                    <>
+                      <span className="opacity-30">·</span>
+                      <ListChecks className="h-3 w-3" />
+                      {completedSubtasks}/{totalSubtasks} subtasks
+                    </>
+                  )}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2 md:justify-end">
                   <Button

@@ -235,8 +235,8 @@ export default function DashboardPage() {
 				<div
 					className="rounded-xl p-2.5"
 					style={{
-						background: 'rgba(239,68,68,0.06)',
-						border: '1px solid rgba(239,68,68,0.15)',
+						background: 'var(--card-bg)',
+						border: '1px solid var(--card-border)',
 						backdropFilter: 'blur(12px)',
 					}}
 				>
@@ -251,8 +251,8 @@ export default function DashboardPage() {
 				<div
 					className="rounded-xl p-2.5"
 					style={{
-						background: 'rgba(245,158,11,0.06)',
-						border: '1px solid rgba(245,158,11,0.15)',
+						background: 'var(--card-bg)',
+						border: '1px solid var(--card-border)',
 						backdropFilter: 'blur(12px)',
 					}}
 				>

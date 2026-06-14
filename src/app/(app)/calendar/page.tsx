@@ -199,21 +199,21 @@ export default function CalendarPage() {
         <p className="mt-0.5 text-sm font-bold sm:mt-1 sm:text-lg" style={{ color: 'var(--foreground)' }}>{monthTaskCount}</p>
         <p className="hidden text-[11px] sm:block" style={{ color: 'var(--muted-fg)' }}>Scheduled tasks</p>
       </div>
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-2 dark:border-emerald-900/50 dark:bg-emerald-950/20 sm:px-3 sm:py-2.5">
-        <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 sm:gap-1.5 sm:text-xs">
+      <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 sm:gap-1.5 sm:text-xs">
           <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           Today
         </div>
-        <p className="mt-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300 sm:mt-1 sm:text-lg">{dueTodayCount}</p>
-        <p className="hidden text-[11px] text-emerald-700/80 dark:text-emerald-300/80 sm:block">Open tasks due today</p>
+        <p className="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 sm:mt-1 sm:text-lg">{dueTodayCount}</p>
+        <p className="hidden text-[11px] text-emerald-600/70 dark:text-emerald-400/70 sm:block">Open tasks due today</p>
       </div>
-      <div className="rounded-xl border border-red-200 bg-red-50 p-2 dark:border-red-900/50 dark:bg-red-950/20 sm:px-3 sm:py-2.5">
-        <div className="flex items-center gap-1 text-[10px] font-semibold text-red-700 dark:text-red-300 sm:gap-1.5 sm:text-xs">
+      <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-red-500 dark:text-red-400 sm:gap-1.5 sm:text-xs">
           <Clock className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           Overdue
         </div>
-        <p className="mt-0.5 text-sm font-bold text-red-700 dark:text-red-300 sm:mt-1 sm:text-lg">{overdueCount}</p>
-        <p className="hidden text-[11px] text-red-700/80 dark:text-red-300/80 sm:block">Past due and open</p>
+        <p className="mt-0.5 text-sm font-bold text-red-500 dark:text-red-400 sm:mt-1 sm:text-lg">{overdueCount}</p>
+        <p className="hidden text-[11px] text-red-500/70 dark:text-red-400/70 sm:block">Past due and open</p>
       </div>
       <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
         <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-1.5 sm:text-xs" style={{ color: 'var(--foreground)' }}>

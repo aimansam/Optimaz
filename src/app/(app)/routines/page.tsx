@@ -97,14 +97,14 @@ export default function RoutinesPage() {
               <p className="mt-0.5 text-sm font-bold sm:mt-2 sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.all}</p>
               <p className="hidden text-xs sm:block" style={{ color: 'var(--muted-fg)' }}>All active cadences</p>
             </div>
-            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
-              <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 sm:gap-2 sm:text-sm">
+            <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 sm:gap-2 sm:text-sm">
                 <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Due today</span>
                 <span className="sm:hidden">Today</span>
               </div>
-              <p className="mt-0.5 text-sm font-bold text-emerald-700 dark:text-emerald-300 sm:mt-2 sm:text-2xl">{stats.dueToday}</p>
-              <p className="hidden text-xs text-emerald-700/80 dark:text-emerald-300/80 sm:block">Scheduled for today</p>
+              <p className="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 sm:mt-2 sm:text-2xl">{stats.dueToday}</p>
+              <p className="hidden text-xs text-emerald-600/70 dark:text-emerald-400/70 sm:block">Scheduled for today</p>
             </div>
             <div className="rounded-xl p-2 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
               <div className="flex items-center gap-1 text-[10px] font-semibold sm:gap-2 sm:text-sm" style={{ color: 'var(--foreground)' }}>

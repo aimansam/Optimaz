@@ -26,6 +26,7 @@ import {
   MapPin,
   Users,
   Smartphone,
+  ChevronDown,
 } from 'lucide-react';
 
 // ── Static design tokens (landing page never changes with user theme)
@@ -86,6 +87,24 @@ const TRUST_BADGES = [
   { icon: MapPin,      label: 'Hosted in Singapore' },
   { icon: Users,       label: 'Google & GitHub Auth' },
 ];
+
+function ScrollDown({ href }: { href: string }) {
+  return (
+    <div className="mt-10 flex justify-center">
+      <a
+        href={href}
+        aria-label="Scroll to next section"
+        className="bounce-down"
+        style={{ color: C.muted, textDecoration: 'none' }}
+      >
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          More
+        </span>
+        <ChevronDown style={{ width: 16, height: 16 }} />
+      </a>
+    </div>
+  );
+}
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -221,6 +240,12 @@ export default async function LandingPage() {
             </div>
           </div>
         </div>
+        {/* Scroll to features */}
+        <a href="#features" aria-label="Scroll to features" className="bounce-down absolute bottom-7 left-1/2 -translate-x-1/2 z-10"
+          style={{ color: C.accent, textDecoration: 'none', opacity: 0.5 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Scroll</span>
+          <ChevronDown style={{ width: 18, height: 18 }} />
+        </a>
       </section>
 
       {/* ── Features ── */}
@@ -233,11 +258,12 @@ export default async function LandingPage() {
             </p>
           </div>
           <FeaturesSection />
+          <ScrollDown href="#why" />
         </div>
       </section>
 
       {/* ── Why Optimaz ── */}
-      <section className="py-20" style={{ background: C.bg }}>
+      <section id="why" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Why Optimaz?</h2>
@@ -254,6 +280,7 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
+          <ScrollDown href="#compare" />
         </div>
       </section>
 
@@ -291,6 +318,7 @@ export default async function LandingPage() {
             </table>
           </div>
           <p className="mt-4 text-center text-xs" style={{ color: C.muted }}>One workspace. One login. One monthly subscription.</p>
+          <ScrollDown href="#pricing" />
         </div>
       </section>
 
@@ -372,11 +400,12 @@ export default async function LandingPage() {
           <p className="mt-6 text-center text-xs" style={{ color: C.muted }}>
             Beta users who sign up now keep RM15/mo forever. After launch the Pro plan will be RM29/mo.
           </p>
+          <ScrollDown href="#founder" />
         </div>
       </section>
 
       {/* ── Founder Story ── */}
-      <section className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
+      <section id="founder" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
           <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg"
             style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.7))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
@@ -391,11 +420,12 @@ export default async function LandingPage() {
           </p>
           <p className="mt-4 text-sm font-semibold" style={{ color: C.fg }}>Less app switching. More meaningful progress.</p>
           <p className="mt-2 text-sm" style={{ color: C.muted }}>— Mavora Digital, Malaysia</p>
+          <ScrollDown href="#trust" />
         </div>
       </section>
 
       {/* ── Trust badges ── */}
-      <section className="py-12" style={{ background: C.bg }}>
+      <section id="trust" className="py-12" style={{ background: C.bg }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {TRUST_BADGES.map(({ icon: Icon, label }) => (

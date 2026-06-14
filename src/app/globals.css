@@ -454,3 +454,16 @@ body {
     transform: translate(var(--fx, 0px), var(--fy, -80px)) rotate(var(--fr, 0deg)) scale(0.3);
   }
 }
+
+/* ── LANDING PAGE — Bounce-down scroll indicator ──────────────────── */
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0);   opacity: 0.4; }
+  50%       { transform: translateY(7px); opacity: 0.75; }
+}
+.bounce-down {
+  animation: bounce-down 1.8s ease-in-out infinite;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}

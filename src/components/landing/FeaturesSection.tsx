@@ -251,9 +251,13 @@ export function FeaturesSection() {
               >
                 <Icon className="h-5 w-5" style={{ color: isActive ? f.color : '#9ca3af' }} />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold" style={{ color: isActive ? f.color : C.fg }}>{f.title}</h3>
                 <p className="mt-0.5 text-xs leading-5" style={{ color: C.muted }}>{f.desc}</p>
+                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-wide"
+                  style={{ color: isActive ? f.color : '#9ca3af', opacity: isActive ? 1 : 0.7 }}>
+                  {isActive ? '✓ Previewing' : 'Click to preview →'}
+                </p>
               </div>
             </button>
           );

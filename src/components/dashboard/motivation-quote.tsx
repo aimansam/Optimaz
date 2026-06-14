@@ -63,14 +63,16 @@ export function MotivationQuote({ inline }: MotivationQuoteProps = {}) {
     return QUOTES[index];
   }, []);
 
-  // Inline mode — single italic line for use in header bar
+  // Inline mode — single compact line for use in header bar
   if (inline) {
     return (
-      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
-        <Quote className="h-3 w-3 shrink-0 text-indigo-300 dark:text-indigo-700" />
-        <span className="italic">&ldquo;{quote.text}&rdquo;</span>
-        <span className="not-italic font-medium">— {quote.author}</span>
-      </p>
+      <div className="mt-0.5 flex items-start gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+        <Quote className="mt-0.5 h-3 w-3 shrink-0 text-indigo-300 dark:text-indigo-700" />
+        <span className="leading-snug italic">
+          &ldquo;{quote.text}&rdquo;
+          <span className="not-italic font-medium"> — {quote.author}</span>
+        </span>
+      </div>
     );
   }
 

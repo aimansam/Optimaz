@@ -154,7 +154,9 @@ export default function DashboardPage() {
 						</h2>
 						<TaskStreak tasks={allTasks ?? []} inline />
 					</div>
+					<div className="hidden sm:block">
 					<MotivationQuote inline />
+				</div>
 				</div>
 				{/* Right: action buttons */}
 				<div className="flex shrink-0 items-center gap-2 pt-0.5">

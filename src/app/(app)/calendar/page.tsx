@@ -292,8 +292,8 @@ export default function CalendarPage() {
         {/* ═══════════════════════════════════════════════════════
             MOBILE layout (< lg): single natural scroll column
             ═══════════════════════════════════════════════════════ */}
-        <div className="overflow-y-auto lg:hidden" style={{ background: 'var(--background)' }}>
-          <div className="space-y-3 px-4 pb-6 sm:px-6">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain lg:hidden" style={{ background: 'var(--background)' }}>
+          <div className="space-y-3 px-4 sm:px-6" style={{ paddingBottom: 'max(6rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))' }}>
 
             {error ? (
               <EmptyState

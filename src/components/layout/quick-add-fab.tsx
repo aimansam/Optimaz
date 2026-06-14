@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, X, CheckSquare, Target, FolderOpen } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { Dialog } from '@/components/ui/dialog';
 import { TaskQuestionFlow } from '@/components/tasks/task-question-flow';
 import { GoalQuestionFlow } from '@/components/goals/goal-question-flow';
@@ -16,7 +17,11 @@ const ACTIONS = [
   { id: 'project' as const, label: 'Project', icon: FolderOpen,  color: 'bg-rose-500 hover:bg-rose-600',        ring: 'ring-rose-300' },
 ];
 
+// Pages that have their own dedicated add buttons — FAB would overlap content
+const FAB_HIDDEN_PATHS = ['/calendar', '/kanban'];
+
 export function QuickAddFAB() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [activeForm, setActiveForm] = useState<ActiveForm>(null);
 
@@ -40,9 +45,12 @@ export function QuickAddFAB() {
         />
       )}
 
-      {/* FAB cluster — bottom accounts for iOS safe area inset */}
+      {/* FAB cluster — hidden on pages with their own add UI */}
       <div
-        className="fixed right-5 z-50 flex flex-col-reverse items-end gap-2.5"
+        className={cn(
+          'fixed right-5 z-50 flex flex-col-reverse items-end gap-2.5 transition-all duration-200',
+          FAB_HIDDEN_PATHS.includes(pathname) ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        )}
         style={{ bottom: 'max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem))' }}
       >
         {/* Action buttons (shown when open) */}

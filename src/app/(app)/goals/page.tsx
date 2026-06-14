@@ -67,7 +67,14 @@ function GoalListRow({ goal }: GoalListRowProps) {
 export default function GoalsPage() {
   const { data: goals, isLoading, error } = useGoals();
   const [addOpen, setAddOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    if (typeof window === 'undefined') return 'list';
+    return (window.localStorage.getItem('optimaz:goals-view') as 'grid' | 'list') ?? 'list';
+  });
+  const setViewModeAndPersist = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    if (typeof window !== 'undefined') window.localStorage.setItem('optimaz:goals-view', mode);
+  };
 
   const active = goals?.filter((g) => {
     const total = g.tasks?.length ?? 0;
@@ -89,7 +96,7 @@ export default function GoalsPage() {
           {/* Grid / List toggle */}
           <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid var(--card-border)' }}>
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => setViewModeAndPersist('grid')}
               className="flex items-center justify-center h-8 w-8 transition-colors"
               style={{
                 background: viewMode === 'grid' ? 'var(--accent)' : 'transparent',
@@ -101,7 +108,7 @@ export default function GoalsPage() {
               <LayoutGrid className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewModeAndPersist('list')}
               className="flex items-center justify-center h-8 w-8 transition-colors"
               style={{
                 background: viewMode === 'list' ? 'var(--accent)' : 'transparent',

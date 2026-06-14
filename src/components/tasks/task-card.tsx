@@ -171,9 +171,9 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
             ) : (
               <p
                 onClick={!isDone ? startEditing : undefined}
-                title={!isDone ? 'Click to rename' : undefined}
+                title={task.title}
                 className={cn(
-                  'text-sm font-medium leading-snug',
+                  'truncate text-sm font-medium leading-snug',
                   isDone && 'line-through',
                   !isDone && 'cursor-text'
                 )}

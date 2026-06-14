@@ -116,7 +116,7 @@ export default async function LandingPage() {
 
       {/* ── Beta banner ── */}
       <div
-        className="py-2.5 text-center text-xs font-medium"
+        className="lp-banner py-2.5 text-center text-xs font-medium"
         style={{ background: C.accentLight, borderBottom: `1px solid ${C.accentBorder}`, color: C.accent }}
       >
         <Gift className="inline h-3.5 w-3.5 align-middle mr-1" />
@@ -129,7 +129,7 @@ export default async function LandingPage() {
 
       {/* ── Nav ── */}
       <header
-        className="sticky top-0 z-50"
+        className="lp-nav sticky top-0 z-50"
         style={{ background: 'rgba(255,255,255,0.92)', borderBottom: `1px solid ${C.cardBorder}`, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
@@ -168,7 +168,7 @@ export default async function LandingPage() {
         <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8" style={{ zIndex: 1 }}>
           {/* Glass card container — Apple-style frosted panel */}
           <div
-            className="max-w-xl rounded-3xl p-8 sm:p-10"
+            className="lp-hero-card max-w-xl rounded-3xl p-8 sm:p-10"
             style={{
               background: 'rgba(255,255,255,0.60)',
               backdropFilter: 'blur(28px)',
@@ -179,7 +179,7 @@ export default async function LandingPage() {
           >
             {/* Badge */}
             <div
-              className="mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
+              className="lp-hero-badge mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
               style={{ background: C.accentLight, border: `1px solid ${C.accentBorder}`, color: C.accent }}
             >
               <Sparkles className="h-3.5 w-3.5" />
@@ -188,7 +188,7 @@ export default async function LandingPage() {
 
             {/* Headline — gradient text */}
             <h1
-              className="font-black uppercase leading-[0.9] tracking-tight"
+              className="lp-hero-h1 font-black uppercase leading-[0.9] tracking-tight"
               style={{
                 fontSize: 'clamp(2.2rem, 4.5vw, 4rem)',
                 background: 'linear-gradient(135deg, #5b21b6 0%, #7C3AED 40%, #a78bfa 80%, #6d28d9 100%)',
@@ -203,12 +203,12 @@ export default async function LandingPage() {
             </h1>
 
             {/* Sub-headline */}
-            <p className="mt-7 max-w-md text-base leading-7 sm:text-lg" style={{ color: C.muted }}>
+            <p className="lp-hero-sub mt-7 max-w-md text-base leading-7 sm:text-lg" style={{ color: C.muted }}>
               The single source of truth for your tasks, goals, and project progress. Beautifully organized.
             </p>
 
             {/* CTA */}
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="lp-hero-cta mt-9 flex flex-wrap items-center gap-4">
               <Link
                 href="/auth/login"
                 className="inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 active:scale-95"
@@ -225,7 +225,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Avatar social proof */}
-            <div className="mt-10 flex items-center gap-3">
+            <div className="lp-hero-social mt-10 flex items-center gap-3">
               <div className="flex -space-x-2">
                 {(['#7C3AED','#ec4899','#0ea5e9','#10b981'] as const).map((color, i) => (
                   <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-bold text-white"
@@ -251,13 +251,15 @@ export default async function LandingPage() {
       {/* ── Features ── */}
       <section id="features" className="py-20" style={{ background: C.bgAlt, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="lp-section-head mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Everything you need to stay organized</h2>
             <p className="mt-3 max-w-xl mx-auto" style={{ color: C.muted }}>
               One workspace built to help you focus on execution instead of managing software.
             </p>
           </div>
-          <FeaturesSection />
+          <div className="lp-reveal">
+            <FeaturesSection />
+          </div>
           <ScrollDown href="#why" />
         </div>
       </section>
@@ -265,11 +267,11 @@ export default async function LandingPage() {
       {/* ── Why Optimaz ── */}
       <section id="why" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="lp-section-head mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Why Optimaz?</h2>
             <p className="mt-3" style={{ color: C.muted }}>Four reasons people make it their default workspace.</p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lp-card-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {WHY_REASONS.map(({ icon: Icon, title, desc, color, bg }) => (
               <div key={title} className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                 <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: bg }}>
@@ -287,13 +289,13 @@ export default async function LandingPage() {
       {/* ── Comparison ── */}
       <section id="compare" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="lp-section-head mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Replace 5 Apps With One</h2>
             <p className="mt-3 max-w-lg mx-auto" style={{ color: C.muted }}>
               Stop paying for five productivity apps. Most people manage tasks, goals, habits, projects, and planning across multiple tools. Optimaz combines everything into one focused workspace.
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
+          <div className="lp-reveal overflow-hidden rounded-2xl" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: `1px solid ${C.cardBorder}` }}>
@@ -325,11 +327,11 @@ export default async function LandingPage() {
       {/* ── Pricing ── */}
       <section id="pricing" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="lp-section-head mb-12 text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Premium experience, Affordable price</h2>
             <p className="mt-3" style={{ color: C.muted }}>Start free. Upgrade when you&apos;re ready. Cancel any time.</p>
           </div>
-          <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+          <div className="lp-card-grid mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
 
             {/* Free */}
             <div className="rounded-2xl p-8" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -406,7 +408,7 @@ export default async function LandingPage() {
 
       {/* ── Founder Story ── */}
       <section id="founder" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
-        <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+        <div className="lp-reveal mx-auto max-w-2xl px-4 text-center sm:px-6">
           <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg"
             style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.7))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
             <img src="/icon-192x192.png" alt="Optimaz" className="h-10 w-10 rounded-xl" />
@@ -427,7 +429,7 @@ export default async function LandingPage() {
       {/* ── Trust badges ── */}
       <section id="trust" className="py-12" style={{ background: C.bg }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="lp-card-grid grid grid-cols-2 gap-4 sm:grid-cols-4">
             {TRUST_BADGES.map(({ icon: Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-2 rounded-xl px-4 py-4 text-center"
                 style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
@@ -442,7 +444,7 @@ export default async function LandingPage() {
       {/* ── Bottom CTA ── */}
       <section className="py-20 text-center"
         style={{ background: `linear-gradient(135deg, ${C.accent} 0%, rgba(124,58,237,0.75) 100%)`, boxShadow: `0 -4px 40px ${C.accentGlow}` }}>
-        <div className="mx-auto max-w-2xl px-4 sm:px-6">
+        <div className="lp-cta-section mx-auto max-w-2xl px-4 sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white">
             <Sparkles className="h-3.5 w-3.5" />
             Beta pricing locks in today

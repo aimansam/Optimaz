@@ -122,8 +122,8 @@ export function HeroDashboardMockup() {
         zIndex: 8,
       }} />
 
-      {/* ── Dashboard scene ───────────────────────────────────── */}
-      <div style={{
+      {/* ── Dashboard scene — hidden on mobile to not obscure hero text ── */}
+      <div className="hidden md:block" style={{
         position: 'absolute',
         top: '50%', left: '44%',
         // Single 3D transform — browser allocates one GPU layer for the whole subtree

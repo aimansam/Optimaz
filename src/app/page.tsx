@@ -165,7 +165,7 @@ export default async function LandingPage() {
         style={{ backgroundColor: C.bgAlt }}
       >
         <HeroDashboardMockup />
-        <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8" style={{ zIndex: 1 }}>
+        <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8" style={{ zIndex: 5 }}>
           {/* Glass card container — Apple-style frosted panel */}
           <div
             className="lp-hero-card max-w-xl rounded-3xl p-8 sm:p-10"
@@ -190,7 +190,7 @@ export default async function LandingPage() {
             <h1
               className="lp-hero-h1 font-black uppercase leading-[0.9] tracking-tight"
               style={{
-                fontSize: 'clamp(2.2rem, 4.5vw, 4rem)',
+                fontSize: 'clamp(1.75rem, 4.5vw, 4rem)',
                 background: 'linear-gradient(135deg, #5b21b6 0%, #7C3AED 40%, #a78bfa 80%, #6d28d9 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -211,7 +211,7 @@ export default async function LandingPage() {
             <div className="lp-hero-cta mt-9 flex flex-wrap items-center gap-4">
               <Link
                 href="/auth/login"
-                className="inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 active:scale-95"
+                className="inline-flex items-center gap-2.5 rounded-full px-5 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 active:scale-95"
                 style={{
                   background: `linear-gradient(135deg, #5b21b6, ${C.accent})`,
                   boxShadow: `0 6px 28px ${C.accentGlow}`,

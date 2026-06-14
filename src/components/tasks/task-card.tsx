@@ -121,7 +121,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           <button
             onClick={toggleDone}
             className={cn(
-              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
+              'mt-0.5 flex h-8 w-8 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
             )}
             style={isDone ? {
               borderColor: '#10b981',
@@ -292,7 +292,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
               onClick={() => setDetailOpen(true)}
               title="View full details"
               aria-label="View task details"
-              className="flex h-7 w-7 items-center justify-center rounded-lg transition-all duration-150"
+              className="flex h-10 w-10 sm:h-7 sm:w-7 items-center justify-center rounded-lg transition-all duration-150"
               style={{ color: 'var(--muted-fg)' }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.1)';
@@ -305,7 +305,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
             >
               <Expand className="h-3.5 w-3.5" />
             </button>
-            <TaskActions task={task} onEdit={() => setDetailOpen(true)} className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" />
+            <TaskActions task={task} onEdit={() => setDetailOpen(true)} className="opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" buttonClassName="h-10 w-10 sm:h-7 sm:w-7 rounded-lg" />
           </div>
         </div>
 

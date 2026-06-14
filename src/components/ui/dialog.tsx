@@ -40,14 +40,17 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
         className={cn(
-          'relative flex w-full flex-col rounded-2xl',
-          'max-h-[90dvh] sm:max-w-3xl',
+          'relative flex w-full flex-col',
+          // Mobile: bottom-sheet — full width, rounded top corners, slides from bottom
+          'rounded-t-2xl sm:rounded-2xl',
+          // Mobile: up to 92dvh; desktop: centered with max-w
+          'max-h-[92dvh] sm:max-w-3xl',
           className
         )}
         style={{
@@ -58,6 +61,11 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
           boxShadow: '0 24px 64px rgba(0,0,0,0.2), 0 0 0 1px var(--glass-border), 0 0 40px var(--glow)',
         }}
       >
+        {/* Drag handle — mobile only */}
+        <div className="flex shrink-0 justify-center pt-3 sm:hidden">
+          <div className="h-1 w-10 rounded-full" style={{ background: 'var(--muted-fg)', opacity: 0.3 }} />
+        </div>
+
         {/* Header */}
         <div
           className="flex shrink-0 items-center justify-between rounded-t-2xl px-4 py-3 sm:px-6 sm:py-4"
@@ -72,7 +80,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
           >
             {title}
           </h2>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-9 w-9 sm:h-7 sm:w-7 rounded-lg">
             <X className="h-4 w-4" />
           </Button>
         </div>

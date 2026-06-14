@@ -40,8 +40,11 @@ export function QuickAddFAB() {
         />
       )}
 
-      {/* FAB cluster */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col-reverse items-end gap-2.5">
+      {/* FAB cluster — bottom accounts for iOS safe area inset */}
+      <div
+        className="fixed right-5 z-50 flex flex-col-reverse items-end gap-2.5"
+        style={{ bottom: 'max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem))' }}
+      >
         {/* Action buttons (shown when open) */}
         {ACTIONS.map((action, index) => {
           const Icon = action.icon;

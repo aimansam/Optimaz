@@ -61,9 +61,13 @@ export function Header({ title, actions, onMenuClick }: HeaderProps & { onMenuCl
       <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
         {actions}
         <GlobalSearch />
-        <FeedbackButton />
+        <span className="hidden sm:contents">
+          <FeedbackButton />
+        </span>
         <NotificationBell />
-        <ThemeToggle />
+        <span className="hidden sm:contents">
+          <ThemeToggle />
+        </span>
         <Button
           variant="ghost"
           size="icon"

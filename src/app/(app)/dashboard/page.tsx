@@ -16,6 +16,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { UpcomingTasks } from '@/components/tasks/upcoming-tasks';
 import { TaskFilterBar, DEFAULT_TASK_FILTERS, type TaskFilters } from '@/components/tasks/task-filter-bar';
 import { OnboardingPanel } from '@/components/onboarding/onboarding-panel';
+import { PreferenceFlow } from '@/components/onboarding/preference-flow';
 
 import { useTodayTasks, useOverdueTasks, useTasks } from '@/hooks/use-tasks';
 import { useProjects } from '@/hooks/use-projects';
@@ -429,7 +430,7 @@ export default function DashboardPage() {
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
 				<aside
-				className="shrink-0 w-1/2 max-w-md flex flex-col overflow-y-auto overscroll-y-contain px-4 py-4"
+				className="flex-1 basis-1/2 min-w-0 flex flex-col overflow-y-auto overscroll-y-contain px-4 py-4"
 				style={{
 					background: 'var(--sidebar-bg)',
 					borderRight: '1px solid var(--card-border)',
@@ -473,6 +474,19 @@ export default function DashboardPage() {
 			<Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Add Task" className="min-h-0 sm:max-w-lg">
 				<TaskQuestionFlow onClose={() => setAddOpen(false)} />
 			</Dialog>
+
+			{/* Preference questionnaire — auto-opens once for new users */}
+			{user && !user.user_metadata?.preferences_completed && (
+				<Dialog
+					open={true}
+					onClose={() => {}}
+					title="Welcome to Optimaz"
+					className="min-h-0 sm:max-w-xl"
+				>
+					<PreferenceFlow onComplete={() => {}} onSkip={() => {}} />
+				</Dialog>
+			)}
+
 			<InstallPWAButton />
 		</>
 	);

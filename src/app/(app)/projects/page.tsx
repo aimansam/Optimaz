@@ -7,12 +7,14 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FolderOpen, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { MemoizedProjectCard } from '@/components/projects/project-card';
 import { ProjectQuestionFlow } from '@/components/projects/project-question-flow';
 
 function ProjectCardSkeleton() {
   return (
-    <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 animate-pulse">
+    <div className="group relative rounded-xl p-5 animate-pulse" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
       <div className="flex items-center gap-3 mb-2">
         <span className="h-4 w-4 rounded-full bg-slate-200 dark:bg-slate-800" />
         <div className="h-4 w-32 rounded bg-slate-200 dark:bg-slate-800" />
@@ -104,7 +106,7 @@ export default function ProjectsPage() {
   return (
     <>
 
-      <div className="flex-1 overflow-y-auto p-6 pb-24" style={{ background: 'var(--background)' }}>
+      <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-6" style={{ background: 'var(--background)' }}>
         {/* Toggle for sort/search bar */}
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
@@ -126,42 +128,35 @@ export default function ProjectsPage() {
             Add Project
           </Button>
         </div>
-        {showFilters && (
-          <div className="mb-6 flex flex-wrap gap-4 items-center">
-            <label className="flex items-center gap-2 text-sm">
+          {showFilters && (
+          <div className="mb-6 flex flex-wrap gap-3 items-center">
+            <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--foreground)' }}>
               Sort by:
-              <select
-                className="border rounded px-2 py-1 text-sm bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700"
+              <Select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as 'name' | 'activity' | 'completion')}
+                className="w-auto"
               >
                 <option value="favorite">Favorites</option>
                 <option value="name">Name</option>
                 <option value="activity">Last Activity</option>
                 <option value="completion">Completion %</option>
-              </select>
+              </Select>
             </label>
-            <input
+            <Input
               type="text"
-              className="border rounded px-2 py-1 text-sm"
               placeholder="Search projects..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ minWidth: 180 }}
+              className="w-48"
               aria-label="Search projects"
             />
           </div>
         )}
         {error ? (
-          <div className="flex flex-col items-center gap-3 py-16 text-red-400">
-            <svg width="96" height="96" fill="none" viewBox="0 0 96 96" aria-hidden="true">
-              <circle cx="48" cy="48" r="44" fill="#fee2e2" />
-              <path d="M48 32v24" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
-              <circle cx="48" cy="66" r="3" fill="#ef4444" />
-            </svg>
-            <p className="text-lg font-semibold">Failed to load projects</p>
-            <p className="text-sm">{error.message || 'An unexpected error occurred. Please try again.'}</p>
-            <Button size="sm" onClick={() => window.location.reload()}>Retry</Button>
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            <p className="font-semibold">Failed to load projects</p>
+            <p className="mt-1 opacity-80">{error.message}</p>
           </div>
         ) : isLoading ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

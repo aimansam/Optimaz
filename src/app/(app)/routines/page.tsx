@@ -88,15 +88,15 @@ export default function RoutinesPage() {
           </div>
 
           <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <Repeat2 className="h-4 w-4 text-slate-500" />
+            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                <Repeat2 className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
                 Total routines
               </div>
-              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.all}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">All active cadences</p>
+              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.all}</p>
+              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>All active cadences</p>
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20 sm:p-4">
+            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
               <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 <CheckCircle2 className="h-4 w-4" />
                 Due today
@@ -104,25 +104,25 @@ export default function RoutinesPage() {
               <p className="mt-2 text-xl font-bold text-emerald-700 dark:text-emerald-300 sm:text-2xl">{stats.dueToday}</p>
               <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">Scheduled for today</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CalendarClock className="h-4 w-4 text-slate-500" />
+            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                <CalendarClock className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
                 Overdue
               </div>
-              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.overdue}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Needs attention</p>
+              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.overdue}</p>
+              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>Needs attention</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <CalendarClock className="h-4 w-4 text-slate-500" />
+            <div className="rounded-xl p-3 sm:p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                <CalendarClock className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
                 With checklist
               </div>
-              <p className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">{stats.withChecklist}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Routines with steps</p>
+              <p className="mt-2 text-xl font-bold sm:text-2xl" style={{ color: 'var(--foreground)' }}>{stats.withChecklist}</p>
+              <p className="text-xs" style={{ color: 'var(--muted-fg)' }}>Routines with steps</p>
             </div>
           </div>
 
-          <div className="mb-5 flex flex-wrap gap-1.5 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-950">
+          <div className="mb-5 flex flex-wrap gap-1.5 rounded-xl p-2" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
             {ROUTINE_FILTERS.map(item => (
               <Button
                 key={item.value}
@@ -138,11 +138,10 @@ export default function RoutinesPage() {
           </div>
 
           {error ? (
-            <EmptyState
-              icon={<Repeat2 className="h-6 w-6" />}
-              title="Could not load routines"
-              description={error.message || 'Refresh the page and try again.'}
-            />
+            <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+              <p className="font-semibold">Failed to load routines</p>
+              <p className="mt-1 opacity-80">{error.message}</p>
+            </div>
           ) : isLoading ? (
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {[...Array(3)].map((_, colIndex) => (
@@ -184,13 +183,13 @@ export default function RoutinesPage() {
                     </div>
 
                     {groupTasks.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-4 py-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
+                      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed px-4 py-8 text-center" style={{ borderColor: 'var(--glass-border)', background: 'var(--muted-bg)' }}>
                         <Repeat2 className="mb-2 h-5 w-5 text-slate-300 dark:text-slate-600" />
                         <p className="text-xs text-slate-400 dark:text-slate-500">No {group.value} routines</p>
                         <button
                           type="button"
                           onClick={() => setAddOpen(true)}
-                          className="mt-2 text-xs font-semibold text-indigo-500 hover:text-indigo-600"
+                          className="mt-2 text-xs font-semibold" style={{ color: 'rgb(var(--accent))' }}
                         >
                           + Add one
                         </button>

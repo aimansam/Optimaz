@@ -208,12 +208,12 @@ export default function KanbanPage() {
 
       <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: 'var(--background)' }}>
         <div className="shrink-0 px-2 pt-2 pb-0 sm:px-4 sm:pt-4 md:px-6 md:pt-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <div className="rounded-xl p-3" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
-              <Filter className="h-4 w-4 text-slate-500" />
+            <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+              <Filter className="h-4 w-4" style={{ color: 'var(--muted-fg)' }} />
               Kanban filters
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <span className="rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: 'var(--muted-bg)', color: 'var(--muted-fg)' }}>
                 {filteredTasks.length}/{tasks?.length ?? 0}
               </span>
               {activeFilterCount > 0 && (
@@ -234,14 +234,14 @@ export default function KanbanPage() {
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <div className="mt-3 flex flex-wrap gap-1.5 border-t pt-3" style={{ borderColor: 'var(--card-border)' }}>
             <Button type="button" variant={activeQuickView === 'active' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('active')} aria-pressed={activeQuickView === 'active'}>Active <span className="tabular-nums">{taskCounts.active}</span></Button>
             <Button type="button" variant={activeQuickView === 'urgent' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('urgent')} aria-pressed={activeQuickView === 'urgent'}>Urgent</Button>
             <Button type="button" variant={activeQuickView === 'today' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('today')} aria-pressed={activeQuickView === 'today'}>Due today</Button>
             <Button type="button" variant={activeQuickView === 'completed' ? 'secondary' : 'ghost'} size="sm" onClick={() => applyQuickView('completed')} aria-pressed={activeQuickView === 'completed'}>Completed <span className="tabular-nums">{taskCounts.completed}</span></Button>
           </div>
 
-          {showFilters && <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]">
+          {showFilters && <div className="mt-3 grid gap-2 border-t pt-3 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1.4fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(130px,0.7fr)_minmax(140px,0.7fr)_minmax(140px,0.7fr)]" style={{ borderColor: 'var(--card-border)' }}>
             <label className="relative block">
               <span className="sr-only">Search Kanban tasks</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -320,7 +320,7 @@ export default function KanbanPage() {
           </div>}
 
           {showFilters && (
-            <div className="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800">
+            <div className="mt-3 border-t pt-3" style={{ borderColor: 'var(--card-border)' }}>
               <div className="grid gap-2 sm:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_auto]">
                 <label>
                   <span className="sr-only">Saved Kanban views</span>

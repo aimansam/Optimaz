@@ -178,9 +178,9 @@ export default async function LandingPage() {
                 backgroundClip: 'text',
               }}
             >
-              RECLAIM YOUR<br />
-              FOCUS. OPTIMIZE<br />
-              YOUR DAY.
+              Reclaim Your<br />
+              Focus. Optimize<br />
+              Your Day.
             </h1>
 
             {/* Sub-headline */}
@@ -202,7 +202,7 @@ export default async function LandingPage() {
                 Get started free
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <p className="text-xs" style={{ color: C.muted }}>No credit card required. Free 14-day trial.</p>
+              <p className="text-xs" style={{ color: C.muted }}>No credit card required. Free 30-day trial.</p>
             </div>
 
             {/* Avatar social proof */}

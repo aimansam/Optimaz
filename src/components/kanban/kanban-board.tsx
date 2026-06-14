@@ -141,23 +141,11 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
         ))}
       </div>
 
-      {/* Floating card that follows the cursor — lifted + rotated */}
+      {/* Floating card — rotation/shadow applied inside the card itself (no wrapper offset) */}
       <DragOverlay
         dropAnimation={{ duration: 160, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}
       >
-        {activeTask && (
-          <div
-            style={{
-              transform: 'rotate(2.5deg)',
-              cursor: 'grabbing',
-              boxShadow: '0 24px 56px rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.12)',
-              borderRadius: 12,
-              pointerEvents: 'none',
-            }}
-          >
-            <KanbanCard task={activeTask} isOverlay />
-          </div>
-        )}
+        {activeTask && <KanbanCard task={activeTask} isOverlay />}
       </DragOverlay>
     </DndContext>
   );

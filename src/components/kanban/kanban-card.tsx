@@ -103,16 +103,22 @@ export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
       <div
         ref={isOverlay ? undefined : setNodeRef}
         style={{
-          ...(!isOverlay ? style : {}),
+          // Overlay: apply lifted/rotated look. Non-overlay: use dnd-kit's transform/transition.
+          ...(isOverlay
+            ? { transform: 'rotate(2.5deg)', cursor: 'grabbing', pointerEvents: 'none' }
+            : style),
           background: 'var(--card-bg)',
           border: '1px solid var(--card-border)',
           borderLeft: `2px solid ${overdue ? '#ef4444' : PRIORITY_LEFT_COLOR[task.priority]}`,
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          boxShadow: isOverlay
+            ? '0 24px 56px rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.12)'
+            : '0 1px 3px rgba(0,0,0,0.06)',
         }}
         className={cn(
-          'group relative rounded-xl transition-shadow duration-150 hover:shadow-md',
+          'group relative rounded-xl transition-shadow duration-150',
+          !isOverlay && 'hover:shadow-md',
         )}
         tabIndex={isOverlay ? -1 : 0}
         aria-label={`Task ${task.title}`}

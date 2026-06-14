@@ -102,8 +102,8 @@ export default async function LandingPage() {
       >
         <Gift className="inline h-3.5 w-3.5 align-middle mr-1" />
         <span className="font-semibold">Beta offer:</span>{' '}
-        Lock in <span className="font-bold">RM15/mo forever</span> — beta pricing ends at launch.{' '}
-        <Link href="/auth/login" className="ml-1 font-semibold underline underline-offset-2 hover:opacity-70">
+        Sign up today and get <span className="font-bold">1 month of Pro FREE</span> — no credit card required.{' '}
+        <Link href="/pricing" className="ml-1 font-semibold underline underline-offset-2 hover:opacity-70">
           Claim it →
         </Link>
       </div>
@@ -149,7 +149,7 @@ export default async function LandingPage() {
         <div className="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8" style={{ zIndex: 1 }}>
           {/* Glass card container — Apple-style frosted panel */}
           <div
-            className="max-w-xl rounded-3xl p-8 sm:p-10"
+            className="hero-enter max-w-xl rounded-3xl p-8 sm:p-10"
             style={{
               background: 'rgba(255,255,255,0.60)',
               backdropFilter: 'blur(28px)',
@@ -189,9 +189,9 @@ export default async function LandingPage() {
             </p>
 
             {/* CTA */}
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
-                href="/auth/login"
+                href="/pricing"
                 className="inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 active:scale-95"
                 style={{
                   background: `linear-gradient(135deg, #5b21b6, ${C.accent})`,
@@ -202,8 +202,21 @@ export default async function LandingPage() {
                 Get started free
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <p className="text-xs" style={{ color: C.muted }}>No credit card required. Free 30-day trial.</p>
+              <Link
+                href="/pricing#compare"
+                className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-sm font-bold uppercase tracking-widest transition-all hover:opacity-70"
+                style={{
+                  border: `1.5px solid ${C.accentBorder}`,
+                  color: C.accent,
+                  letterSpacing: '0.06em',
+                  background: C.accentLight,
+                }}
+              >
+                See comparison
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
+            <p className="mt-3 text-xs" style={{ color: C.muted }}>No credit card required. Free 30-day trial.</p>
 
             {/* Avatar social proof */}
             <div className="mt-10 flex items-center gap-3">
@@ -226,7 +239,7 @@ export default async function LandingPage() {
       {/* ── Features ── */}
       <section id="features" className="py-20" style={{ background: C.bgAlt, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="mb-12 text-center scroll-reveal">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Everything you need to stay organized</h2>
             <p className="mt-3 max-w-xl mx-auto" style={{ color: C.muted }}>
               One workspace built to help you focus on execution instead of managing software.
@@ -239,11 +252,11 @@ export default async function LandingPage() {
       {/* ── Why Optimaz ── */}
       <section className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="mb-12 text-center scroll-reveal">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Why Optimaz?</h2>
             <p className="mt-3" style={{ color: C.muted }}>Four reasons people make it their default workspace.</p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 scroll-grid">
             {WHY_REASONS.map(({ icon: Icon, title, desc, color, bg }) => (
               <div key={title} className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                 <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: bg }}>
@@ -260,13 +273,13 @@ export default async function LandingPage() {
       {/* ── Comparison ── */}
       <section id="compare" className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="mb-12 text-center scroll-reveal">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Replace 5 Apps With One</h2>
             <p className="mt-3 max-w-lg mx-auto" style={{ color: C.muted }}>
               Stop paying for five productivity apps. Most people manage tasks, goals, habits, projects, and planning across multiple tools. Optimaz combines everything into one focused workspace.
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
+          <div className="overflow-hidden rounded-2xl scroll-reveal" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: `1px solid ${C.cardBorder}` }}>
@@ -297,11 +310,11 @@ export default async function LandingPage() {
       {/* ── Pricing ── */}
       <section id="pricing" className="py-20" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
+          <div className="mb-12 text-center scroll-reveal">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={GT}>Premium experience, Affordable price</h2>
             <p className="mt-3" style={{ color: C.muted }}>Start free. Upgrade when you&apos;re ready. Cancel any time.</p>
           </div>
-          <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2 scroll-grid">
 
             {/* Free */}
             <div className="rounded-2xl p-8" style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -346,19 +359,17 @@ export default async function LandingPage() {
                     style={{ background: C.accentLight, color: C.accent }}>Best Value</span>
                 </div>
                 <div className="mt-3 flex items-baseline gap-1.5">
-                  <span className="text-base font-semibold line-through" style={{ color: C.muted }}>RM 29</span>
-                  <span className="ml-1 text-5xl font-black" style={{ color: C.fg }}>RM 15</span>
+                  <span className="text-5xl font-black" style={{ color: C.fg }}>RM 19</span>
                   <span style={{ color: C.muted }}>/mo</span>
                 </div>
                 <p className="mt-1 text-xs font-medium" style={{ color: C.accent }}>
-                  Beta pricing — lock it in before launch.{' '}
-                  <span className="font-bold">Price rises to RM 29 after.</span>
+                  or <strong>RM 15/mo</strong> billed yearly (save 21%) — cancel any time
                 </p>
               </div>
-              <Link href="/auth/login"
+              <Link href="/pricing"
                 className="mb-7 block w-full rounded-full py-3 text-center text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.85))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
-                Claim free month + lock beta rate
+                Claim your free month →
               </Link>
               <ul className="space-y-2.5">
                 {PRO_FEATURES.map((f, i) => (
@@ -370,14 +381,14 @@ export default async function LandingPage() {
             </div>
           </div>
           <p className="mt-6 text-center text-xs" style={{ color: C.muted }}>
-            Beta users who sign up now keep RM15/mo forever. After launch the Pro plan will be RM29/mo.
+            Beta users get 1 month of Pro FREE. Then RM 19/mo monthly or RM 15/mo billed yearly. Cancel any time.
           </p>
         </div>
       </section>
 
       {/* ── Founder Story ── */}
       <section className="py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.cardBorder}`, borderBottom: `1px solid ${C.cardBorder}` }}>
-        <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+        <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 scroll-reveal">
           <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg"
             style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.7))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
             <img src="/icon-192x192.png" alt="Optimaz" className="h-10 w-10 rounded-xl" />
@@ -397,7 +408,7 @@ export default async function LandingPage() {
       {/* ── Trust badges ── */}
       <section className="py-12" style={{ background: C.bg }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 scroll-grid">
             {TRUST_BADGES.map(({ icon: Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-2 rounded-xl px-4 py-4 text-center"
                 style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}` }}>
@@ -414,14 +425,14 @@ export default async function LandingPage() {
         style={{ background: `linear-gradient(135deg, ${C.accent} 0%, rgba(124,58,237,0.75) 100%)`, boxShadow: `0 -4px 40px ${C.accentGlow}` }}>
         <div className="mx-auto max-w-2xl px-4 sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white">
-            <Sparkles className="h-3.5 w-3.5" />
-            Beta pricing locks in today
+            <Gift className="h-3.5 w-3.5" />
+            Beta offer — 1 month Pro FREE
           </div>
           <h2 className="text-2xl font-bold text-white sm:text-3xl">Stop managing apps. Start getting things done.</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/80">
-            Join beta users who replaced 5 different tools with one focused workspace. First month free, then RM15/mo — locked in before the price rises to RM29.
+            Join beta users who replaced 5 different tools with one focused workspace. Your first month of Pro is completely free — no credit card needed.
           </p>
-          <Link href="/auth/login"
+          <Link href="/pricing"
             className="mt-7 inline-flex items-center gap-2 rounded-full bg-white/15 px-8 py-3.5 text-sm font-bold uppercase tracking-widest text-white ring-1 ring-white/30 backdrop-blur-md transition-all hover:bg-white/25"
             style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.2)', letterSpacing: '0.06em' }}>
             <Zap className="h-4 w-4" />

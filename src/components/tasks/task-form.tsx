@@ -49,7 +49,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
     defaultValues: {
       title: task?.title ?? '',
       notes: task?.notes ?? '',
-      priority: task?.priority ?? 'medium',
+      priority: task?.priority ?? 'low',
       status: task?.status ?? defaultStatus,
       due_date: task?.due_date ?? '',
       due_time: task?.due_time?.slice(0, 5) ?? '',

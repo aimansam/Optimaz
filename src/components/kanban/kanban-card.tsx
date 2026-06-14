@@ -28,12 +28,19 @@ function getAdjacentStatus(status: TaskStatus, direction: -1 | 1) {
   return STATUS_ORDER[currentIndex + direction] ?? null;
 }
 
-export function KanbanCard({ task }: { task: Task }) {
+interface KanbanCardProps {
+  task: Task;
+  /** When true the card is rendered inside DragOverlay — no sortable transform needed */
+  isOverlay?: boolean;
+}
+
+export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const updateTask = useUpdateTask();
   const { attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: { task },
+    disabled: isOverlay,
   });
 
   const style = {
@@ -74,35 +81,49 @@ export function KanbanCard({ task }: { task: Task }) {
     }
   }
 
+  // When actively dragging from this position, show a minimal placeholder
+  // so the column retains its height while the "real" card floats in DragOverlay
+  if (isDragging && !isOverlay) {
+    return (
+      <div ref={setNodeRef} style={style} className="rounded-xl" aria-hidden="true">
+        <div
+          className="rounded-xl"
+          style={{
+            minHeight: 80,
+            background: 'rgb(var(--accent) / 0.04)',
+            border: '2px dashed rgb(var(--accent) / 0.22)',
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <>
       <div
-        ref={setNodeRef}
+        ref={isOverlay ? undefined : setNodeRef}
         style={{
-          ...style,
+          ...(!isOverlay ? style : {}),
           background: 'var(--card-bg)',
           border: '1px solid var(--card-border)',
           borderLeft: `2px solid ${overdue ? '#ef4444' : PRIORITY_LEFT_COLOR[task.priority]}`,
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: isDragging ? '0 16px 40px rgba(0,0,0,0.2)' : '0 1px 3px rgba(0,0,0,0.06)',
-          transform: isDragging ? `${style.transform ?? ''} scale(0.98)` : style.transform ?? '',
-          opacity: isDragging ? 0.7 : 1,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
         }}
         className={cn(
-          'group relative rounded-xl transition-all duration-150',
-          !isDragging && 'hover:shadow-md',
+          'group relative rounded-xl transition-shadow duration-150 hover:shadow-md',
         )}
-        tabIndex={0}
+        tabIndex={isOverlay ? -1 : 0}
         aria-label={`Task ${task.title}`}
-        onKeyDown={handleKeyDown}
+        onKeyDown={isOverlay ? undefined : handleKeyDown}
       >
         <div className="flex items-start gap-2 p-3">
           <button
-            ref={setActivatorNodeRef}
+            ref={isOverlay ? undefined : setActivatorNodeRef}
             type="button"
             className="mt-0.5 shrink-0 rounded p-0.5 opacity-0 transition-all duration-150 focus:opacity-100 focus:outline-none group-hover:opacity-100"
-            style={{ color: 'var(--muted-fg)' }}
+            style={{ color: 'var(--muted-fg)', cursor: isOverlay ? 'grabbing' : 'grab' }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLButtonElement).style.background = 'var(--muted-bg)';
             }}
@@ -110,8 +131,7 @@ export function KanbanCard({ task }: { task: Task }) {
               (e.currentTarget as HTMLButtonElement).style.background = '';
             }}
             aria-label={`Drag task ${task.title}`}
-            {...attributes}
-            {...listeners}
+            {...(isOverlay ? {} : { ...attributes, ...listeners })}
           >
             <GripVertical className="h-4 w-4" />
           </button>

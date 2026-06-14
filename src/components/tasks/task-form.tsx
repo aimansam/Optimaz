@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,7 +43,9 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   const updateTask = useUpdateTask();
   const isEdit = !!task;
 
-  const { register, handleSubmit, control, setValue, formState: { isSubmitting } } = useForm<FormValues>({
+  const [isSaving, setIsSaving] = useState(false);
+
+  const { register, handleSubmit, control, setValue } = useForm<FormValues>({
     defaultValues: {
       title: task?.title ?? '',
       notes: task?.notes ?? '',
@@ -73,6 +76,7 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
   }
 
   const onSubmit = async (values: FormValues) => {
+    setIsSaving(true);
     const recurrenceRule = values.is_recurring && values.recurrence_rule ? values.recurrence_rule : undefined;
     const recurrenceWeekdays = recurrenceRule === 'weekly' ? normalizeWeekdays(values.recurrence_weekdays) : null;
     const createPayload = {
@@ -113,6 +117,8 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
       onClose();
     } catch {
       // Error is already surfaced via toast.error in the mutation's onError callback
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -255,8 +261,8 @@ export function TaskForm({ defaultStatus = 'todo', defaultProjectId, defaultGoal
 
       <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Task'}
+        <Button type="submit" disabled={isSaving}>
+          {isSaving ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Task'}
         </Button>
       </div>
     </form>

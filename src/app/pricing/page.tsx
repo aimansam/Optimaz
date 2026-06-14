@@ -146,7 +146,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing cards */}
-        <div id="compare" className="mb-16 grid gap-6 sm:grid-cols-2">
+        <div className="mb-16 grid gap-6 sm:grid-cols-2">
 
           {/* Free */}
           <div
@@ -225,12 +225,11 @@ export default function PricingPage() {
                 </span>
               </div>
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="text-5xl font-black" style={{ color: 'var(--foreground)' }}>RM 19</span>
-                <span style={{ color: 'var(--muted-fg)' }}>/month</span>
+                <span className="text-base font-semibold line-through" style={{ color: 'var(--muted-fg)' }}>RM 15</span>
+                <span className="ml-1 text-5xl font-black" style={{ color: 'var(--foreground)' }}>RM 0</span>
+                <span style={{ color: 'var(--muted-fg)' }}>/first month</span>
               </div>
-              <p className="mt-1 text-xs font-medium" style={{ color: 'rgb(var(--accent))' }}>
-                or <strong>RM 15/mo</strong> billed yearly (save 21%) — cancel any time
-              </p>
+              <p className="mt-1 text-xs font-medium" style={{ color: 'rgb(var(--accent))' }}>then RM 15/month — cancel any time</p>
             </div>
             <Link
               href="/auth/login"

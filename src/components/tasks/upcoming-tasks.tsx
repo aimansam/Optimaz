@@ -17,8 +17,9 @@ function useUpcomingTasks(days: number = 7) {
       const today = new Date();
       const end = new Date();
       end.setDate(today.getDate() + days);
-      const todayStr = today.toISOString().split("T")[0];
-      const endStr = end.toISOString().split("T")[0];
+      // Use local date to avoid UTC offset making today's tasks appear as "upcoming"
+      const todayStr = today.toLocaleDateString('en-CA'); // YYYY-MM-DD local tz
+      const endStr = end.toLocaleDateString('en-CA');
       const { data, error } = await supabase
         .from("tasks")
         .select("*, subtasks(*), project:projects(id,name,color)")

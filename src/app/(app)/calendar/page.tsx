@@ -200,12 +200,12 @@ export default function CalendarPage() {
         <p className="hidden text-[11px] sm:block" style={{ color: 'var(--muted-fg)' }}>Scheduled tasks</p>
       </div>
       <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-        <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 sm:gap-1.5 sm:text-xs">
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 sm:gap-1.5 sm:text-xs">
           <CheckCircle2 className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           Today
         </div>
-        <p className="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 sm:mt-1 sm:text-lg">{dueTodayCount}</p>
-        <p className="hidden text-[11px] text-emerald-600/70 dark:text-emerald-400/70 sm:block">Open tasks due today</p>
+        <p className="mt-0.5 text-sm font-bold text-amber-600 dark:text-amber-400 sm:mt-1 sm:text-lg">{dueTodayCount}</p>
+        <p className="hidden text-[11px] text-amber-600/70 dark:text-amber-400/70 sm:block">Open tasks due today</p>
       </div>
       <div className="rounded-xl p-2 sm:px-3 sm:py-2.5" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
         <div className="flex items-center gap-1 text-[10px] font-semibold text-red-500 dark:text-red-400 sm:gap-1.5 sm:text-xs">

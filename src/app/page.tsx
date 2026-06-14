@@ -178,9 +178,9 @@ export default async function LandingPage() {
                 backgroundClip: 'text',
               }}
             >
-              Reclaim Your<br />
-              Focus. Optimize<br />
-              Your Day.
+              RECLAIM YOUR<br />
+              FOCUS. OPTIMIZE<br />
+              YOUR DAY.
             </h1>
 
             {/* Sub-headline */}

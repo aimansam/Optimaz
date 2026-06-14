@@ -178,8 +178,8 @@ export default async function LandingPage() {
                 backgroundClip: 'text',
               }}
             >
-              RECLAIM <br />
-              YOUR FOCUS. OPTIMIZE<br />
+              RECLAIM YOUR<br />
+              FOCUS. OPTIMIZE<br />
               YOUR DAY.
             </h1>
 

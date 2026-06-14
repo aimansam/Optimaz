@@ -430,7 +430,7 @@ export default function DashboardPage() {
 
 					{/* Left panel — stats, chart, streak, quote, goal focus */}
 				<aside
-				className="w-[360px] xl:w-[440px] shrink-0 flex flex-col overflow-y-auto overscroll-y-contain px-4 py-4"
+				className="w-[500px] xl:w-[500px] shrink-0 flex flex-col overflow-y-auto overscroll-y-contain px-4 py-4"
 				style={{
 					background: 'var(--sidebar-bg)',
 					borderRight: '1px solid var(--card-border)',

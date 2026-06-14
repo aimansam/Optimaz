@@ -307,6 +307,95 @@ body {
   animation: slide-in-right var(--duration-standard) var(--ease-decelerate) both;
 }
 
+/* ── Per-element animation variants ───────────────────────────────── */
+
+/* Page navigation — entire page fades + drifts up on route change */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-enter var(--duration-quick) var(--ease-decelerate) both;
+}
+
+/* Card enter — scale pop + fade (task cards, project cards, kanban cards) */
+@keyframes card-enter {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-card {
+  animation: card-enter var(--duration-standard) var(--ease-spring) both;
+  will-change: transform, opacity;
+}
+
+/* Stat block enter — slide up + fade (metric boxes, counters) */
+@keyframes stat-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-stat {
+  animation: stat-enter var(--duration-quick) var(--ease-decelerate) both;
+  will-change: transform, opacity;
+}
+
+/* List row enter — slide from left + fade (compact list rows) */
+@keyframes row-enter {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-row {
+  animation: row-enter var(--duration-quick) var(--ease-decelerate) both;
+  will-change: transform, opacity;
+}
+
+/* Panel enter — calm fade (charts, analysis panels, large sections) */
+@keyframes panel-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-panel {
+  animation: panel-enter var(--duration-standard) var(--ease-standard) both;
+}
+
+/* Stagger helpers — apply after the animate-* class */
+.stagger-1  { animation-delay:  40ms; }
+.stagger-2  { animation-delay:  80ms; }
+.stagger-3  { animation-delay: 120ms; }
+.stagger-4  { animation-delay: 160ms; }
+.stagger-5  { animation-delay: 200ms; }
+.stagger-6  { animation-delay: 240ms; }
+.stagger-7  { animation-delay: 280ms; }
+.stagger-8  { animation-delay: 320ms; }
+
+/* ── CSS-only staggered list — add .list-animated to any container ── */
+/* Each child card-enters with progressive delay capped at 360ms      */
+.list-animated > * {
+  animation: card-enter var(--duration-standard) var(--ease-spring) both;
+  will-change: transform, opacity;
+}
+.list-animated > *:nth-child(1)  { animation-delay:   0ms; }
+.list-animated > *:nth-child(2)  { animation-delay:  40ms; }
+.list-animated > *:nth-child(3)  { animation-delay:  80ms; }
+.list-animated > *:nth-child(4)  { animation-delay: 120ms; }
+.list-animated > *:nth-child(5)  { animation-delay: 160ms; }
+.list-animated > *:nth-child(6)  { animation-delay: 200ms; }
+.list-animated > *:nth-child(7)  { animation-delay: 240ms; }
+.list-animated > *:nth-child(8)  { animation-delay: 280ms; }
+.list-animated > *:nth-child(9)  { animation-delay: 320ms; }
+.list-animated > *:nth-child(n+10) { animation-delay: 360ms; }
+
+/* Row variant — slides from left instead of scale-pop */
+.list-animated-rows > * {
+  animation: row-enter var(--duration-quick) var(--ease-decelerate) both;
+  will-change: transform, opacity;
+}
+.list-animated-rows > *:nth-child(1)  { animation-delay:  0ms; }
+.list-animated-rows > *:nth-child(2)  { animation-delay: 30ms; }
+.list-animated-rows > *:nth-child(3)  { animation-delay: 60ms; }
+.list-animated-rows > *:nth-child(4)  { animation-delay: 90ms; }
+.list-animated-rows > *:nth-child(5)  { animation-delay: 120ms; }
+.list-animated-rows > *:nth-child(n+6) { animation-delay: 150ms; }
+
 /* Glass utility */
 .glass {
   background: var(--glass-bg);

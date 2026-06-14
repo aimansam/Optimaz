@@ -212,7 +212,7 @@ export function TaskList({
 
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
+          <div className="list-animated space-y-2">
             {localTasks.map((task) => (
               <SortableTaskItem
                 key={task.id}

@@ -50,7 +50,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       />
       <main className="flex-1 flex min-w-0 flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
-        {children}
+        <div key={pathname} className="page-enter flex-1 flex flex-col min-h-0 overflow-hidden">
+          {children}
+        </div>
       </main>
       <QuickAddFAB />
     </div>

@@ -1,10 +1,12 @@
 "use client";
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { QuickAddFAB } from '@/components/layout/quick-add-fab';
+
+const SIDEBAR_COLLAPSED_KEY = 'optimaz:sidebar-collapsed';
 
 function getPageTitle(pathname: string) {
   if (pathname === '/dashboard') return 'Today';
@@ -23,12 +25,29 @@ function getPageTitle(pathname: string) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+  });
   const pathname = usePathname();
   const title = getPageTitle(pathname);
 
+  const toggleCollapsed = useCallback(() => {
+    setSidebarCollapsed(prev => {
+      const next = !prev;
+      window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next));
+      return next;
+    });
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+      <Sidebar
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={toggleCollapsed}
+      />
       <main className="flex-1 flex min-w-0 flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
         {children}

@@ -105,7 +105,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
                   href={href}
                   title={effectiveCollapsed ? label : undefined}
                   className={cn(
-                    'flex items-center rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200',
+                    'flex items-center rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.96] active:opacity-75',
                     effectiveCollapsed ? 'md:justify-center md:px-2' : 'gap-2.5 md:gap-3 md:px-3',
                   )}
                   style={active ? {

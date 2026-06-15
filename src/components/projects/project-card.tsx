@@ -67,7 +67,7 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
-      <Link href={`/projects/${project.id}`} className="block focus:outline-none focus:underline">
+      <Link href={`/projects/${project.id}`} className="block focus:outline-none focus:underline active:opacity-80 transition-opacity duration-150">
         <div className="mb-4 flex items-start gap-3 pr-20">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"

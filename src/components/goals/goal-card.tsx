@@ -39,7 +39,7 @@ export function GoalCard({ goal }: GoalCardProps) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Link href={`/goals/${goal.id}`} className="block p-5">
+      <Link href={`/goals/${goal.id}`} className="block p-5 active:opacity-80 transition-opacity duration-150">
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
           <div

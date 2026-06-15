@@ -44,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50',
           variant === 'primary' && 'hover:opacity-90 active:scale-[0.98]',
           variant === 'secondary' && 'hover:opacity-80 active:opacity-70',
-          variant === 'ghost' && 'hover:opacity-80',
+          variant === 'ghost' && 'hover:opacity-80 active:opacity-60 active:scale-[0.97]',
           variant === 'danger' && 'hover:opacity-90 active:scale-[0.97]',
           {
             'h-7 px-3 text-xs gap-1.5': size === 'sm',

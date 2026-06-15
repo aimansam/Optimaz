@@ -167,25 +167,6 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
                   </div>
                 )}
 
-                {/* Regular hover tooltip in expanded mode */}
-                {!effectiveCollapsed && (
-                  <div
-                    className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl px-3 py-2 shadow-xl opacity-0 transition-all duration-150 group-hover:opacity-100"
-                    style={{
-                      background: 'var(--card-bg)',
-                      border: '1px solid var(--glass-border)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                    }}
-                  >
-                    <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>{label}</p>
-                    <p className="mt-0.5 text-[11px] leading-snug" style={{ color: 'var(--muted-fg)' }}>{description}</p>
-                    <div
-                      className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent"
-                      style={{ borderRightColor: 'var(--glass-border)' }}
-                    />
-                  </div>
-                )}
               </div>
             );
           })}

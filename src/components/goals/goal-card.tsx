@@ -120,7 +120,7 @@ export function GoalCard({ goal }: GoalCardProps) {
           setDeleteOpen(true);
         }}
         aria-label={`Delete goal ${goal.title}`}
-        className="absolute right-3 top-3 rounded-lg p-1.5 opacity-100 transition-all duration-150 sm:opacity-0 sm:group-hover:opacity-100"
+        className="absolute right-3 top-3 rounded-lg p-1.5 opacity-100 transition-all duration-150 lg:opacity-0 lg:group-hover:opacity-100"
         style={{ color: 'var(--muted-fg)' }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.1)';

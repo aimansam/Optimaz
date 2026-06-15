@@ -37,7 +37,7 @@ interface KanbanCardProps {
 export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const updateTask = useUpdateTask();
-  const { attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: { task },
     disabled: isOverlay,
@@ -115,6 +115,7 @@ export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
           boxShadow: isOverlay
             ? '0 24px 56px rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.12)'
             : '0 1px 3px rgba(0,0,0,0.06)',
+          cursor: isOverlay ? 'grabbing' : 'grab',
         }}
         className={cn(
           'group relative rounded-xl transition-shadow duration-150',
@@ -123,24 +124,17 @@ export function KanbanCard({ task, isOverlay = false }: KanbanCardProps) {
         tabIndex={isOverlay ? -1 : 0}
         aria-label={`Task ${task.title}`}
         onKeyDown={isOverlay ? undefined : handleKeyDown}
+        {...(isOverlay ? {} : { ...attributes, ...listeners })}
       >
         <div className="flex items-start gap-2 p-3">
-          <button
-            ref={isOverlay ? undefined : setActivatorNodeRef}
-            type="button"
-            className="mt-0.5 shrink-0 rounded p-0.5 opacity-0 transition-all duration-150 focus:opacity-100 focus:outline-none group-hover:opacity-100"
-            style={{ color: 'var(--muted-fg)', cursor: isOverlay ? 'grabbing' : 'grab' }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'var(--muted-bg)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = '';
-            }}
-            aria-label={`Drag task ${task.title}`}
-            {...(isOverlay ? {} : { ...attributes, ...listeners })}
+          {/* Grip icon — visual hint only, drag activates from entire card */}
+          <span
+            className="mt-0.5 shrink-0 rounded p-0.5 opacity-0 transition-all duration-150 group-hover:opacity-40"
+            style={{ color: 'var(--muted-fg)', pointerEvents: 'none' }}
+            aria-hidden="true"
           >
             <GripVertical className="h-4 w-4" />
-          </button>
+          </span>
           <div className="min-w-0 flex-1 relative">
             <div className="flex items-start justify-between gap-2">
               <p className="min-w-0 truncate text-sm font-medium leading-snug" style={{ color: 'var(--foreground)' }}>{task.title}</p>

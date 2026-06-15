@@ -4,15 +4,18 @@ import { useEffect, useState } from 'react';
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
+  pointerWithin,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowUpDown, CheckCircle2, GripVertical, Plus } from 'lucide-react';
+import { ArrowUpDown, CheckCircle2, Plus } from 'lucide-react';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -46,35 +49,49 @@ function SortableTaskItem({
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  // Show a dashed placeholder where the card was (like kanban)
+  if (isDragging) {
+    return (
+      <div ref={setNodeRef} style={style} className="flex items-center gap-1.5">
+        {selectionMode && <div className="h-4 w-4 shrink-0" />}
+        <div
+          className="flex-1 rounded-xl"
+          style={{
+            minHeight: 64,
+            background: 'rgb(var(--accent) / 0.04)',
+            border: '2px dashed rgb(var(--accent) / 0.22)',
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       ref={setNodeRef}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.4 : 1,
-      }}
+      style={style}
       className="flex items-center gap-1.5"
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="flex-shrink-0 cursor-grab touch-none rounded px-0.5 py-1 text-slate-300 hover:text-slate-400 active:cursor-grabbing dark:text-slate-700 dark:hover:text-slate-500"
-        aria-label="Drag to reorder"
-        tabIndex={-1}
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
       {selectionMode && (
         <input
           type="checkbox"
           checked={selected}
           onChange={onToggle}
           aria-label={`Select ${task.title}`}
-          className="h-4 w-4 rounded border-slate-300 accent-emerald-500 dark:border-slate-700"
+          className="h-4 w-4 shrink-0 rounded border-slate-300 accent-emerald-500 dark:border-slate-700"
         />
       )}
-      <div className="min-w-0 flex-1">
+      {/* Entire card area is the drag handle — same as kanban */}
+      <div
+        className="min-w-0 flex-1 cursor-grab active:cursor-grabbing touch-none"
+        {...attributes}
+        {...listeners}
+      >
         <TaskCard task={task} />
       </div>
     </div>
@@ -109,8 +126,10 @@ export function TaskList({
     }
   }, [tasks, activeTask]);
 
+  // Kanban-style sensors: separate mouse + touch sensors for reliable iPad support
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
   );
 
   function toggleSelect(id: string) {
@@ -166,6 +185,10 @@ export function TaskList({
     }
   }
 
+  function handleDragCancel() {
+    setActiveTask(null);
+  }
+
   const taskIds = localTasks.map((t) => t.id);
 
   return (
@@ -210,7 +233,13 @@ export function TaskList({
         </div>
       )}
 
-      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={pointerWithin}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           <div className="list-animated space-y-2">
             {localTasks.map((task) => (
@@ -225,9 +254,13 @@ export function TaskList({
           </div>
         </SortableContext>
 
-        <DragOverlay>
+        {/* Floating card — snapped to cursor, same as kanban */}
+        <DragOverlay
+          modifiers={[snapCenterToCursor]}
+          dropAnimation={{ duration: 160, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}
+        >
           {activeTask && (
-            <div className="rotate-1 scale-[1.02] opacity-90 shadow-lg rounded-xl">
+            <div className="rotate-1 scale-[1.02] opacity-95 shadow-2xl rounded-xl pointer-events-none">
               <TaskCard task={activeTask} />
             </div>
           )}

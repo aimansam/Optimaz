@@ -27,6 +27,8 @@ interface SidebarProps {
 export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const { data: projects } = useProjects();
+  // On mobile (open=true), always show full sidebar regardless of collapsed state
+  const effectiveCollapsed = collapsed && !open;
   const activeProject = projects?.find(project => pathname === `/projects/${project.id}`);
   const topLevelProjects = projects?.filter(project => !project.parent_project_id) ?? [];
   const baseProjects = topLevelProjects.slice(0, activeProject && !topLevelProjects.some(project => project.id === activeProject.id) ? 5 : 6);
@@ -74,7 +76,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
           >
             <img src="/icon-192x192.png" alt="Optimaz" className="h-7 w-7 rounded-lg" />
           </div>
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <div className="flex items-center gap-1.5">
               <span className="gradient-text text-base font-bold tracking-tight">
                 Optimaz
@@ -103,7 +105,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
                   href={href}
                   className={cn(
                     'flex items-center rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200',
-                    collapsed ? 'md:justify-center md:px-2' : 'gap-2.5 md:gap-3 md:px-3',
+                    effectiveCollapsed ? 'md:justify-center md:px-2' : 'gap-2.5 md:gap-3 md:px-3',
                   )}
                   style={active ? {
                     background: 'rgb(var(--accent) / 0.12)',
@@ -142,11 +144,11 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
                   >
                     <Icon className="h-4 w-4" />
                   </span>
-                  {!collapsed && label}
+                  {!effectiveCollapsed && label}
                 </Link>
 
                 {/* Hover tooltip — only in collapsed desktop mode */}
-                {collapsed && (
+                {effectiveCollapsed && (
                   <div
                     className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl px-3 py-2 shadow-xl opacity-0 transition-all duration-150 group-hover:opacity-100 hidden md:block"
                     style={{
@@ -166,7 +168,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
                 )}
 
                 {/* Regular hover tooltip in expanded mode */}
-                {!collapsed && (
+                {!effectiveCollapsed && (
                   <div
                     className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 min-w-[160px] max-w-[200px] rounded-xl px-3 py-2 shadow-xl opacity-0 transition-all duration-150 group-hover:opacity-100"
                     style={{
@@ -189,7 +191,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
           })}
 
         {/* Projects — hidden when collapsed */}
-        {!collapsed && projects && projects.length > 0 && (
+        {!effectiveCollapsed && projects && projects.length > 0 && (
           <div className="pt-5">
             <p
               className="mb-2 px-2.5 text-[10px] font-semibold uppercase tracking-widest md:px-3"
@@ -281,7 +283,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
               onClick={onToggleCollapsed}
               className={cn(
                 'hidden md:flex mb-2 w-full items-center rounded-lg px-2 py-1.5 text-xs font-medium transition-all duration-200',
-                collapsed ? 'justify-center' : 'gap-2'
+                effectiveCollapsed ? 'justify-center' : 'gap-2'
               )}
               style={{ color: 'var(--muted-fg)' }}
               onMouseEnter={e => {
@@ -304,7 +306,7 @@ export function Sidebar({ open, setOpen, collapsed = false, onToggleCollapsed }:
             </button>
           )}
 
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <>
               <div className="flex items-center justify-between">
                 <p className="text-[10px]" style={{ color: 'var(--muted-fg)', opacity: 0.6 }}>

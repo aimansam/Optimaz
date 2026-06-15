@@ -173,7 +173,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
                 onClick={!isDone ? startEditing : undefined}
                 title={task.title}
                 className={cn(
-                  'truncate text-sm font-medium leading-snug',
+                  'line-clamp-2 sm:truncate text-sm font-medium leading-snug',
                   isDone && 'line-through',
                   !isDone && 'cursor-text'
                 )}
@@ -292,7 +292,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
               onClick={() => setDetailOpen(true)}
               title="View full details"
               aria-label="View task details"
-              className="flex h-10 w-10 sm:h-7 sm:w-7 items-center justify-center rounded-lg transition-all duration-150"
+              className="hidden sm:flex h-10 w-10 sm:h-7 sm:w-7 items-center justify-center rounded-lg transition-all duration-150"
               style={{ color: 'var(--muted-fg)' }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLButtonElement).style.background = 'rgb(var(--accent) / 0.1)';
@@ -309,10 +309,10 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
           </div>
         </div>
 
-        {/* Subtasks: always visible if present */}
+        {/* Subtasks: visible on desktop, hidden on mobile (accessible via detail drawer) */}
         {totalSubtasks > 0 && (
           <div
-            className="px-3.5 pb-3 pt-2.5 pl-12"
+            className="hidden sm:block px-3.5 pb-3 pt-2.5 pl-12"
             style={{ borderTop: '1px solid var(--card-border)' }}
           >
             <SubtaskList task={task} />

@@ -27,7 +27,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+    const saved = window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    if (saved !== null) return saved === 'true';
+    // Auto-collapse on tablet/iPad (< 1024px) — gives more content space
+    return window.innerWidth < 1024;
   });
   const pathname = usePathname();
   const title = getPageTitle(pathname);

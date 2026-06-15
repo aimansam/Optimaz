@@ -51,7 +51,7 @@ export function KanbanColumn({ id, label, tasks, totalTasks, isDragOver = false 
         className={cn(
           'flex flex-col rounded-2xl transition-all duration-200',
           accepting && 'ring-2 ring-[rgb(var(--accent)/0.4)] scale-[1.01]',
-          'w-full md:w-[320px] min-w-0 md:min-w-[320px] h-full max-h-full'
+          'w-full md:w-[280px] lg:w-[320px] min-w-0 md:min-w-[280px] lg:min-w-[320px] h-full max-h-full'
         )}
         style={{
           background: accepting ? 'rgb(var(--accent) / 0.04)' : 'var(--muted-bg)',

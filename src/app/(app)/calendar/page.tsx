@@ -346,7 +346,7 @@ export default function CalendarPage() {
                               <span
                                 className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
                                 style={isToday
-                                  ? { background: 'var(--accent)', color: '#fff' }
+                                  ? { background: 'rgb(var(--accent))', color: '#fff' }
                                   : { color: 'var(--foreground)' }}
                               >
                                 {day.getDate()}
@@ -404,7 +404,7 @@ export default function CalendarPage() {
                                 <span
                                   className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold"
                                   style={isToday
-                                    ? { background: 'var(--accent)', color: '#fff' }
+                                    ? { background: 'rgb(var(--accent))', color: '#fff' }
                                     : { color: 'var(--foreground)' }}
                                 >
                                   {day.getDate()}
@@ -515,7 +515,7 @@ export default function CalendarPage() {
                             <span
                               className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold sm:h-6 sm:w-6 sm:text-xs"
                               style={isToday
-                                ? { background: 'var(--accent)', color: '#fff' }
+                                ? { background: 'rgb(var(--accent))', color: '#fff' }
                                 : { color: 'var(--foreground)' }}
                             >
                               {day.getDate()}
@@ -585,7 +585,7 @@ export default function CalendarPage() {
                               <span
                                 className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold"
                                 style={isToday
-                                  ? { background: 'var(--accent)', color: '#fff' }
+                                  ? { background: 'rgb(var(--accent))', color: '#fff' }
                                   : { color: 'var(--foreground)' }}
                               >
                                 {day.getDate()}

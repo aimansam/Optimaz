@@ -84,7 +84,7 @@ function ProjectListRow({ project, taskCount, doneCount }: ProjectListRowProps) 
             <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--card-border)' }}>
               <div
                 className="h-full rounded-full transition-all"
-                style={{ width: `${percent}%`, background: 'var(--accent)' }}
+                style={{ width: `${percent}%`, background: 'rgb(var(--accent))' }}
               />
             </div>
             <span className="text-xs tabular-nums w-8 text-right" style={{ color: 'var(--muted-fg)' }}>

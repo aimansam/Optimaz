@@ -88,7 +88,7 @@ function SortableTaskItem({
       )}
       {/* Entire card area is the drag handle — same as kanban */}
       <div
-        className="min-w-0 flex-1 cursor-grab active:cursor-grabbing touch-none"
+        className="min-w-0 flex-1 cursor-grab active:cursor-grabbing"
         {...attributes}
         {...listeners}
       >

@@ -83,7 +83,7 @@ const COMPARISON = [
 
 const TRUST_BADGES = [
   { icon: Lock,        label: 'HTTPS Encrypted' },
-  { icon: ShieldCheck, label: 'PDPA Compliant' },
+  { icon: ShieldCheck, label: 'Secure App' },
   { icon: MapPin,      label: 'Hosted in Singapore' },
   { icon: Users,       label: 'Google & GitHub Auth' },
 ];
@@ -221,7 +221,7 @@ export default async function LandingPage() {
                 Get started free
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <p className="text-xs" style={{ color: C.muted }}>No credit card required. Free 30-day trial.</p>
+              <p className="text-xs" style={{ color: C.muted }}> Free 30-day PRO plan.</p>
             </div>
 
             {/* Avatar social proof */}
@@ -388,7 +388,7 @@ export default async function LandingPage() {
               <Link href="/auth/login"
                 className="mb-7 block w-full rounded-full py-3 text-center text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: `linear-gradient(135deg, ${C.accent}, rgba(124,58,237,0.85))`, boxShadow: `0 4px 16px ${C.accentGlow}` }}>
-                Claim free month + lock beta rate
+                Claim free month
               </Link>
               <ul className="space-y-2.5">
                 {PRO_FEATURES.map((f, i) => (
@@ -400,7 +400,7 @@ export default async function LandingPage() {
             </div>
           </div>
           <p className="mt-6 text-center text-xs" style={{ color: C.muted }}>
-            Beta users who sign up now keep RM15/mo forever. After launch the Pro plan will be RM29/mo.
+            Beta users who sign up now get free 1 month PRO plan. After launch the Pro plan will be RM29/mo.
           </p>
           <ScrollDown href="#founder" />
         </div>
@@ -447,7 +447,7 @@ export default async function LandingPage() {
         <div className="lp-cta-section mx-auto max-w-2xl px-4 sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white">
             <Sparkles className="h-3.5 w-3.5" />
-            Beta pricing locks in today
+            Affordable pricing today
           </div>
           <h2 className="text-2xl font-bold text-white sm:text-3xl">Stop managing apps. Start getting things done.</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/80">
@@ -459,7 +459,7 @@ export default async function LandingPage() {
             <Zap className="h-4 w-4" />
             Start free — claim your Pro month
           </Link>
-          <p className="mt-3 text-xs text-white/60">Takes under 30 seconds. No credit card required.</p>
+          <p className="mt-3 text-xs text-white/60">Takes under 30 seconds. Free 1 month PRO plan for first time user.</p>
         </div>
       </section>
 

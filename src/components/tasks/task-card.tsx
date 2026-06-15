@@ -305,7 +305,7 @@ export function TaskCard({ task, compact = false }: TaskCardProps) {
             >
               <Expand className="h-3.5 w-3.5" />
             </button>
-            <TaskActions task={task} onEdit={() => setDetailOpen(true)} className="opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100" buttonClassName="h-10 w-10 sm:h-7 sm:w-7 rounded-lg" />
+            <TaskActions task={task} onEdit={() => setDetailOpen(true)} buttonClassName="h-10 w-10 sm:h-7 sm:w-7 rounded-lg" />
           </div>
         </div>
 

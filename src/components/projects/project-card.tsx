@@ -186,7 +186,7 @@ const ProjectCard = ({ project, allTasks, rollupProjectIds = [], subprojectCount
         )}
       </Link>
 
-      <div className="absolute right-3 top-3 z-10 flex gap-0.5 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+      <div className="absolute right-3 top-3 z-10 flex gap-0.5 transition-opacity">
         <button
           aria-label={project.favorite ? `Unfavorite project ${project.name}` : `Favorite project ${project.name}`}
           title={project.favorite ? 'Unfavorite' : 'Favorite'}
